@@ -29,3 +29,9 @@ class Collection(Type):
 
     def __init__(Type):
         super(Collection, self).__init__()
+
+
+from .string import String as String
+from .integer import Integer as Integer
+from .float import Float as Float
+from .boolean import Boolean as Boolean
