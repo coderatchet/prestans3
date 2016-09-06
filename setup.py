@@ -55,4 +55,7 @@ setup(
     install_requires = [],
     tests_require = ['pytest'],
     setup_requires = ['pytest-runner'],
+    extras_require = {
+        'SQLAlchemy': ['SQLAlchemy'],
+    }
 )
