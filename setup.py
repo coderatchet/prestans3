@@ -31,9 +31,11 @@ setup(
     maintainer = 'Anomaly Software',
     maintainer_email = 'support@anomaly.net.au',
     classifiers = [
+        'Development Status :: 1 - Planning',
         'Environment :: Web Environment',
         'License :: OSI Approved',
         'License :: OSI Approved :: Apache Software License',
+        'Natural Language :: English',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2',

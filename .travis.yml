@@ -1,13 +1,16 @@
 language: python
 python:
-  - 2.7
-  - 3.4
-  - 3.5
-  - 3.5-dev
-  - nightly
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.5-dev"
+  - "nightly"
+  - "pypy"
 install:
   - pip install -U coveralls
 script:
   - coverage run --source=prestans3 setup.py test
 after_success:
   - coveralls
+notifications:
+  email: false
