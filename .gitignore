@@ -90,3 +90,4 @@ ENV/
 
 # intellij-idea
 /.idea/workspace.xml
+/.idea/dictionaries/*
