@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="prestans3 python code" pattern="file[prestans3]:prestans3//*.py" />
+</component>
