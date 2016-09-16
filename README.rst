@@ -24,4 +24,7 @@ Prestans 3 is currently undergoing *aggressive development* and will eventually 
 
 We encourage you to join `our list <https://groups.google.com/forum/#!forum/presntas3-discuss>`_ and share any ideas or feature requests.
 
+PEP (Prestans Enhancement Proposal)
+-----------------------------------
+
 **Note:** Please do not attempt to use Prestans 3 at the moment, your REST API won't work :-) 
