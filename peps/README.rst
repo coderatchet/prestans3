@@ -20,7 +20,7 @@ the contents of a typical PEP.
 
   :Copyright/public domain:
     Each PEP must either be explicitly labeled as placed in the public domain (see this PEP as
-    an example) or licensed under the Open Publication License [7] .
+    an example) or licensed under the `Open Publication License [7]`_ .
 
   :Specification:
     The technical specification should describe the syntax and semantics of any new language feature.
@@ -53,3 +53,6 @@ the contents of a typical PEP.
 
   The final implementation must include test code and documentation appropriate for either the Python language reference
   or the standard library reference.
+
+.. _Open Publication License [7]: https://www.python.org/dev/peps/pep-0001/#id15
+
