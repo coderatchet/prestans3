@@ -8,10 +8,12 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from abc import abstractmethod, ABC
+from abc import abstractmethod, ABCMeta
 
 
-class ImmutableType(ABC):
+class ImmutableType:
+
+    __metaclass__ = ABCMeta
 
     """
     A descriptor of a type that may call a validator on setting
