@@ -10,6 +10,9 @@
 """
 
 from . import Collection
+from builtins import dict
 
-class Model(Collection):
-    pass
+
+class Model(dict, Collection):
+    def __init__(self, seq, **kwargs):
+        dict.__init__(seq, **kwargs)

@@ -8,8 +8,10 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+from datetime import datetime
 
 from . import Structure
 
-class DateTime(Structure):
+
+class DateTime(Structure, datetime):
     pass

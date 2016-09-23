@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-    prestans.types.string
+    prestans.types.number
     ~~~~~~~~~~~~~~~~~~~~~
-    
+
     A WSGI compliant REST micro-framework.
 
     :copyright: (c) 2016 Anomaly Software
@@ -12,7 +12,9 @@
 from . import Scalar
 
 
-class String(Scalar, str):
-    def __init__(self):
-        super(String, self).__init__()
-    pass
+class Number(Scalar):
+    def __init__(self, *args, **kwargs):
+        super(Scalar, self).__init__(*args, **kwargs)
+
+    def __get__(self, instance, owner):
+        pass

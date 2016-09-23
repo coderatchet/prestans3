@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Sphinx Docs Index" type="JavascriptDebugType" factoryName="JavaScript Debug" uri="file://$PROJECT_DIR$/docs/build/html/index.html">
+    <method>
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="sphinx docs" run_configuration_type="docs" />
+    </method>
+  </configuration>
+</component>

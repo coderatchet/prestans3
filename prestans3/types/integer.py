@@ -9,7 +9,15 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Scalar
+from .number import Number
 
-class Integer(Scalar):
-    pass
+
+class Integer(int, Number):
+    def __init__(self, value, base=10):
+        int.__init__(value, base)
+
+    def __set__(self, instance, value, base=10):
+        int.__init__(value, base)
+
+    def __get__(self, instance, owner):
+        return self

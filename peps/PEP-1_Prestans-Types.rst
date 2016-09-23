@@ -8,6 +8,9 @@ Status: Draft
 Type: Standards Track
 Created: 19/09/2016
 
+.. |hellip| unicode:: U+2026  .. hellip
+    :ltrim:
+
 PEP 1 - Prestans Types
 ======================
 
@@ -49,12 +52,21 @@ Specification
 Main Goals
 ^^^^^^^^^^
 
-A Prestans type should do these things:
+A Prestans Configuration Property should:
+    - contain validation rules
+    - provide sensible defaults e.g.
     - validate itself
     - Serialise itself
     - work with their contextual magic methods; interchangeable with native python objects/scalars.
-        e.g. prestans3.types.Integer(1) == 1 == True
-        +prestans3.types.Integer(1) == 2 == True, etc&hellip;
+        >>> import prestans3.types
+        >>> Integer(1) == 1 == True
+        >>> +Integer(1) == 2 == True
+
+        etc |hellip|
+
+A Prestans Configuration Property should:
+    - contain validation rules
+    - provide sensible defaults e.g. ``required=False``
 
 .. _base_types:
 

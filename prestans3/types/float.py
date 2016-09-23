@@ -9,7 +9,8 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Scalar
+from . import Number
 
-class Float(Scalar):
+
+class Float(float, Number):
     pass

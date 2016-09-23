@@ -11,5 +11,7 @@
 
 from . import Collection
 
+
 class Array(Collection):
-    pass
+    def __init__(self, seq=None):
+        super().__init__(seq if seq is not None else [])
