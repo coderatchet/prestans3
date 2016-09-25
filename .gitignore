@@ -91,3 +91,5 @@ ENV/
 # intellij-idea
 /.idea/workspace.xml
 /.idea/dictionaries/*
+
+/.idea/codeStyleSettings.xml
