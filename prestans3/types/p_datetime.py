@@ -8,10 +8,12 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-import datetime
+from datetime import datetime
 
 from . import Structure
 
 
-class DateTime(datetime.datetime, Structure):
+class DateTime(datetime, Structure):
+    def __init__(self):
+        super(DateTime, self).__init__()
     pass

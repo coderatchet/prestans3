@@ -10,7 +10,6 @@
 """
 
 from . import Collection
-from builtins import dict
 
 
 class Model(dict, Collection):

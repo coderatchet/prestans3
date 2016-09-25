@@ -14,4 +14,11 @@ from . import Structure
 
 
 class Date(date, Structure):
-    pass
+    """
+    Prestans3 Date Type.
+    """
+
+    def __new__(self, year, month, day):
+        if getattr(self, '__init__', None):
+            date.__new__(year, month, day)
+        return self
