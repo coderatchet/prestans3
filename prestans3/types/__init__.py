@@ -22,7 +22,6 @@ class ImmutableType:
     __validation_rules__ = []
     __prestans_attribute__ = True
 
-    @abstractmethod
     def __init__(self):
         pass
 

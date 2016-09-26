@@ -54,14 +54,13 @@ Main Goals
 
 A Prestans Configuration Property should:
     - contain validation rules
-    - provide sensible defaults e.g.
-    - validate itself
-    - Serialise itself
+    - provide sensible defaults e.g. Integer, String, etc |hellip|
+    - validate itself |emdash| using user defined rules
+    - Serialise itself |emdash| using plugin serializer
     - work with their contextual magic methods; interchangeable with native python objects/scalars.
         >>> import prestans3.types
         >>> Integer(1) == 1 == True
         >>> +Integer(1) == 2 == True
-
         etc |hellip|
 
 A Prestans Configuration Property should:
