@@ -13,6 +13,10 @@ from . import Scalar
 
 
 class String(Scalar, str):
-    def __init__(self):
-        super(String, self).__init__()
+    def __init__(self, value):
+        str.__init__(value)
+
+    @classmethod
+    def from_value(cls, value, *args, **kwargs):
+        return String(value)
     pass

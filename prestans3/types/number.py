@@ -13,8 +13,4 @@ from . import Scalar
 
 
 class Number(Scalar):
-    def __init__(self, *args, **kwargs):
-        super(Scalar, self).__init__(*args, **kwargs)
-
-    def __get__(self, instance, owner):
-        pass
+    pass

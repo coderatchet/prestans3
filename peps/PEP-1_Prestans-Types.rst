@@ -21,6 +21,7 @@ Contents
 #. :ref:`specification`
     #. :ref:`main_goals`
     #. :ref:`base_types`
+    #. :ref:`type_properties`
 #. :ref:`motivation`
 #. :ref:`rationale`
 #. :ref:`backwards_compatibility`
@@ -55,8 +56,13 @@ Main Goals
 A Prestans Configuration Property should:
     - contain validation rules
     - provide sensible defaults e.g. Integer, String, etc |hellip|
+    - represent itself in blueprint
     - validate itself |emdash| using user defined rules
-    - Serialise itself |emdash| using plugin serializer
+        - as a developer of a prestans client
+            I want to see a collection of all validation errors for a submitted request
+            I want to know what nested variable went wrong and how
+
+    - Serialize itself |emdash| using plugin serializer
     - work with their contextual magic methods; interchangeable with native python objects/scalars.
         >>> import prestans3.types
         >>> Integer(1) == 1 == True
@@ -72,6 +78,13 @@ A Prestans Configuration Property should:
 Base types
 ^^^^^^^^^^
 
+.. _type_properties:
+
+Type Properties
+^^^^^^^^^^^^^^^
+
+Base Type Property
+    - can be a member of a class or instantiated on its own.
 
 
 .. _motivation:

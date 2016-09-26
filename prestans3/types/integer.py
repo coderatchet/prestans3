@@ -13,11 +13,12 @@ from .number import Number
 
 
 class Integer(int, Number):
+    # @property_rule
+    @classmethod
+    def _min(cls, min_value=0, instance=None):
+        if instance is None:
+            raise TypeError("Huh?")
+        return instance >= min_value
+
     def __init__(self, value, base=10):
         int.__init__(value, base)
-
-    def __set__(self, instance, value, base=10):
-        int.__init__(value, base)
-
-    def __get__(self, instance, owner):
-        return self
