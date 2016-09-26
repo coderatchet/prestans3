@@ -92,5 +92,9 @@ ENV/
 /.idea/workspace.xml
 /.idea/dictionaries/*
 
+<<<<<<< HEAD
 /.idea/inspectionProfiles/
 /.idea/codeStyleSettings.xml
+=======
+/.idea/codeStyleSettings.xml
+>>>>>>> intellij
