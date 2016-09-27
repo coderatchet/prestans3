@@ -46,7 +46,7 @@ class MutableType(object):
         """
         validates against own rules and configured attribute's rules
         :return: ``True`` if the validation succeeded or ``ValidationExceptionSet`` if the validation failed
-        :rtype: True | prestans3.validation_exception_set.ValidationExceptionSet
+        :rtype: True | prestans3.validation_tree.ValidationTree
         """
         # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # todo then validate against own configured rules
@@ -63,7 +63,6 @@ class MutableType(object):
 
 
 class Property(object):
-    __of_type__ = MutableType
 
     # __validation_rules__ = {}  # type: dict[str, (object, T <= MutableType) -> True | ValidationExceptionSet ]
 
@@ -109,6 +108,9 @@ class Property(object):
         # return instance._value
         return instance
 
+    @property
+    def property_type(self):
+        return self._of_type
 
 class ImmutableType(MutableType):
     def __setattr__(self, key, value):

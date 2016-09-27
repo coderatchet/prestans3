@@ -11,9 +11,11 @@ Welcome to Prestans 3's documentation!
 Contents:
 
 .. toctree::
+   :glob:
    :maxdepth: 2
 
-   glossary.rst
+   peps/
+   glossary
 
 Indices and tables
 ==================

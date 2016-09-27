@@ -1,31 +1,8 @@
-from urllib.request import Request
-
 from prestans3.types import String, Property
 
-from prestans3.types import MutableType, Structure, Scalar
+from prestans3.types import Structure
 
 
-# def test_can_call_Property_class_():
-#     ImmutableType.Property()
-#     assert str(error.value) == "Should not instantiate this class directly"
-
-# def test_can_set_and_get_subclass_property_instance():
-#     class MyType(MutableType):
-#         pass
-#
-#     class MyModel(MutableType):
-#         my_type = MyType.Property()
-#
-#     model = MyModel()
-#     model.my_type = "jum"
-#     assert model.my_type == 'jum'
-#
-#
-# def test_can_set_request_data_as_custom_class():
-#     request = Request('http://www.example.com')
-#     request.data = MutableType.Property()
-#     request.data = "jum"
-#     assert request.data == "jum"
 class MyClass(Structure):
     some_string = String.property()
 

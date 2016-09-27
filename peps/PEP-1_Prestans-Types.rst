@@ -14,19 +14,6 @@ Created: 19/09/2016
 PEP 1 - Prestans Types
 ======================
 
-Contents
---------
-#. :ref:`abstract`
-#. :ref:`copyright_public_domain`
-#. :ref:`specification`
-    #. :ref:`main_goals`
-    #. :ref:`base_types`
-    #. :ref:`type_properties`
-#. :ref:`motivation`
-#. :ref:`rationale`
-#. :ref:`backwards_compatibility`
-#. :ref:`ref_impl`
-
 .. _abstract:
 
 Abstract
