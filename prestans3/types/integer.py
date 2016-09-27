@@ -9,7 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from .number import Number
+from . import Number
 
 
 class Integer(int, Number):

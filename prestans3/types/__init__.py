@@ -14,23 +14,6 @@ def property_rule(function):
     return function
 
 
-class ValidationExceptionSet(object):
-    def __init__(self, namespace, validation_exception):
-        """
-
-        :param namespace:
-        :param validation_exception:
-         :type validation_exception: ``prestans3.errors.ValidationError``
-        :param exceptionSet:
-        """
-        pass
-        # if exceptionSet is None:
-        #     exceptionSet = []
-        # self._namespace = namespace
-        # self._exceptionSet = []
-        # for exceptionSet in exceptionSet:
-
-
 class MutableType(object):
     """
     A descriptor of a type that may call a validator when setting it's value. May also ``repr`` itself as via a
@@ -63,7 +46,7 @@ class MutableType(object):
         """
         validates against own rules and configured attribute's rules
         :return: ``True`` if the validation succeeded or ``ValidationExceptionSet`` if the validation failed
-        :rtype: True | ValidationExceptionSet
+        :rtype: True | prestans3.validation_exception_set.ValidationExceptionSet
         """
         # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # todo then validate against own configured rules
@@ -111,8 +94,6 @@ class Property(object):
         if isinstance(value[1], self._of_type):
             instance[value[0]] = value[1]
         else:
-            import inspect
-            getargspec = inspect.getargspec(self._of_type.from_value)
             instance[value[0]] = self._of_type.from_value(value[1])
 
     def __get__(self, instance, owner):
@@ -191,10 +172,11 @@ class Collection(MutableType):
 
 from .boolean import Boolean as Boolean
 from .number import Number as Number
-from .float import Float as Float
 from .integer import Integer as Integer
+from .float import Float as Float
 from .model import Model as Model
 from .p_date import Date as Date
 from .p_datetime import DateTime as DateTime
 from .string import String as String
 from .time import Time as Time
+

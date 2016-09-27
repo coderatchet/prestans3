@@ -1,5 +1,4 @@
-class ValidationError(Exception):
-    def __init__(self, property_name, message):
+class ValidationException(Exception):
+    def __init__(self, message):
         self._validation_set = None
-        self._property_name = property_name
         self._message = message

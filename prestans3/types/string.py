@@ -18,5 +18,7 @@ class String(Scalar, str):
 
     @classmethod
     def from_value(cls, value, *args, **kwargs):
+        if not isinstance(value, str):
+            raise TypeError
         return String(value)
     pass

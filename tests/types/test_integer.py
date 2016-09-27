@@ -3,7 +3,7 @@ from urllib.request import Request
 
 import pytest
 
-from prestans3.errors import ValidationError
+from prestans3.errors import ValidationException
 from prestans3.types import Integer, MutableType, Scalar
 from prestans3.types import Number
 
@@ -50,7 +50,7 @@ def test_raises_validation_error_for_min_rule():
 
     my_class = MyClass()
 
-    with pytest.raises(ValidationError):
+    with pytest.raises(ValidationException):
         my_class.age = 12
 
 
