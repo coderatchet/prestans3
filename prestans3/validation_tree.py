@@ -90,7 +90,8 @@ class LeafValidationSummary(tuple):
     (``str``, |LeafValidationException|)
     """
 
-    def __new__(cls, property_name, attribute_name, leaf_exception, sub_summary=None, direct_child=True):
+    # noinspection PyInitNewSignature
+    def __new__(cls, property_name, attribute_name, leaf_exception, sub_summary=None):
         """
         :param str property_name: the name of the root class of this exception
         :param str attribute_name: The attribute of the |type| of which this exception refers to
@@ -104,11 +105,7 @@ class LeafValidationSummary(tuple):
         else:
             _replace_regex = r'^[^.]*'
             return cls.__new__(cls, property_name, re.sub(_replace_regex, attribute_name, sub_summary[0]),
-                               sub_summary[1], direct_child=False)
-
-    # noinspection PyMissingConstructor,PyUnusedLocal
-    def __init__(self, property_name, attribute_name, leaf_exception, sub_summary=None, direct_child=True):
-        self._direct_child = direct_child
+                               sub_summary[1])
 
     @property
     def message(self):

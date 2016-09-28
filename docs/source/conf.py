@@ -75,6 +75,10 @@ release = '3.0'
 # file that is read. This is the right place to add substitutions that should
 # be available in every file.
 rst_epilog = """
+
+.. terms
+.. -----
+
 .. |type|  replace:: :term:`prestans3 type`
 .. |types|  replace:: :term:`prestans3 types<prestans3 type>`
 
@@ -85,35 +89,48 @@ rst_epilog = """
 .. |hellip|  unicode:: U+2026 .. ellipsis
     :ltrim:
 
-.. |MutableType|  replace:: :class:`MutableType<prestans3.types.MutableType>`
-.. |MutableTypes|  replace:: :class:`MutableTypes<prestans3.types.MutableType>`
+.. types
+.. -----
 
-.. |ImmutableType|  replace:: :class:`ImmutableType<prestans3.types.ImmutableType>`
-.. |ImmutableTypes|  replace:: :class:`ImmutableTypes<prestans3.types.ImmutableType>`
+.. py:currentmodule:: prestans3.types
 
-.. |Structure|  replace:: :class:`Structure<prestans3.types.Structure>`
-.. |Structures|  replace:: :class:`Structures<prestans3.types.Structure>`
+.. |MutableType|  replace:: :class:`MutableType<.MutableType>`
+.. |MutableTypes|  replace:: :class:`MutableTypes<.MutableType>`
 
-.. |String|  replace:: :class:`~prestans3.types.String`
-.. |Strings|  replace:: :class:`Strings<prestans3.types.String>`
+.. |ImmutableType|  replace:: :class:`ImmutableType<.ImmutableType>`
+.. |ImmutableTypes|  replace:: :class:`ImmutableTypes<.ImmutableType>`
 
-.. |Scalar|  replace:: :class:`Scalar<prestans3.types.Scalar>`
-.. |Scalars|  replace:: :class:`Scalars<prestans3.types.Scalar>`
+.. |Structure|  replace:: :class:`Structure<.Structure>`
+.. |Structures|  replace:: :class:`Structures<.Structure>`
 
-.. |ValidationTreeNode|  replace:: :class:`ValidationTreeNode<prestans3.validation_tree.ValidationTreeNode>`
-.. |ValidationTreeNodes|  replace:: :class:`ValidationTreeNodes<prestans3.validation_tree.ValidationTreeNode>`
+.. |String|  replace:: :class:`~.String`
+.. |Strings|  replace:: :class:`Strings<.String>`
 
-.. |ValidationTree|  replace:: :class:`ValidationTree<prestans3.validation_tree.ValidationTree>`
-.. |ValidationTrees|  replace:: :class:`ValidationTrees<prestans3.validation_tree.ValidationTree>`
+.. |Scalar|  replace:: :class:`Scalar<.Scalar>`
+.. |Scalars|  replace:: :class:`Scalars<.Scalar>`
 
-.. |LeafValidationSummary|  replace:: :class:`LeafValidationSummary<prestans3.validation_tree.LeafValidationSummary>`
-.. |LeafValidationSummaries|  replace:: :class:`LeafValidationSummarys<prestans3.validation_tree.LeafValidationSummary>`
+.. |Integer|  replace:: :class:`Integer<.Integer>`
+.. |Integers|  replace:: :class:`Integers<.Integer>`
 
-.. |LeafValidationException| replace:: :class:`LeafValidationException<prestans3.validation_tree.LeafValidationException>`
-.. |LeafValidationExceptions| replace:: :class:`LeafValidationExceptions<prestans3.validation_tree.LeafValidationException>`
+.. |Property|  replace:: :class:`Property<.Property>`
+.. |Properties|  replace:: :class:`Properties<.Property>`
 
-.. |Property|  replace:: :class:`Property<prestans3.types.Property>`
-.. |Properties|  replace:: :class:`Properties<prestans3.types.Property>`
+.. validation
+.. ----------
+
+.. py:currentmodule:: prestans3
+
+.. |ValidationTreeNode|  replace:: :class:`ValidationTreeNode<.validation_tree.ValidationTreeNode>`
+.. |ValidationTreeNodes|  replace:: :class:`ValidationTreeNodes<.validation_tree.ValidationTreeNode>`
+
+.. |ValidationTree|  replace:: :class:`ValidationTree<.validation_tree.ValidationTree>`
+.. |ValidationTrees|  replace:: :class:`ValidationTrees<.validation_tree.ValidationTree>`
+
+.. |LeafValidationSummary|  replace:: :class:`LeafValidationSummary<.validation_tree.LeafValidationSummary>`
+.. |LeafValidationSummaries|  replace:: :class:`LeafValidationSummarys<.validation_tree.LeafValidationSummary>`
+
+.. |LeafValidationException| replace:: :class:`LeafValidationException<.validation_tree.LeafValidationException>`
+.. |LeafValidationExceptions| replace:: :class:`LeafValidationExceptions<.validation_tree.LeafValidationException>`
 """
 
 def skip(app, what, name, obj, skip, options):

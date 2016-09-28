@@ -24,8 +24,9 @@ def test_prestans_attribute_is_instance_of_MutableType():
 
 
 def test_required_rule():
-    class MyClass(Structure):
+    class MyStructure(Structure):
         some_string = String.property(required=True)
 
-    my_class = MyClass()
-    assert not my_class.validate()
+    my_class = MyStructure()
+    validation = my_class.validate()
+    # assert validation is not None and not validation

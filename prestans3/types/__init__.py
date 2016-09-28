@@ -193,6 +193,15 @@ class ImmutableType(MutableType):
 
 
 class Scalar(MutableType):
+    """
+    Base type of all |Scalar| |attributes|\ .
+
+    known Subclasses:
+        - |Boolean|
+        - |Number|
+            - |Integer|
+            - |Float|
+    """
     pass
 
 
@@ -206,7 +215,7 @@ class Structure(MutableType):
         |types| maintain an internal dictionary of attribute names to their values for easy demarcation between prestans
         attributes and native python object attributes. This enables the user to set arbitrary values on the object
         without affecting the final serialization of the object. In other words: regular python properties on an object
-        are transient to the client receiving the object.
+        are transient to the client requesting the object.
 
         :param str key: the name of the attribute or regular python property to set on the object.
         :param value: the value to set on this |Structure|. if the key refers a prestans attribute,
@@ -216,7 +225,7 @@ class Structure(MutableType):
         :return:
         """
         # if the key being set is a prestans attribute then store the value in the self._prestans_attributes dictionary
-        if self._is_prestans_attribute(key):
+        if self.is_prestans_attribute(key):
             object.__getattribute__(self, '__class__').__dict__[key].__set__(
                 object.__getattribute__(self, '_prestans_attributes'),
                 (key, value)
@@ -226,11 +235,12 @@ class Structure(MutableType):
             super(Structure, self).__setattr__(key, value)
         pass
 
-    def _is_prestans_attribute(self, key):
+    def is_prestans_attribute(self, key):
         """
+        Determines if the key provides is a configured |attribute| of this |Structure|\ .
 
-        :param key:
-        :return:
+        :param str key:
+        :return bool: ``True`` if this is a |attribute| or False if otherwise.
         """
         if key in object.__getattribute__(self, '__class__').__dict__ and \
                 isinstance(object.__getattribute__(self, '__class__').__dict__[key], Property):
@@ -239,7 +249,7 @@ class Structure(MutableType):
             return False
 
     def __getattribute__(self, item):
-        if object.__getattribute__(self, '_is_prestans_attribute')(item):
+        if object.__getattribute__(self, 'is_prestans_attribute')(item):
             return object.__getattribute__(self, '__class__').__dict__[item].__get__(
                 object.__getattribute__(self, '_prestans_attributes')[item],
                 object.__getattribute__(self, '_prestans_attributes')[item].__class__)
@@ -248,6 +258,15 @@ class Structure(MutableType):
 
     def __init__(self):
         self._prestans_attributes = {}
+
+    @property
+    def prestans_attributes(self):
+        """
+        returns a dictionary of prestan attribute names to their values
+
+        :rtype: dict[str -> |MutableType|\ ]
+        """
+        return self._prestans_attributes
 
 
 class Iterable(MutableType):
