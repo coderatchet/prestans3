@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    prestans.types
+    prestans3.types
     ~~~~~~~~~~~~~~
     
     A WSGI compliant REST micro-framework.
@@ -11,13 +11,41 @@
 
 
 def property_rule(function):
+    """
+
+    decorator used for declaring a function as a rule inside a |MutableType| subclass. The property rule may then be
+    configured as a parameter to :func:`MutableType.property() <prestans3.types.MutableType.property>`
+
+    for instance, the default property rule ``required`` is defined:
+
+    .. code-block:: python
+
+        class MutableType(object):
+            @property_rule(name="required")
+            def _required(self, instance):
+               # verifies whether the instance given is
+               # defined on a containing class
+               pass
+
+    And may be configured on a subclass of |Structure|:
+
+    >>> import prestans3.types as types
+    >>> class MyStringContainingClass(types.Structure)
+    ...     string_property = String.property(required=True)
+    ...
+    >>> my_class = MyStringContainingClass()
+    >>> type(my_class.validate())  # ValidationTreeNode
+
+    :param function: the function to register as a property. Must accept an instance of the |type| being validated
+    :type function: rule(instance : |MutableType|) -> bool or |ValidationTree| or |LeafValidationException|
+    :returns: the original function
+    """
     return function
 
 
 class MutableType(object):
     """
-    A descriptor of a type that may call a validator when setting it's value. May also ``repr`` itself as via a
-    serializer
+    All prestans types extend this base |MutableType|.
     """
 
     @classmethod
@@ -28,9 +56,10 @@ class MutableType(object):
     @classmethod
     def property(cls, **kwargs):
         """
-        :param kwargs:
-         :rtype: ``Property``
-        :return: configured Property Class
+        :param kwargs: additional configured rules e.g. ``required``, ``default``, etc |hellip|
+        :type kwargs: dict
+        :return: configured |Property| Class
+        :rtype: |Property|
         """
         return Property(of_type=cls, **kwargs)
 
@@ -44,26 +73,44 @@ class MutableType(object):
     #
     def validate(self):
         """
-        validates against own rules and configured attribute's rules
-        :return: ``True`` if the validation succeeded or ``ValidationExceptionSet`` if the validation failed
-        :rtype: True | prestans3.validation_tree.ValidationTree
+        validates against own rules and configured attribute's rules. Scalars will return a |LeafValidationException|
+        whilst |Structures| will return a |ValidationTree| with nested |ValidationTreeNode| subclasses
+
+        :rtype: ``True`` or |ValidationTree| or |LeafValidationException|
         """
         # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # todo then validate against own configured rules
         pass
+
     #
     @classmethod
     def from_value(cls, value, *args, **kwargs):
         """
-        returns the wrapped instance of the Type from a given value
-        :param value:
-        :return:
+        returns the wrapped instance of this |type| from a given value. subclasses of |MutableType| must override this
+        method if prestans should attempt to assign a |Property| to an object other than an instance of this class.
+
+        for a |Structure| containing a |String| |Property|, this will allow an api developer to set the contents of the
+        structure to a native python string:
+
+        >>> import prestans3.types as types
+        >>> class MyClass(types.Structure):
+        ...     name = String.property()
+        ...
+        >>> my_class = MyClass()
+        >>> my_class.name = "jum"
+
+        :param value: an acceptable value according to the |type|\ 's subclass
+        :raises NotImplementedError: if called on a subclass that does not override this method
         """
         raise NotImplementedError
 
 
 class Property(object):
-
+    """
+    Base class for all |Property| configurations. not instantiated directly but called from the owning |type|\ 's
+    :func:`property()<prestans3.types.MutableType.property>` method. A Property is a type descriptor that allows the
+    setting of prestans attributes on it's containing class
+    """
     # __validation_rules__ = {}  # type: dict[str, (object, T <= MutableType) -> True | ValidationExceptionSet ]
 
     # @classmethod
@@ -75,6 +122,11 @@ class Property(object):
     #     pass
 
     def __init__(self, of_type=MutableType, **kwargs):
+        """
+
+        :param of_type: The class of the |type| being configured. Must be a subclass of |MutableType|
+        :type of_type: T <= :attr:`MutableType.__class__<prestans3.types.MutableType>`
+        """
         self._of_type = of_type
         # if 'required' not in kwargs:
         #     kwargs.update(required=lambda is_required, instance: MutableType.Property._required(False, instance))
@@ -112,7 +164,12 @@ class Property(object):
     def property_type(self):
         return self._of_type
 
+
 class ImmutableType(MutableType):
+    """
+    Base class of all immutable |types|
+    """
+
     def __setattr__(self, key, value):
         """
         This is an immutable type, You should not set values directly through here, set them through the main init
@@ -121,10 +178,6 @@ class ImmutableType(MutableType):
         i.e. We'll fire you if you override this method. `see_stackoverflow`_
 
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
-        :param instance: the instance whose attribute is being set
-        :type instance: object
-        :param value:
-        :return:
         """
         raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
 
@@ -134,9 +187,11 @@ class Scalar(MutableType):
 
 
 class Structure(MutableType):
+    """"""
+
     def __setattr__(self, key, value):
         # if the key being set is a prestans attribute then store the value in the self._prestans_attributes dictionary
-        if self.is_prestans_attribute(key):
+        if self._is_prestans_attribute(key):
             object.__getattribute__(self, '__class__').__dict__[key].__set__(
                 object.__getattribute__(self, '_prestans_attributes'),
                 (key, value)
@@ -146,7 +201,7 @@ class Structure(MutableType):
             super(Structure, self).__setattr__(key, value)
         pass
 
-    def is_prestans_attribute(self, key):
+    def _is_prestans_attribute(self, key):
         if key in object.__getattribute__(self, '__class__').__dict__ and \
                 isinstance(object.__getattribute__(self, '__class__').__dict__[key], Property):
             return True
@@ -154,7 +209,7 @@ class Structure(MutableType):
             return False
 
     def __getattribute__(self, item):
-        if object.__getattribute__(self, 'is_prestans_attribute')(item):
+        if object.__getattribute__(self, '_is_prestans_attribute')(item):
             return object.__getattribute__(self, '__class__').__dict__[item].__get__(
                 object.__getattribute__(self, '_prestans_attributes')[item],
                 object.__getattribute__(self, '_prestans_attributes')[item].__class__)
@@ -163,9 +218,6 @@ class Structure(MutableType):
 
     def __init__(self):
         self._prestans_attributes = {}
-
-    # contains other scalars
-    pass
 
 
 class Collection(MutableType):
@@ -181,4 +233,3 @@ from .p_date import Date as Date
 from .p_datetime import DateTime as DateTime
 from .string import String as String
 from .time import Time as Time
-

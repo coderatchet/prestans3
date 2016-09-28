@@ -14,7 +14,7 @@ Contents:
    :glob:
    :maxdepth: 2
 
-   peps/
+   api
    glossary
 
 Indices and tables
