@@ -9,9 +9,9 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Collection
+from . import Iterable
 
 
-class Model(dict, Collection):
+class Model(dict, Iterable):
     def __init__(self, seq, **kwargs):
         dict.__init__(seq, **kwargs)

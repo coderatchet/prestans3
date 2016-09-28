@@ -115,6 +115,12 @@ class LeafValidationSummary(tuple):
         """
         The end user friendly formatted message for this leaf exception
 
+        for example:
+
+        .. code-block:: python
+
+            "MyClass.sub_attr.some_string was invalid: SubAttrClass.some_string min length is 10, len('foobar') was 6"
+
         :rtype: str
         """
         return "{} was invalid: {}".format(self[0], self[1].message)

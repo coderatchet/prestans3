@@ -78,6 +78,9 @@ rst_epilog = """
 .. |type|  replace:: :term:`prestans3 type`
 .. |types|  replace:: :term:`prestans3 types<prestans3 type>`
 
+.. |attribute|  replace:: :term:`prestans3 attribute`
+.. |attributes|  replace:: :term:`prestans3 attributes<prestans3 attribute>`
+
 .. |emdash|  unicode:: U+2014  .. em dash
 .. |hellip|  unicode:: U+2026 .. ellipsis
     :ltrim:

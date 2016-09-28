@@ -13,15 +13,38 @@ ImmutableType
 -------------
 
 .. autoclass:: ImmutableType
+    :show-inheritance:
     :members:
 
 Property
 --------
 
-.. py:currentmodule:: prestans3.types
-
 .. autoclass:: Property
     :members:
+    :special-members:
+    :exclude-members: __weakref__
+
+.. autoclass:: Structure
+    :members:
+    :special-members:
+    :exclude-members: __weakref__
+
+Scalar
+------
+
+.. autoclass:: Scalar
+    :members:
+    :show-inheritance:
+
+Number
+------
+
+.. py:currentmodule:: prestans3.types.number
+
+.. autoclass:: Number
+    :members:
+    :show-inheritance:
+
 
 String
 ------
@@ -29,6 +52,7 @@ String
 .. py:currentmodule:: prestans3.types.string
 
 .. autoclass:: String
+    :show-inheritance:
     :members:
     :exclude-members: __init__
 
@@ -38,5 +62,6 @@ Integer
 .. py:currentmodule:: prestans3.types.integer
 
 .. autoclass:: Integer
+    :show-inheritance:
     :members:
     :exclude-members: __init__

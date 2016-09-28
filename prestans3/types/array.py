@@ -9,9 +9,9 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Collection
+from . import Iterable
 
 
-class Array(Collection):
+class Array(Iterable):
     def __init__(self, seq=None):
         super().__init__(seq if seq is not None else [])

@@ -123,9 +123,9 @@ class Property(object):
 
     def __init__(self, of_type=MutableType, **kwargs):
         """
-
         :param of_type: The class of the |type| being configured. Must be a subclass of |MutableType|
         :type of_type: T <= :attr:`MutableType.__class__<prestans3.types.MutableType>`
+        :param dict **kwargs: additional property rule configuration
         """
         self._of_type = of_type
         # if 'required' not in kwargs:
@@ -139,6 +139,15 @@ class Property(object):
         pass
 
     def __set__(self, instance, value):
+        """
+        If the value provided is not a subclass of the this |Property|\ 's |type|\ , then it is passed to
+        :func:`.MutableType.from_value()` in an attempt to coerce the value to the desired |type|.
+
+        :param instance: the storage for this class' |attributes|\ .
+        :type instance: dict[str, |MutableType|\ ]
+        :param value: a subclass or coercible value of this class's |type|\ .
+        :type value: T <= G
+        """
         # _prestans_attributes.update()
         print("set value: {}".format(value))
         # if value is a MutableType then set it otherwise construct it from variable
@@ -149,11 +158,11 @@ class Property(object):
 
     def __get__(self, instance, owner):
         """
-
-        :param instance: instance to retrieve value from
+        :param instance: The instance of this |type|
+        :type instance: T <= |MutableType|
         :param owner: class type of the instance
-        :type owner: T
-        :return: the value this descriptor describes
+        :type owner: any
+        :return: the value this descriptor holds
         """
         # my_locals = locals()
         # print("got value: {}".format(instance._value))
@@ -167,7 +176,7 @@ class Property(object):
 
 class ImmutableType(MutableType):
     """
-    Base class of all immutable |types|. default behaviour of setting an attribute on this class is to throw an
+    Base class of all immutable |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
     """
 
@@ -188,9 +197,24 @@ class Scalar(MutableType):
 
 
 class Structure(MutableType):
-    """"""
+    """
+    Base class of complex |types|. may contain other |Structures| and/or |Scalars|.
+    """
 
     def __setattr__(self, key, value):
+        """
+        |types| maintain an internal dictionary of attribute names to their values for easy demarcation between prestans
+        attributes and native python object attributes. This enables the user to set arbitrary values on the object
+        without affecting the final serialization of the object. In other words: regular python properties on an object
+        are transient to the client receiving the object.
+
+        :param str key: the name of the attribute or regular python property to set on the object.
+        :param value: the value to set on this |Structure|. if the key refers a prestans attribute,
+                                             it is stored in the internal :attr:`.Structure._prestans_attributes` store.
+                                             otherwise it is stored in the :attr:`.Structure.__dict__` as normal.
+        :type value: |MutableType| or any
+        :return:
+        """
         # if the key being set is a prestans attribute then store the value in the self._prestans_attributes dictionary
         if self._is_prestans_attribute(key):
             object.__getattribute__(self, '__class__').__dict__[key].__set__(
@@ -203,6 +227,11 @@ class Structure(MutableType):
         pass
 
     def _is_prestans_attribute(self, key):
+        """
+
+        :param key:
+        :return:
+        """
         if key in object.__getattribute__(self, '__class__').__dict__ and \
                 isinstance(object.__getattribute__(self, '__class__').__dict__[key], Property):
             return True
@@ -221,7 +250,7 @@ class Structure(MutableType):
         self._prestans_attributes = {}
 
 
-class Collection(MutableType):
+class Iterable(MutableType):
     pass
 
 
