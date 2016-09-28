@@ -43,11 +43,11 @@ A Prestans Configuration Property should:
     - represent itself in blueprint
     - validate itself |emdash| using user defined rules
         - as a developer of a prestans client
-            I want to see a collection of all validation errors for a submitted request
-            I want to know what nested variable went wrong and how
+            - I want to see a collection of all validation errors for a submitted request
+            - I want to know what nested variable went wrong and how
 
-    - Serialize itself |emdash| using plugin serializer
-    - work with their contextual magic methods; interchangeable with native python objects/scalars.
+    - Serialize itself |emdash| using a loosely-coupled serializer
+    - work with their contextual magic methods; Interchangeable with native python objects/scalars.
         >>> import prestans3.types
         >>> Integer(1) == 1 == True
         >>> +Integer(1) == 2 == True

@@ -38,6 +38,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -77,7 +78,7 @@ rst_epilog = """
 .. |type|  replace:: :term:`prestans3 type`
 .. |types|  replace:: :term:`prestans3 types<prestans3 type>`
 
-.. |emdash| replace:: unicode:: U+2014  .. em dash
+.. |emdash|  unicode:: U+2014  .. em dash
 .. |hellip|  unicode:: U+2026 .. ellipsis
     :ltrim:
 

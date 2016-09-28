@@ -6,4 +6,4 @@ Prestans 3 API
 
 .. include:: types.rst
 
-.. include:: errors.rst
+.. include:: validation.rst

@@ -40,10 +40,10 @@ class ValidationTree(ValidationTreeNode):
 
     def add_validation_exception(self, key, node):
         """
-        :param key: the attribute name whose validation failed. This name must be a configured attribute property of
+        :param str key: the attribute name whose validation failed. This name must be a configured attribute property of
                     this tree's ``self._of_type``
-         :type key: ``str``
-        :param node:
+        :param node: the node to add to this |ValidationTree|\ 's list of exceptions
+        :type node: |ValidationTree| | |LeafValidationException|
         """
         if not isinstance(node, ValidationTreeNode) or ValidationTreeNode == node.__class__:
             raise TypeError

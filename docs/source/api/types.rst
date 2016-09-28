@@ -30,7 +30,7 @@ String
 
 .. autoclass:: String
     :members:
-        :exclude-members: __init__
+    :exclude-members: __init__
 
 Integer
 -------
@@ -39,4 +39,4 @@ Integer
 
 .. autoclass:: Integer
     :members:
-        :exclude-members: __init__
+    :exclude-members: __init__

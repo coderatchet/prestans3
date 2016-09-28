@@ -11,26 +11,13 @@ Welcome to Prestans 3's documentation!
 Contents
 --------
 
-.. toctree::
-   :glob:
-   :maxdepth: 1
-
-   glossary
-
 API Reference
 -------------
 
 .. toctree::
    :maxdepth: 1
-   :glob:
-   :titlesonly:
 
-   Single HTML <api/single_html>
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
+   api/single_html
    api/types
    api/validation
 
@@ -58,3 +45,4 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
+* :ref:`glossary`
