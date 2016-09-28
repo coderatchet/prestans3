@@ -8,7 +8,8 @@
 Welcome to Prestans 3's documentation!
 ======================================
 
-Contents:
+Contents
+--------
 
 .. toctree::
    :glob:
@@ -16,6 +17,24 @@ Contents:
 
    api
    glossary
+
+Peps
+----
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   peps/README
+   peps/PEP[-]*[_]*
+
+Writing a PEP
+-------------
+
+.. toctree::
+   :maxdepth: 1
+
+   Template of a PEP <peps/PEP-template>
 
 Indices and tables
 ==================

@@ -8,9 +8,6 @@ Status: Draft
 Type: Standards Track
 Created: 19/09/2016
 
-.. |hellip| unicode:: U+2026  .. hellip
-    :ltrim:
-
 PEP 1 - Prestans Types
 ======================
 

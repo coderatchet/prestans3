@@ -12,6 +12,7 @@ MutableType
 .. py:currentmodule:: prestans3.types
 
 .. autoclass:: MutableType
+    :members:
 
 String
 ------
@@ -24,7 +25,6 @@ Integer
 
 .. automodule:: prestans3.types.integer
     :members:
-
 
 Property
 --------
