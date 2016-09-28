@@ -17,9 +17,9 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+sys.path.insert(0, os.path.abspath('../../'))
 
 # -- General configuration ------------------------------------------------
 
@@ -93,11 +93,17 @@ rst_epilog = """
 .. |String|  replace:: :class:`~prestans3.types.String`
 .. |Strings|  replace:: :class:`Strings<prestans3.types.String>`
 
+.. |Scalar|  replace:: :class:`Scalar<prestans3.types.Scalar>`
+.. |Scalars|  replace:: :class:`Scalars<prestans3.types.Scalar>`
+
 .. |ValidationTreeNode|  replace:: :class:`ValidationTreeNode<prestans3.validation_tree.ValidationTreeNode>`
 .. |ValidationTreeNodes|  replace:: :class:`ValidationTreeNodes<prestans3.validation_tree.ValidationTreeNode>`
 
 .. |ValidationTree|  replace:: :class:`ValidationTree<prestans3.validation_tree.ValidationTree>`
 .. |ValidationTrees|  replace:: :class:`ValidationTrees<prestans3.validation_tree.ValidationTree>`
+
+.. |LeafValidationSummary|  replace:: :class:`LeafValidationSummary<prestans3.validation_tree.LeafValidationSummary>`
+.. |LeafValidationSummaries|  replace:: :class:`LeafValidationSummarys<prestans3.validation_tree.LeafValidationSummary>`
 
 .. |LeafValidationException| replace:: :class:`LeafValidationException<prestans3.validation_tree.LeafValidationException>`
 .. |LeafValidationExceptions| replace:: :class:`LeafValidationExceptions<prestans3.validation_tree.LeafValidationException>`

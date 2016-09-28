@@ -14,7 +14,7 @@ from prestans3.types import Integer
 
 from prestans3.types import String, Structure
 from prestans3.validation_tree import LeafValidationException, ValidationTree, \
-    ValidationTreeNode
+    ValidationTreeNode, LeafValidationSummary
 
 exception_1 = LeafValidationException(String)
 exception_2 = LeafValidationException(String)
@@ -90,7 +90,8 @@ def test_should_only_add_validation_exceptions_for_attribute_keys_of_defined_pre
     tree = ValidationTree(MySuperStructure, ('stringy_1', exception_1))
     with pytest.raises(AttributeError) as error:
         tree.add_validation_exception('not_an_attribute', exception_1)
-    assert 'not_an_attribute is not a configured prestans attribute of MySuperStructure class, when trying to set Validation Exception' in str(error.value)
+    assert 'not_an_attribute is not a configured prestans attribute of MySuperStructure class, when trying to set Validation Exception' in str(
+        error.value)
 
 
 def test_should_raise_exception_when_adding_validation_exception_for_attribute_of_different_type():
@@ -112,23 +113,32 @@ def test_property_type_returns_correct_value():
     assert LeafValidationException(String).property_type == String
     assert ValidationTree(MySuperStructure, ('stringy_1', exception_1)).property_type == MySuperStructure
 
+
 def test_cannot_make_validation_tree_for_scalar():
     with pytest.raises(TypeError) as error:
         ValidationTree(String, ('what?', exception_1))
     assert 'validation trees are only valid for Types with configured prestans attributes' in str(error.value)
 
+
+# noinspection PyUnusedLocal
+def test_can_use_iterator_syntax_for_validation_tree():
+    tree = ValidationTree(MyStructure, ('some_string', exception_1))
+    tree_ = tree[0]
+    for summary in tree:
+        summary_ = summary[0]
+
+
 def test_can_retrieve_dict_of_validation_exceptions_by_qualified_name():
     exception = LeafValidationException(String)
     sub_tree = ValidationTree(MyStructure, ('some_string', exception))
     tree = ValidationTree(MySuperStructure, ('some_structure', sub_tree))
-    l = list(tree.items())
-    assert ('MySuperStructure.some_structure.some_string', exception) == l[0]
-    pass
+    for val1, val2 in zip(LeafValidationSummary('MySuperStructure', 'some_structure.some_string', exception), tree[0]):
+        assert val2 == val2
+
 
 def test_nested_exception_message_correctly_constructed_from_root_exception_class():
     exception = LeafValidationException(String)
     sub_tree = ValidationTree(MyStructure, ('some_string', exception))
     tree = ValidationTree(MySuperStructure, ('some_structure', sub_tree))
     expected_message = 'MySuperStructure.some_structure.some_string was invalid: validation error for type String'
-    # getlist[0].message
-    pass
+    assert expected_message == tree[0].message

@@ -34,7 +34,7 @@ def property_rule(function):
     ...     string_property = String.property(required=True)
     ...
     >>> my_class = MyStringContainingClass()
-    >>> type(my_class.validate())  # ValidationTreeNode
+    >>> type(my_class.validate())  # prestans3.validation_tree.ValidationTreeNode
 
     :param function: the function to register as a property. Must accept an instance of the |type| being validated
     :type function: rule(instance : |MutableType|) -> bool or |ValidationTree| or |LeafValidationException|
@@ -167,7 +167,8 @@ class Property(object):
 
 class ImmutableType(MutableType):
     """
-    Base class of all immutable |types|
+    Base class of all immutable |types|. default behaviour of setting an attribute on this class is to throw an
+    :class:`AttributeError<builtins.AttributeError>`
     """
 
     def __setattr__(self, key, value):

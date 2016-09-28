@@ -3,7 +3,16 @@ import re
 
 
 class ValidationTreeNode(object):
+    """
+    Abstract Base Class of a Validation Tree Node. Do not instantiate this class directly, instead use a subclass
+    (|ValidationTree| or |LeafValidationException|)
+    """
+
     def __init__(self, of_type):
+        """
+        :param of_type: the class this Validation Tree Node refers to.
+        :type of_type: T <= |MutableType|
+        """
         self._of_type = of_type
 
     @property
@@ -14,7 +23,7 @@ class ValidationTreeNode(object):
 class ValidationTree(ValidationTreeNode):
     """
     A |Structure| validation result, contains a dictionary of attribute names to their
-    ValidationTreeNodes or LeafValidationException for structure and scalar attributes respectively
+    |ValidationTreeNodes| or |LeafValidationException| for |Structure| and |Scalar| attributes respectively
     """
 
     def __init__(self, of_type, validation_node):
@@ -51,18 +60,64 @@ class ValidationTree(ValidationTreeNode):
             ))
         self.validation_exceptions.update({key: node})
 
-    def items(self):
+    def head(self):
+        if self.validation_exceptions:
+            return list(self.__iter__())[0]
+        else:
+            return None
+
+    def __getitem__(self, item):
+        return list(self.__iter__())[item]
+
+    def __iter__(self):
         """
-        smart dictionary when iterated through
-        :return:
+        iterates through the exceptions and produces a list of |LeafValidationSummaries|\ .
+
+        :yields: the next summarised exception (|LeafValidationSummaries|)
+        :rtype: list[|LeafValidationSummary|]
         """
-        for key, value in list(self.validation_exceptions.items()):  # type: (str, LeafValidationException)
-            if isinstance(value, LeafValidationException):
-                yield ("{}.{}".format(self.property_type.__name__, key), value)
+        for key, node in list(self.validation_exceptions.items()):  # type: (str, LeafValidationException)
+            if isinstance(node, LeafValidationException):
+                yield LeafValidationSummary(self.property_type.__name__, key, node)
             else:
-                for sub_key, sub_value in list(value.items()):
-                    yield ("{}.{}".format(self.property_type.__name__, re.sub(r'^(.*)\.', "{}.".format(key), sub_key)),
-                           sub_value)
+                for sub_summary in node:
+                    yield LeafValidationSummary(self.property_type.__name__, key, node, sub_summary)
+
+
+class LeafValidationSummary(tuple):
+    """
+    Returned when iterating through a |ValidationTree|. Each LeafValidationSummary is a
+    (``str``, |LeafValidationException|)
+    """
+
+    def __new__(cls, property_name, attribute_name, leaf_exception, sub_summary=None, direct_child=True):
+        """
+        :param str property_name: the name of the root class of this exception
+        :param str attribute_name: The attribute of the |type| of which this exception refers to
+        :param |LeafValidationException| leaf_exception: The exception detailing the leaf property and it's validation message
+        :param bool direct_child: whether this summary represents a direct child attribute of the root class or a nested
+                             attribute. Affects the display of the summarised message
+        """
+        if sub_summary is None:
+            return super(LeafValidationSummary, cls).__new__(cls, (
+                "{}.{}".format(property_name, attribute_name), leaf_exception))
+        else:
+            _replace_regex = r'^[^.]*'
+            return cls.__new__(cls, property_name, re.sub(_replace_regex, attribute_name, sub_summary[0]),
+                               sub_summary[1], direct_child=False)
+
+    # noinspection PyMissingConstructor,PyUnusedLocal
+    def __init__(self, property_name, attribute_name, leaf_exception, sub_summary=None, direct_child=True):
+        self._direct_child = direct_child
+
+    @property
+    def message(self):
+        """
+        The end user friendly formatted message for this leaf exception
+
+        :rtype: str
+        """
+        return "{} was invalid: {}".format(self[0], self[1].message)
 
 
 class LeafValidationException(ValidationTreeNode):

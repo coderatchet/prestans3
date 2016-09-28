@@ -13,10 +13,26 @@ Contents
 
 .. toctree::
    :glob:
-   :maxdepth: 2
+   :maxdepth: 1
 
-   api
    glossary
+
+API Reference
+-------------
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+   :titlesonly:
+
+   Single HTML <api/single_html>
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   api/types
+   api/validation
 
 Peps
 ----

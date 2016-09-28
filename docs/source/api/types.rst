@@ -1,8 +1,3 @@
-=============
-API Reference
-=============
-
-
 Types
 =====
 
@@ -12,6 +7,12 @@ MutableType
 .. py:currentmodule:: prestans3.types
 
 .. autoclass:: MutableType
+    :members:
+
+ImmutableType
+-------------
+
+.. autoclass:: ImmutableType
     :members:
 
 Property
@@ -29,7 +30,7 @@ String
 
 .. autoclass:: String
     :members:
-    :exclude-members: __init__
+        :exclude-members: __init__
 
 Integer
 -------
@@ -38,4 +39,4 @@ Integer
 
 .. autoclass:: Integer
     :members:
-    :exclude-members: __init__
+        :exclude-members: __init__
