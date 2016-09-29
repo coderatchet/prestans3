@@ -90,7 +90,7 @@ class ImmutableType(object):
         """
         # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # todo then validate against own configured rules
-        pass
+        return True
 
     #
     @classmethod
@@ -213,7 +213,9 @@ class Structure(ImmutableType):
 
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
         """
-        raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
+        #todo: added by brad because otherwise an object could not even be instantiated
+        if key != "_prestans_attributes":
+            raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
 
     # @classmethod
     # def mutable(cls, *args, **kwargs):
@@ -247,7 +249,8 @@ class Structure(ImmutableType):
             return object.__getattribute__(self, item)
 
     def __init__(self):
-        super().__init__()
+        #todo: changed by brad
+        super(Structure, self).__init__()
         self._prestans_attributes = {}
 
     @property
@@ -261,7 +264,11 @@ class Structure(ImmutableType):
 
 
     def mutable(self):
-        self.__class__.from_immutable(self)
+        print (self.__class__)
+        class _PrivateMutable(_MutableStructure, self.__class__):
+            pass
+
+        return _PrivateMutable()
 
 
 class _MutableStructure(Structure):
@@ -290,15 +297,13 @@ class _MutableStructure(Structure):
                 (key, value)
             )
         # else default super behaviour
-        else:
-            super(_MutableStructure, self).__setattr__(key, value)
-        pass
+        #else:
+        #    super(_MutableStructure, self).__setattr__(key, value)
+        print (key, value, "mutable")
 
     @classmethod
     def from_immutable(cls, instance):
-        class _Mute(_MutableStructure, instance.__class__):
-            pass
-        pass
+        return cls()
 
 class Iterable(ImmutableType):
     # todo construct entire object in __init__
