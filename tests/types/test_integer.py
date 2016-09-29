@@ -3,7 +3,7 @@
 import pytest
 
 from prestans3.errors import ValidationException
-from prestans3.types import Integer, MutableType
+from prestans3.types import Integer, ImmutableType
 
 
 # def test_can_create_integer():

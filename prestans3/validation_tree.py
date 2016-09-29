@@ -2,7 +2,7 @@ from prestans3.types import Property, Structure
 import re
 
 
-class ValidationTreeNode(object):
+class ValidationTreeNode(Exception):
     """
     Abstract Base Class of a Validation Tree Node. Do not instantiate this class directly, instead use a subclass
     (|ValidationTree| or |LeafValidationException|)

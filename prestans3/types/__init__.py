@@ -12,15 +12,14 @@
 
 def property_rule(function):
     """
-
-    decorator used for declaring a function as a rule inside a |MutableType| subclass. The property rule may then be
-    configured as a parameter to :func:`MutableType.property() <prestans3.types.MutableType.property>`
+    decorator used for declaring a function as a rule inside an |ImmutableType| subclass. The property rule may then be
+    configured as a parameter to :func:`ImmutableType.property()<.ImmutableType.property>`
 
     for instance, the default property rule ``required`` is defined:
 
     .. code-block:: python
 
-        class MutableType(object):
+        class ImmutableType(object):
             @property_rule(name="required")
             def _required(self, instance):
                # verifies whether the instance given is
@@ -43,10 +42,27 @@ def property_rule(function):
     return function
 
 
-class MutableType(object):
+class ImmutableType(object):
     """
-    All prestans types extend this base |MutableType|.
+    Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
+    :class:`AttributeError<builtins.AttributeError>`
     """
+
+    def __init__(self, validate_immediately=True):
+        """
+        NOTE: call this method after setting values if validating immediately in order for validation to work!
+
+        if validate_immediately is set, will raise a subclass of |ValidationTreeNode| when initializing the object.
+        This is the default behaviour of all immutable types.
+
+        :param bool validate_immediately: whether to validate this object on construction or defer validation to the
+                                          user or prestans3 REST api process
+        :raises: |ValidationTreeNode|
+        """
+        if validate_immediately:
+            _validation_result = self.validate()
+            if _validation_result is not True:
+                raise _validation_result
 
     @classmethod
     @property_rule
@@ -65,12 +81,6 @@ class MutableType(object):
 
     __prestans_attribute__ = True
 
-    # def __init__(self, validate=True):
-    #     validation_result = self.validate()
-    #     if isinstance(validation_result, ValidationExceptionSet):
-    #         pass
-    #     pass
-    #
     def validate(self):
         """
         validates against own rules and configured attribute's rules. Scalars will return a |LeafValidationException|
@@ -111,6 +121,7 @@ class Property(object):
     :func:`property()<prestans3.types.MutableType.property>` method. A Property is a type descriptor that allows the
     setting of prestans attributes on it's containing class
     """
+
     # __validation_rules__ = {}  # type: dict[str, (object, T <= MutableType) -> True | ValidationExceptionSet ]
 
     # @classmethod
@@ -121,7 +132,7 @@ class Property(object):
     # def _default(cls, default_value, instance):
     #     pass
 
-    def __init__(self, of_type=MutableType, **kwargs):
+    def __init__(self, of_type=ImmutableType, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |MutableType|
         :type of_type: T <= :attr:`MutableType.__class__<prestans3.types.MutableType>`
@@ -174,25 +185,7 @@ class Property(object):
         return self._of_type
 
 
-class ImmutableType(MutableType):
-    """
-    Base class of all immutable |types|. Default behaviour of setting an attribute on this class is to throw an
-    :class:`AttributeError<builtins.AttributeError>`
-    """
-
-    def __setattr__(self, key, value):
-        """
-        This is an immutable type, You should not set values directly through here, set them through the main init
-        method.
-
-        i.e. We'll fire you if you override this method. `see_stackoverflow`_
-
-        .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
-        """
-        raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
-
-
-class Scalar(MutableType):
+class Scalar(ImmutableType):
     """
     Base type of all |Scalar| |attributes|\ .
 
@@ -205,35 +198,32 @@ class Scalar(MutableType):
     pass
 
 
-class Structure(MutableType):
+class Structure(ImmutableType):
     """
     Base class of complex |types|. may contain other |Structures| and/or |Scalars|.
     """
 
     def __setattr__(self, key, value):
-        """
-        |types| maintain an internal dictionary of attribute names to their values for easy demarcation between prestans
-        attributes and native python object attributes. This enables the user to set arbitrary values on the object
-        without affecting the final serialization of the object. In other words: regular python properties on an object
-        are transient to the client requesting the object.
 
-        :param str key: the name of the attribute or regular python property to set on the object.
-        :param value: the value to set on this |Structure|. if the key refers a prestans attribute,
-                                             it is stored in the internal :attr:`.Structure._prestans_attributes` store.
-                                             otherwise it is stored in the :attr:`.Structure.__dict__` as normal.
-        :type value: |MutableType| or any
-        :return:
         """
-        # if the key being set is a prestans attribute then store the value in the self._prestans_attributes dictionary
-        if self.is_prestans_attribute(key):
-            object.__getattribute__(self, '__class__').__dict__[key].__set__(
-                object.__getattribute__(self, '_prestans_attributes'),
-                (key, value)
-            )
-        # else default super behaviour
-        else:
-            super(Structure, self).__setattr__(key, value)
-        pass
+        This is an immutable type, You should not set values directly through here, set them through the main init
+        method.
+
+        i.e. We'll fire you if you override this method. `see_stackoverflow`_
+
+        .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
+        """
+        raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
+
+    # @classmethod
+    # def mutable(cls, *args, **kwargs):
+    #     """
+    #     return an instance of this class with mutable |attributes|
+    #     :param args:
+    #     :param kwargs:
+    #     :return:
+    #     """
+    #     pass
 
     def is_prestans_attribute(self, key):
         """
@@ -257,6 +247,7 @@ class Structure(MutableType):
             return object.__getattribute__(self, item)
 
     def __init__(self):
+        super().__init__()
         self._prestans_attributes = {}
 
     @property
@@ -269,7 +260,54 @@ class Structure(MutableType):
         return self._prestans_attributes
 
 
-class Iterable(MutableType):
+    def mutable(self):
+        self.__class__.from_immutable(self)
+
+
+class _MutableStructure(Structure):
+    """
+    Not instantiated directly, instead call the :func:`.Container.mutable()` method to retrieve an instance of this
+    |type| that may be mutated. Validation will now not happen on __init__
+    """
+
+    def __setattr__(self, key, value):
+        """
+        |types| maintain an internal dictionary of attribute names to their values for easy demarcation between prestans
+        attributes and native python object attributes. This enables the user to set arbitrary values on the object
+        without affecting the final serialization of the object. In other words: regular python properties on an object
+        are transient to the client requesting the object.
+
+        :param str key: the name of the attribute or regular python property to set on the object.
+        :param value: the value to set on this |MutableType|. if the key refers a prestans attribute,
+                                             it is stored in the internal :attr:`.Structure._prestans_attributes` store.
+                                             otherwise it is stored in the :attr:`.Structure.__dict__` as normal.
+        :type value: |MutableType| or |ImmutableType| or any
+        """
+        # if the key being set is a prestans attribute then store the value in the self._prestans_attributes dictionary
+        if self.is_prestans_attribute(key):
+            object.__getattribute__(self, '__class__').__dict__[key].__set__(
+                object.__getattribute__(self, '_prestans_attributes'),
+                (key, value)
+            )
+        # else default super behaviour
+        else:
+            super(_MutableStructure, self).__setattr__(key, value)
+        pass
+
+    @classmethod
+    def from_immutable(cls, instance):
+        class _Mute(_MutableStructure, instance.__class__):
+            pass
+        pass
+
+class Iterable(ImmutableType):
+    # todo construct entire object in __init__
+    # todo __setitem__ raises error
+    pass
+
+
+class _MutableIterable(Iterable):
+    # todo __setitem__ should not raise error.
     pass
 
 

@@ -100,6 +100,12 @@ rst_epilog = """
 .. |ImmutableType|  replace:: :class:`ImmutableType<.ImmutableType>`
 .. |ImmutableTypes|  replace:: :class:`ImmutableTypes<.ImmutableType>`
 
+.. |Container|  replace:: :class:`.Container`
+.. |Containers|  replace:: :class:`.Containers<.Container>`
+
+.. |MutableContainer|  replace:: :class:`._MutableContainer`
+.. |MutableContainers|  replace:: :class:`._MutableContainers<_MutableContainer>`
+
 .. |Structure|  replace:: :class:`Structure<.Structure>`
 .. |Structures|  replace:: :class:`Structures<.Structure>`
 
