@@ -97,11 +97,11 @@ class ImmutableType(object):
 
         :rtype: ``True`` or |ValidationTree| or |LeafValidationException|
         """
-        # todo for each attribute property, validate and append any exceptions with namespace to exception set
-        # todo then validate against own configured rules
-        for rule in self._property_rules:
-            rule(self, )
-        pass
+        # # todo for each attribute property, validate and append any exceptions with namespace to exception set
+        # # todo then validate against own configured rules
+        # for rule in self._property_rules:
+        #     rule(self, )
+        # pass
 
     #
     @classmethod
@@ -317,7 +317,6 @@ class Structure(Container):
             return object.__getattribute__(self, item)
 
     def __init__(self):
-        #todo: changed by brad
         super(Structure, self).__init__()
         self._prestans_attributes = {}
 
@@ -331,7 +330,6 @@ class Structure(Container):
         return self._prestans_attributes
 
     def mutable(self):
-        print (self.__class__)
         class _PrivateMutable(_MutableStructure, self.__class__):
             pass
 
