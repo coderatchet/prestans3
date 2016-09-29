@@ -8,9 +8,10 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import functools
 
 
-def property_rule(function):
+class PropertyRule(classmethod):
     """
     decorator used for declaring a function as a rule inside an |ImmutableType| subclass. The property rule may then be
     configured as a parameter to :func:`ImmutableType.property()<.ImmutableType.property>`
@@ -39,7 +40,18 @@ def property_rule(function):
     :type function: rule(instance : |MutableType|) -> bool or |ValidationTree| or |LeafValidationException|
     :returns: the original function
     """
-    return function
+
+    # noinspection PyMissingConstructor
+    def __init__(self, name=None):
+        self._name = name
+        pass
+
+    def __call__(self, function):
+        self._function = function
+        name__ = function.__name__
+        # for name in set(dir(function)) - set(dir(self)):
+        #     setattr(self, name, getattr(function, name))
+        return self._function
 
 
 class ImmutableType(object):
@@ -47,6 +59,8 @@ class ImmutableType(object):
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
     """
+
+    _property_rules = {}
 
     def __init__(self, validate_immediately=True):
         """
@@ -61,13 +75,8 @@ class ImmutableType(object):
         """
         if validate_immediately:
             _validation_result = self.validate()
-            if _validation_result is not True:
+            if _validation_result is not True:  # assumes we have a ValidationTreeNode(Exception) class instance
                 raise _validation_result
-
-    @classmethod
-    @property_rule
-    def _required(cls, instance):
-        pass
 
     @classmethod
     def property(cls, **kwargs):
@@ -90,6 +99,8 @@ class ImmutableType(object):
         """
         # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # todo then validate against own configured rules
+        for rule in self._property_rules:
+            rule(self, )
         pass
 
     #
@@ -113,6 +124,37 @@ class ImmutableType(object):
         :raises NotImplementedError: if called on a subclass that does not override this method
         """
         raise NotImplementedError
+
+    @classmethod
+    def register_property_rule(cls, property_rule):
+        argcount = property_rule.__code__.co_argcount
+        if argcount != 2:
+            func_name = property_rule.__name__
+            func_args = property_rule.__code__.co_varnames
+            raise ValueError(
+                "expected property_rule function with 2 arguments, received function with {} argument(s): {}({})".format(
+                    argcount, func_name, ", ".join(func_args)))
+
+        @functools.wraps(property_rule)
+        def wrapped_pr(*args):
+            result = property_rule(*args)
+            # if not isinstance()
+
+        cls._property_rules.update({wrapped_pr.__name__: wrapped_pr})
+
+
+def _required(owner, instance, config):
+    """
+    checks if the instance is not None
+    :param instance:
+    :param config:
+    :return:
+    """
+    if owner is None:
+        raise ValueError("owner instance can't be None")
+    if not isinstance(owner, ImmutableType):
+        raise ValueError("owner instance is not a subclass of {}".format(ImmutableType.__name__))
+    return True if not config else instance is not None
 
 
 class Property(object):
@@ -198,7 +240,33 @@ class Scalar(ImmutableType):
     pass
 
 
-class Structure(ImmutableType):
+class Container(ImmutableType):
+    """
+    subclass of all |types| with containable |attributes|
+    """
+
+    # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]  # func raises |ValidationTreeNode| on invalidation
+    _owner_property_rules = {}
+
+    @classmethod
+    def register_owner_property_rule(cls, owner_property_rule):
+        argcount = owner_property_rule.__code__.co_argcount
+        if argcount != 3:
+            func_name = owner_property_rule.__name__
+            func_args = owner_property_rule.__code__.co_varnames
+            raise ValueError(
+                "expected owner_property_rule function with 3 arguments, received function with {} argument(s): {}({})".format(
+                    argcount, func_name, ", ".join(func_args)))
+
+        @functools.wraps(owner_property_rule)
+        def wrapped_opr(*args):
+            result = owner_property_rule(*args)
+            # if not isinstance()
+
+        cls._owner_property_rules.update({wrapped_opr.__name__: wrapped_opr})
+
+
+class Structure(Container):
     """
     Base class of complex |types|. may contain other |Structures| and/or |Scalars|.
     """
@@ -259,7 +327,6 @@ class Structure(ImmutableType):
         """
         return self._prestans_attributes
 
-
     def mutable(self):
         self.__class__.from_immutable(self)
 
@@ -298,9 +365,11 @@ class _MutableStructure(Structure):
     def from_immutable(cls, instance):
         class _Mute(_MutableStructure, instance.__class__):
             pass
+
         pass
 
-class Iterable(ImmutableType):
+
+class Iterable(Container):
     # todo construct entire object in __init__
     # todo __setitem__ raises error
     pass
