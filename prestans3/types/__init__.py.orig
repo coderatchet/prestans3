@@ -99,9 +99,13 @@ class ImmutableType(object):
         """
         # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # todo then validate against own configured rules
+<<<<<<< HEAD
         for rule in self._property_rules:
             rule(self, )
         pass
+=======
+        return True
+>>>>>>> 87b448d8692001c43f85e227279ac43b2b86eb4e
 
     #
     @classmethod
@@ -364,16 +368,20 @@ class _MutableStructure(Structure):
                 (key, value)
             )
         # else default super behaviour
-        else:
-            super(_MutableStructure, self).__setattr__(key, value)
-        pass
+        #else:
+        #    super(_MutableStructure, self).__setattr__(key, value)
+        print (key, value, "mutable")
 
     @classmethod
     def from_immutable(cls, instance):
+<<<<<<< HEAD
         class _Mute(_MutableStructure, instance.__class__):
             pass
 
         pass
+=======
+        return cls()
+>>>>>>> 87b448d8692001c43f85e227279ac43b2b86eb4e
 
 
 class Iterable(Container):
