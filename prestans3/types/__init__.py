@@ -37,7 +37,7 @@ class PropertyRule(classmethod):
     >>> type(my_class.validate())  # prestans3.validation_tree.ValidationTreeNode
 
     :param function: the function to register as a property. Must accept an instance of the |type| being validated
-    :type function: rule(instance : |MutableType|) -> bool or |ValidationTree| or |LeafValidationException|
+    :type function: rule(instance : |ImmutableType| or |ImmutableType|) -> bool or |ValidationTree| or |LeafValidationException|
     :returns: the original function
     """
 
@@ -111,7 +111,7 @@ class ImmutableType(object):
     @classmethod
     def from_value(cls, value, *args, **kwargs):
         """
-        returns the wrapped instance of this |type| from a given value. subclasses of |MutableType| must override this
+        returns the wrapped instance of this |type| from a given value. subclasses of |ImmutableType| must override this
         method if prestans should attempt to assign a |Property| to an object other than an instance of this class.
 
         for a |Structure| containing a |String| |Property|, this will allow an api developer to set the contents of the
@@ -189,11 +189,11 @@ def _required(owner, instance, config):
 class Property(object):
     """
     Base class for all |Property| configurations. not instantiated directly but called from the owning |type|\ 's
-    :func:`property()<prestans3.types.MutableType.property>` method. A Property is a type descriptor that allows the
+    :func:`property()<prestans3.types.ImmutableType.property>` method. A Property is a type descriptor that allows the
     setting of prestans attributes on it's containing class
     """
 
-    # __validation_rules__ = {}  # type: dict[str, (object, T <= MutableType) -> True | ValidationExceptionSet ]
+    # __validation_rules__ = {}  # type: dict[str, (object, T <= ImmutableType) -> True | ValidationExceptionSet ]
 
     # @classmethod
     # def _required(cls, is_required, instance):
@@ -205,15 +205,15 @@ class Property(object):
 
     def __init__(self, of_type=ImmutableType, **kwargs):
         """
-        :param of_type: The class of the |type| being configured. Must be a subclass of |MutableType|
-        :type of_type: T <= :attr:`MutableType.__class__<prestans3.types.MutableType>`
+        :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
+        :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         :param dict **kwargs: additional property rule configuration
         """
         self._of_type = of_type
         # if 'required' not in kwargs:
-        #     kwargs.update(required=lambda is_required, instance: MutableType.Property._required(False, instance))
+        #     kwargs.update(required=lambda is_required, instance: ImmutableType.Property._required(False, instance))
         # if 'default' not in kwargs:
-        #     kwargs.update(default=lambda default_value, instance: MutableType.Property._default(None, instance))
+        #     kwargs.update(default=lambda default_value, instance: ImmutableType.Property._default(None, instance))
         # for _ in kwargs.keys():
         #     pass
         # super(ImmutableType.Property, self).__init__(self)
@@ -223,16 +223,16 @@ class Property(object):
     def __set__(self, instance, value):
         """
         If the value provided is not a subclass of the this |Property|\ 's |type|\ , then it is passed to
-        :func:`.MutableType.from_value()` in an attempt to coerce the value to the desired |type|.
+        :func:`.ImmutableType.from_value()` in an attempt to coerce the value to the desired |type|.
 
         :param instance: the storage for this class' |attributes|\ .
-        :type instance: dict[str, |MutableType|\ ]
+        :type instance: dict[str, |ImmutableType|\ ]
         :param value: a subclass or coercible value of this class's |type|\ .
         :type value: T <= G
         """
         # _prestans_attributes.update()
         print("set value: {}".format(value))
-        # if value is a MutableType then set it otherwise construct it from variable
+        # if value is a ImmutableType then set it otherwise construct it from variable
         if isinstance(value[1], self._of_type):
             instance[value[0]] = value[1]
         else:
@@ -241,7 +241,7 @@ class Property(object):
     def __get__(self, instance, owner):
         """
         :param instance: The instance of this |type|
-        :type instance: T <= |MutableType|
+        :type instance: T <= |ImmutableType|
         :param owner: class type of the instance
         :type owner: any
         :return: the value this descriptor holds
@@ -379,7 +379,7 @@ class Structure(Container):
         """
         returns a dictionary of prestan attribute names to their values
 
-        :rtype: dict[str -> |MutableType|\ ]
+        :rtype: dict[str -> |ImmutableType|\ ]
         """
         return self._prestans_attributes
 
@@ -404,12 +404,12 @@ class _MutableStructure(Structure):
         are transient to the client requesting the object.
 
         :param str key: the name of the attribute or regular python property to set on the object.
-        :param value: the value to set on this |MutableType|. if the key refers a prestans attribute,
+        :param value: the value to set on this |MutableStructure|. if the key refers a prestans attribute,
                                              it is stored in the internal :attr:`.Structure._prestans_attributes` store.
                                              otherwise it is stored in the :attr:`.Structure.__dict__` as normal.
-        :type value: |MutableType| or |ImmutableType| or any
+        :type value: |ImmutableType| or any
         """
-        # if the key being set is a prestans attribute then store the value in the self._prestans_attributes dictionary
+        # if the key being set is a |attribute| then store the value in the self._prestans_attributes dictionary
         if self.is_prestans_attribute(key):
             object.__getattribute__(self, '__class__').__dict__[key].__set__(
                 object.__getattribute__(self, '_prestans_attributes'),

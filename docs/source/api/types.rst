@@ -24,10 +24,13 @@ Property
     :special-members:
     :exclude-members: __weakref__
 
+Structure
+---------
+
 .. autoclass:: Structure
     :members:
     :special-members:
-    :exclude-members: __weakref__
+    :exclude-members: __weakref__, __init__
 
 Scalar
 ------
