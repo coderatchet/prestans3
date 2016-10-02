@@ -135,7 +135,7 @@ class ImmutableType(object):
         Register a property rule with all instances and subclasses of this |type|
 
         :param property_rule: callable to be registered
-        :type property_rule: .. function:: rule(instance: ImmutableType, config: any) -> bool
+        :type property_rule: rule(instance: ImmutableType, config: any) -> bool
         :param str name: name of the property rule as will appear in configuring the property:
 
         >>> import prestans3.types as types
@@ -283,7 +283,7 @@ class Container(ImmutableType):
         Register an owner type property rule with all instances and subclasses of this |type|
 
         :param property_rule: callable to be registered
-        :type property_rule: .. function:: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
+        :type property_rule: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
         :param str name: name of the property rule as will appear in configuring the property:
 
         >>> import prestans3.types as types
