@@ -1,13 +1,7 @@
 Types
 =====
 
-MutableType
------------
-
 .. py:currentmodule:: prestans3.types
-
-.. autoclass:: MutableType
-    :members:
 
 ImmutableType
 -------------
