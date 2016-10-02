@@ -70,3 +70,23 @@ Integer
     :show-inheritance:
     :members:
     :exclude-members: __init__
+
+Boolean
+-------
+
+.. py:currentmodule:: prestans3.types.boolean
+
+.. autoclass:: Boolean
+    :show-inheritance:
+    :members:
+    :exclude-members: __init__
+
+Float
+-----
+
+.. py:currentmodule:: prestans3.types.float
+
+.. autoclass:: Float
+    :show-inheritance:
+    :members:
+    :exclude-members: __init__
