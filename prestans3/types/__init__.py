@@ -269,12 +269,12 @@ class Scalar(ImmutableType):
     pass
 
 
+# noinspection PyAbstractClass
 class Container(ImmutableType):
-    """
-    subclass of all |types| with containable |attributes|
-    """
+    """ subclass of all |types| with containable |attributes| """
 
-    # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]  # func raises |ValidationTreeNode| on invalidation
+    # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]
+    # func raises |ValidationTreeNode| on invalidation
     _owner_property_rules = {}
 
     @classmethod
@@ -282,8 +282,8 @@ class Container(ImmutableType):
         """
         Register an owner type property rule with all instances and subclasses of this |type|
 
-        :param property_rule: callable to be registered
-        :type property_rule: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
+        :param owner_property_rule: callable to be registered
+        :type owner_property_rule: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
         :param str name: name of the property rule as will appear in configuring the property:
 
         >>> import prestans3.types as types
@@ -302,8 +302,8 @@ class Container(ImmutableType):
             func_name = owner_property_rule.__name__
             func_args = owner_property_rule.__code__.co_varnames
             raise ValueError(
-                "expected owner_property_rule function with 3 arguments, received function with {} argument(s): {}({})".format(
-                    argcount, func_name, ", ".join(func_args)))
+                "expected owner_property_rule function with 3 arguments, received function with {} argument(s): {}({})" \
+                    .format(argcount, func_name, ", ".join(func_args)))
 
         @functools.wraps(owner_property_rule)
         def wrapped_opr(*args):
@@ -320,6 +320,7 @@ class Container(ImmutableType):
         return cls._owner_property_rules[name]
 
 
+# noinspection PyAbstractClass
 class Structure(Container):
     """
     Base class of complex |types|. may contain other |Structures| and/or |Scalars|.
@@ -339,21 +340,11 @@ class Structure(Container):
         if key != "_prestans_attributes":
             raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
 
-    # @classmethod
-    # def mutable(cls, *args, **kwargs):
-    #     """
-    #     return an instance of this class with mutable |attributes|
-    #     :param args:
-    #     :param kwargs:
-    #     :return:
-    #     """
-    #     pass
-
     def is_prestans_attribute(self, key):
         """
         Determines if the key provides is a configured |attribute| of this |Structure|\ .
 
-        :param str key:
+        :param str key: name of the attribute
         :return bool: ``True`` if this is a |attribute| or False if otherwise.
         """
         if key in object.__getattribute__(self, '__class__').__dict__ and \
@@ -363,6 +354,10 @@ class Structure(Container):
             return False
 
     def __getattribute__(self, item):
+        """
+        will use the |Property|\ 's __get__ method if the item is a |attribute| otherwise retrieves the regular
+        python attribute as normal
+        """
         if object.__getattribute__(self, 'is_prestans_attribute')(item):
             return object.__getattribute__(self, '__class__').__dict__[item].__get__(
                 object.__getattribute__(self, '_prestans_attributes')[item],

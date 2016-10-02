@@ -24,6 +24,14 @@ Property
     :special-members:
     :exclude-members: __weakref__
 
+Container
+---------
+
+.. autoclass:: Container
+    :members:
+    :special-members:
+    :exclude-members: __weakref__
+
 Structure
 ---------
 
