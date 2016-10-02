@@ -110,13 +110,22 @@ rst_epilog = """
 .. |Structures|  replace:: :class:`Structures<.Structure>`
 
 .. |String|  replace:: :class:`~.String`
-.. |Strings|  replace:: :class:`Strings<.String>`
+.. |Strings|  replace:: :class:`Strings<.string.String>`
 
 .. |Scalar|  replace:: :class:`Scalar<.Scalar>`
 .. |Scalars|  replace:: :class:`Scalars<.Scalar>`
 
-.. |Integer|  replace:: :class:`Integer<.Integer>`
-.. |Integers|  replace:: :class:`Integers<.Integer>`
+.. |Integer|  replace:: :class:`Integer<.integer.Integer>`
+.. |Integers|  replace:: :class:`Integers<.integer..Integer>`
+
+.. |Number|  replace:: :class:`Number<.number.Number>`
+.. |Numbers|  replace:: :class:`Numbers<.number.Number>`
+
+.. |Boolean|  replace:: :class:`Boolean<.boolean.Boolean>`
+.. |Booleans|  replace:: :class:`Booleans<.boolean.Boolean>`
+
+.. |Float|  replace:: :class:`Float<.float.Float>`
+.. |Floats|  replace:: :class:`Floats<.float.Float>`
 
 .. |Property|  replace:: :class:`Property<.Property>`
 .. |Properties|  replace:: :class:`Properties<.Property>`
@@ -133,7 +142,7 @@ rst_epilog = """
 .. |ValidationTrees|  replace:: :class:`ValidationTrees<.validation_tree.ValidationTree>`
 
 .. |LeafValidationSummary|  replace:: :class:`LeafValidationSummary<.validation_tree.LeafValidationSummary>`
-.. |LeafValidationSummaries|  replace:: :class:`LeafValidationSummarys<.validation_tree.LeafValidationSummary>`
+.. |LeafValidationSummaries|  replace:: :class:`LeafValidationSummaries<.validation_tree.LeafValidationSummary>`
 
 .. |LeafValidationException| replace:: :class:`LeafValidationException<.validation_tree.LeafValidationException>`
 .. |LeafValidationExceptions| replace:: :class:`LeafValidationExceptions<.validation_tree.LeafValidationException>`
