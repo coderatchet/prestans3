@@ -43,6 +43,10 @@ class PropertyRule(classmethod):
 
     # noinspection PyMissingConstructor
     def __init__(self, name=None):
+        """
+        :param str name: name of the Property Rule. for convenience sake, it is recommended that this name should be a
+        space free python-like identifier e.g. ``my_property_rule``.
+        """
         self._name = name
         pass
 
@@ -126,7 +130,25 @@ class ImmutableType(object):
         raise NotImplementedError
 
     @classmethod
-    def register_property_rule(cls, property_rule):
+    def register_property_rule(cls, property_rule, name=None):
+        """
+        Register a property rule with all instances and subclasses of this |type|
+
+        :param property_rule: callable to be registered
+        :type property_rule: .. function:: rule(instance: ImmutableType, config: any) -> bool
+        :param str name: name of the property rule as will appear in configuring the property:
+
+        >>> import prestans3.types as types
+        >>> class MyClass(Structure):
+        ...     pass
+        ...
+        >>> def my_property_rule(instance, config):  # assume config is a bool
+        ...     pass
+        ...
+        >>> MyClass.register_property_rule(my_property_rule, name="custom_prop")
+        >>> class MyOwningClass(Structure):
+        ...     sub_prop = MyClass.property(custom_prop=True)  # should now configure the custom_prop
+        """
         argcount = property_rule.__code__.co_argcount
         if argcount != 2:
             func_name = property_rule.__name__
@@ -140,7 +162,14 @@ class ImmutableType(object):
             result = property_rule(*args)
             # if not isinstance()
 
-        cls._property_rules.update({wrapped_pr.__name__: wrapped_pr})
+        if name is None:
+            name = wrapped_pr.__name__
+        cls._property_rules.update({name: wrapped_pr})
+
+    @classmethod
+    def get_property_rule_by_name(cls, name):
+        """ retrieve the property rule by name (``str``) """
+        return cls._property_rules[name]
 
 
 def _required(owner, instance, config):
@@ -281,7 +310,7 @@ class Structure(Container):
 
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
         """
-        #todo: added by brad because otherwise an object could not even be instantiated
+        # todo: added by brad because otherwise an object could not even be instantiated
         if key != "_prestans_attributes":
             raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
 
