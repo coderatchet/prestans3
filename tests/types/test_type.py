@@ -5,22 +5,24 @@ from prestans3.types import String, Property, _required, ImmutableType
 from prestans3.types import Structure
 
 
-
 class MyClass(Structure):
     some_string = String.property()
 
+
 def test_structure_class_can_contain_instances_of_MutableType_Property():
     assert isinstance(MyClass.__dict__['some_string'], Property)
+
 
 def test_required_throws_exception_when_owner_is_none():
     with pytest.raises(ValueError) as value_error:
         _required(None, True, True)
     assert "owner instance can't be None" in str(value_error.value)
 
+
 def test_required_throws_exception_when_owner_is_not_immutable_type_subclass():
     with pytest.raises(ValueError) as value_error:
         _required(True, True, True)
-    assert "owner instance is not a subclass of {}".format(ImmutableType.__name__)
+    assert "owner instance is not a subclass of {}".format(ImmutableType.__name__) in str(value_error.value)
 
 # def test_required_returns_true_if_provided_instance_not_none_and_config_is_True():
 #     assert _required(MyClass(), True, True)
