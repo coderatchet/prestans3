@@ -142,7 +142,7 @@ class ImmutableType(object):
         >>> class MyClass(Structure):
         ...     pass
         ...
-        >>> def my_property_rule(instance, config):  # assume config is a bool
+        >>> def my_property_rule(instance, config):  # assuming config is a bool
         ...     pass
         ...
         >>> MyClass.register_property_rule(my_property_rule, name="custom_prop")
@@ -278,7 +278,25 @@ class Container(ImmutableType):
     _owner_property_rules = {}
 
     @classmethod
-    def register_owner_property_rule(cls, owner_property_rule):
+    def register_owner_property_rule(cls, owner_property_rule, name=None):
+        """
+        Register an owner type property rule with all instances and subclasses of this |type|
+
+        :param property_rule: callable to be registered
+        :type property_rule: .. function:: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
+        :param str name: name of the property rule as will appear in configuring the property:
+
+        >>> import prestans3.types as types
+        >>> class MyClass(Structure):
+        ...     pass
+        ...
+        >>> def my_owner_property_rule(owner, instance, config):  # assuming config is a bool
+        ...     pass
+        ...
+        >>> MyClass.register_property_rule(my_owner_property_rule, name="custom_owner_prop")
+        >>> class MyOwningClass(Structure):
+        ...     sub_owner_prop = MyClass.property(custom_owner_prop=True)  # should now configure the custom_prop
+        """
         argcount = owner_property_rule.__code__.co_argcount
         if argcount != 3:
             func_name = owner_property_rule.__name__
@@ -292,7 +310,14 @@ class Container(ImmutableType):
             result = owner_property_rule(*args)
             # if not isinstance()
 
-        cls._owner_property_rules.update({wrapped_opr.__name__: wrapped_opr})
+        if name is None:
+            name = wrapped_opr.__name__
+        cls._owner_property_rules.update({name: wrapped_opr})
+
+    @classmethod
+    def get_owner_property_rule_by_name(cls, name):
+        """ retrieve the owner property rule by name (``str``) """
+        return cls._owner_property_rules[name]
 
 
 class Structure(Container):

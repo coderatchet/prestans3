@@ -84,8 +84,10 @@ def test_can_store_owner_property_rule_in_type():
     assert any([True if rule.__name__ == my_custom_owner_property_rule.__name__ else False for rule in
                 __CustomClass._owner_property_rules.values()])
 
+
+# noinspection PyProtectedMember,PyAbstractClass,PyUnusedLocal
 def test_can_name_property_rule():
-    class __CustomClass2(Container):
+    class __CustomClass2(ImmutableType):
         pass
 
     def my_custom_property_rule_nameable(instance, config):
@@ -95,6 +97,22 @@ def test_can_name_property_rule():
 
     assert "custom_prop" in __CustomClass2._property_rules.keys()
     assert __CustomClass2.get_property_rule_by_name("custom_prop").__name__ == my_custom_property_rule_nameable.__name__
+
+
+# noinspection PyProtectedMember,PyAbstractClass,PyUnusedLocal
+def test_can_name_owner_property_rule():
+    class __CustomClass3(Container):
+        pass
+
+    def my_custom_owner_property_rule_nameable(owner, instance, config):
+        pass
+
+    __CustomClass3.register_owner_property_rule(my_custom_owner_property_rule_nameable,
+                                          name="custom_owner_prop")
+
+    assert "custom_prop" in __CustomClass3._property_rules.keys()
+    assert __CustomClass3.get_owner_property_rule_by_name(
+        "custom_owner_prop").__name__ == my_custom_owner_property_rule_nameable.__name__
 
 # def test_property_rule_should_not_validate_on_non_instances_or_subclasses_of_owning_class():
 #     MyClass()
