@@ -100,12 +100,12 @@ def test_should_raise_exception_when_adding_validation_exception_for_attribute_o
     with pytest.raises(TypeError) as error:
         tree.add_validation_exception('stringy_2', exception_integer)
     assert 'validation exception for MySuperStructure.stringy_2 was of type Integer, ' + \
-           'however MySuperStructure.stringy_2 is a String Property' \
+           'however MySuperStructure.stringy_2 is a String _Property' \
            in str(error.value)
     with pytest.raises(TypeError) as error:
         ValidationTree(MySuperStructure, ('stringy_2', exception_integer))
     assert 'validation exception for MySuperStructure.stringy_2 was of type Integer, ' + \
-           'however MySuperStructure.stringy_2 is a String Property' \
+           'however MySuperStructure.stringy_2 is a String _Property' \
            in str(error.value)
 
 

@@ -1,5 +1,7 @@
-from prestans3.types import _Property, Structure
 import re
+
+from prestans3.types import *
+from prestans3.types import Structure
 
 
 class ValidationTreeNode(Exception):
@@ -28,8 +30,8 @@ class ValidationTree(ValidationTreeNode):
 
     def __init__(self, of_type, validation_node):
         """
-        :type validation_node: (``str``, ``ValidationTreeNode``)
-        :rtype: ``ValidationTree``
+        :type validation_node: (``str``, T <= |ValidationTreeNode|)
+        :rtype: |ValidationTree|
         """
         if not issubclass(of_type, Structure):
             raise TypeError('validation trees are only valid for Types with configured prestans attributes')
@@ -96,8 +98,6 @@ class LeafValidationSummary(tuple):
         :param str property_name: the name of the root class of this exception
         :param str attribute_name: The attribute of the |type| of which this exception refers to
         :param |LeafValidationException| leaf_exception: The exception detailing the leaf property and it's validation message
-        :param bool direct_child: whether this summary represents a direct child attribute of the root class or a nested
-                             attribute. Affects the display of the summarised message
         """
         if sub_summary is None:
             return super(LeafValidationSummary, cls).__new__(cls, (
@@ -129,6 +129,11 @@ class LeafValidationException(ValidationTreeNode):
     """
 
     def __init__(self, of_type, message=None):
+        """
+        :param of_type: |type| this validation message applies to.
+        :type of_type: T <= |ImmutableType|\ .1
+        :param str message: validation message, user friendly.
+        """
         super(LeafValidationException, self).__init__(of_type)
         if message is None:
             message = self._default_message()

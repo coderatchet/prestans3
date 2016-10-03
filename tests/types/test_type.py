@@ -24,8 +24,14 @@ def test_required_throws_exception_when_owner_is_not_immutable_type_subclass():
         _required(True, True, True)
     assert "owner instance is not a subclass of {}".format(ImmutableType.__name__) in str(value_error.value)
 
-# def test_required_returns_true_if_provided_instance_not_none_and_config_is_True():
-#     assert _required(MyClass(), True, True)
+
+def test_required_returns_true_if_provided_instance_not_none_and_config_is_true():
+    # noinspection PyAbstractClass
+    class MyClass2(Structure):
+        my_string = String.property(required=True)
+
+    assert _required(MyClass2(), True, True)
+
 #
 # def test_required_returns_true_if_provided_instance_is_none_and_config_is_False():
 #     assert _required(None, False)

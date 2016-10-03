@@ -9,25 +9,25 @@ validation will contain a tree structure of validation errors that may be iterat
 ValidationTreeNode
 ------------------
 
-.. autoclass:: ValidationTreeNode
+.. autoclass:: .ValidationTreeNode
     :members:
 
 ValidationTree
 --------------
 
-.. autoclass:: ValidationTree
+.. autoclass:: .ValidationTree
     :members:
 
 LeafValidationException
 -----------------------
 
-.. autoclass:: LeafValidationException
+.. autoclass:: .LeafValidationException
     :members:
 
 LeafValidationSummary
 ---------------------
 
-.. autoclass:: LeafValidationSummary
+.. autoclass:: .LeafValidationSummary
     :members:
     :special-members: __new__
     :exclude-members: __init__

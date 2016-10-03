@@ -10,6 +10,9 @@
 """
 import functools
 
+from prestans3.validation_tree import ValidationTree, LeafValidationException
+
+
 class ImmutableType(object):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
@@ -35,14 +38,12 @@ class ImmutableType(object):
                 raise _validation_result
 
     @classmethod
-    def property(cls, **kwargs):
+    def property(cls):
         """
-        :param kwargs: additional configured rules e.g. ``required``, ``default``, etc |hellip|
-        :type kwargs: dict
-        :return: configured |Property| Class
-        :rtype: |Property|
+        :return: configured |_Property| Class
+        :rtype: |_Property|
         """
-        return _Property(of_type=cls, **kwargs)
+        return _Property(of_type=cls)
 
     __prestans_attribute__ = True
 
@@ -51,22 +52,25 @@ class ImmutableType(object):
         validates against own rules and configured attribute's rules. Scalars will return a |LeafValidationException|
         whilst |Structures| will return a |ValidationTree| with nested |ValidationTreeNode| subclasses
 
-        :rtype: ``True`` or |ValidationTree| or |LeafValidationException|
+        :rtype: ``True``
+        :raises: |ValidationTree| or |LeafValidationException|
         """
         # # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # # todo then validate against own configured rules
         # for rule in self._property_rules:
         #     rule(self, )
         # pass
+        if isinstance(self, Container):
+            raise ValidationTree(Container, LeafValidationException(String, message="not-implemented-yet"))
 
     #
     @classmethod
     def from_value(cls, value, *args, **kwargs):
         """
         returns the wrapped instance of this |type| from a given value. subclasses of |ImmutableType| must override this
-        method if prestans should attempt to assign a |Property| to an object other than an instance of this class.
+        method if prestans should attempt to assign a |_Property| to an object other than an instance of this class.
 
-        for a |Structure| containing a |String| |Property|, this will allow an api developer to set the contents of the
+        for a |Structure| containing a |String| |_Property|, this will allow an api developer to set the contents of the
         structure to a native python string:
 
         >>> import prestans3.types as types
@@ -101,13 +105,13 @@ class ImmutableType(object):
         >>> class MyOwningClass(Structure):
         ...     sub_prop = MyClass.property(custom_prop=True)  # should now configure the custom_prop
         """
-        argcount = property_rule.__code__.co_argcount
-        if argcount != 2:
+        arg_count = property_rule.__code__.co_argcount
+        if arg_count != 2:
             func_name = property_rule.__name__
             func_args = property_rule.__code__.co_varnames
             raise ValueError(
                 "expected property_rule function with 2 arguments, received function with {} argument(s): {}({})".format(
-                    argcount, func_name, ", ".join(func_args)))
+                    arg_count, func_name, ", ".join(func_args)))
 
         @functools.wraps(property_rule)
         def wrapped_pr(*args):
@@ -140,41 +144,30 @@ def _required(owner, instance, config):
 
 class _Property(object):
     """
-    Base class for all |Property| configurations. not instantiated directly but called from the owning |type|\ 's
-    :func:`property()<prestans3.types.ImmutableType.property>` method. A Property is a type descriptor that allows the
+    Base class for all |_Property| configurations. not instantiated directly but called from the owning |type|\ 's
+    :func:`property()<prestans3.types.ImmutableType.property>` method. A |_Property| is a type descriptor that allows the
     setting of prestans attributes on it's containing class
     """
 
-    # __validation_rules__ = {}  # type: dict[str, (object, T <= ImmutableType) -> True | ValidationExceptionSet ]
-
-    # @classmethod
-    # def _required(cls, is_required, instance):
-    #     pass
-    #
-    # @classmethod
-    # def _default(cls, default_value, instance):
-    #     pass
-
-    def __init__(self, of_type=ImmutableType, **kwargs):
+    def __init__(self, of_type=None):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
-        :param dict **kwargs: additional property rule configuration
         """
         self._of_type = of_type
         # if 'required' not in kwargs:
-        #     kwargs.update(required=lambda is_required, instance: ImmutableType.Property._required(False, instance))
+        #     kwargs.update(required=lambda is_required, instance: ImmutableType._Property._required(False, instance))
         # if 'default' not in kwargs:
-        #     kwargs.update(default=lambda default_value, instance: ImmutableType.Property._default(None, instance))
+        #     kwargs.update(default=lambda default_value, instance: ImmutableType._Property._default(None, instance))
         # for _ in kwargs.keys():
         #     pass
-        # super(ImmutableType.Property, self).__init__(self)
+        # super(ImmutableType._Property, self).__init__(self)
         # todo return ImmutableType whose validate method will call it's validators curried with it's member values
         pass
 
     def __set__(self, instance, value):
         """
-        If the value provided is not a subclass of the this |Property|\ 's |type|\ , then it is passed to
+        If the value provided is not a subclass of the this |_Property|\ 's |type|\ , then it is passed to
         :func:`.ImmutableType.from_value()` in an attempt to coerce the value to the desired |type|.
 
         :param instance: the storage for this class' |attributes|\ .
@@ -208,6 +201,7 @@ class _Property(object):
         return self._of_type
 
 
+# noinspection PyAbstractClass
 class Scalar(ImmutableType):
     """
     Base type of all |Scalar| |attributes|\ .
@@ -307,7 +301,7 @@ class Structure(Container):
 
     def __getattribute__(self, item):
         """
-        will use the |Property|\ 's __get__ method if the item is a |attribute| otherwise retrieves the regular
+        will use the |_Property|\ 's __get__ method if the item is a |attribute| otherwise retrieves the regular
         python attribute as normal
         """
         if object.__getattribute__(self, 'is_prestans_attribute')(item):
@@ -337,6 +331,7 @@ class Structure(Container):
         return _PrivateMutable()
 
 
+# noinspection PyAbstractClass
 class _MutableStructure(Structure):
     """
     Not instantiated directly, instead call the :func:`.Container.mutable()` method to retrieve an instance of this
@@ -375,12 +370,14 @@ class _MutableStructure(Structure):
         pass
 
 
+# noinspection PyAbstractClass
 class Iterable(Container):
     # todo construct entire object in __init__
     # todo __setitem__ raises error
     pass
 
 
+# noinspection PyAbstractClass
 class _MutableIterable(Iterable):
     # todo __setitem__ should not raise error.
     pass

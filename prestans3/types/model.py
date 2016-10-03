@@ -12,6 +12,7 @@
 from . import Iterable
 
 
+# noinspection PyAbstractClass
 class Model(dict, Iterable):
     def __init__(self, seq, **kwargs):
         dict.__init__(seq, **kwargs)
