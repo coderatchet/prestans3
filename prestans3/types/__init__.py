@@ -10,54 +10,6 @@
 """
 import functools
 
-#
-# class PropertyRule(classmethod):
-#     """
-#     decorator used for declaring a function as a rule inside an |ImmutableType| subclass. The property rule may then be
-#     configured as a parameter to :func:`ImmutableType.property()<.ImmutableType.property>`
-#
-#     for instance, the default property rule ``required`` is defined:
-#
-#     .. code-block:: python
-#
-#         class ImmutableType(object):
-#             @property_rule(name="required")
-#             def _required(self, instance):
-#                # verifies whether the instance given is
-#                # defined on a containing class
-#                pass
-#
-#     And may be configured on a subclass of |Structure|:
-#
-#     >>> import prestans3.types as types
-#     >>> class MyStringContainingClass(types.Structure)
-#     ...     string_property = String.property(required=True)
-#     ...
-#     >>> my_class = MyStringContainingClass()
-#     >>> type(my_class.validate())  # prestans3.validation_tree.ValidationTreeNode
-#
-#     :param function: the function to register as a property. Must accept an instance of the |type| being validated
-#     :type function: rule(instance : |ImmutableType| or |ImmutableType|) -> bool or |ValidationTree| or |LeafValidationException|
-#     :returns: the original function
-#     """
-#
-#     # noinspection PyMissingConstructor
-#     def __init__(self, name=None):
-#         """
-#         :param str name: name of the Property Rule. for convenience sake, it is recommended that this name should be a
-#         space free python-like identifier e.g. ``my_property_rule``.
-#         """
-#         self._name = name
-#         pass
-#
-#     def __call__(self, function):
-#         self._function = function
-#         name__ = function.__name__
-#         # for name in set(dir(function)) - set(dir(self)):
-#         #     setattr(self, name, getattr(function, name))
-#         return self._function
-
-
 class ImmutableType(object):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
