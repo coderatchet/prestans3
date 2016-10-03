@@ -13,20 +13,19 @@ from setuptools import setup, find_packages
 
 from prestans3 import __version__
 
-
 setup(
     name="prestans3",
-    version = __version__,
-    description = 'A WSGI compliant REST micro-framework',
-    url = 'https://github.com/anomaly/prestans3.git',
-    long_description = open("README.rst").read(),
-    download_url = 'https://github.com/anomaly/prestans3/archive/' + __version__ + '.tar.gz',
-    license = 'Apache 2.0',
-    author = 'Anomaly Software',
-    author_email = 'support@anomaly.net.au',
-    maintainer = 'Anomaly Software',
-    maintainer_email = 'support@anomaly.net.au',
-    classifiers = [
+    version=__version__,
+    description='A WSGI compliant REST micro-framework',
+    url='https://github.com/anomaly/prestans3.git',
+    long_description=open("README.rst").read(),
+    download_url='https://github.com/anomaly/prestans3/archive/' + __version__ + '.tar.gz',
+    license='Apache 2.0',
+    author='Anomaly Software',
+    author_email='support@anomaly.net.au',
+    maintainer='Anomaly Software',
+    maintainer_email='support@anomaly.net.au',
+    classifiers=[
         'Development Status :: 1 - Planning',
         'Environment :: Web Environment',
         'License :: OSI Approved',
@@ -45,13 +44,13 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Programming Language :: Python :: Implementation :: PyPy',
     ],
-    platforms = ['any'],
-    packages = find_packages(),
-    include_package_data = True,
-    install_requires = [],
-    tests_require = ['pytest'],
-    setup_requires = ['pytest-runner'],
-    extras_require = {
+    platforms=['any'],
+    packages=find_packages(),
+    include_package_data=True,
+    install_requires=[],
+    tests_require=['pytest'],
+    setup_requires=['pytest-runner'],
+    extras_require={
         'SQLAlchemy': ['SQLAlchemy'],
     }
 )
