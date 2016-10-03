@@ -167,7 +167,7 @@ class ImmutableType(object):
         cls._property_rules.update({name: wrapped_pr})
 
     @classmethod
-    def get_property_rule_by_name(cls, name):
+    def get_property_rule(cls, name):
         """ retrieve the property rule by name (``str``) """
         return cls._property_rules[name]
 
@@ -315,7 +315,7 @@ class Container(ImmutableType):
         cls._owner_property_rules.update({name: wrapped_opr})
 
     @classmethod
-    def get_owner_property_rule_by_name(cls, name):
+    def get_owner_property_rule(cls, name):
         """ retrieve the owner property rule by name (``str``) """
         return cls._owner_property_rules[name]
 

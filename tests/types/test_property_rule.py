@@ -110,7 +110,7 @@ def test_can_name_property_rule():
     __CustomClass2.register_property_rule(property_rule=my_custom_property_rule_nameable, name="custom_prop")
 
     assert "custom_prop" in __CustomClass2._property_rules.keys()
-    assert __CustomClass2.get_property_rule_by_name("custom_prop").__name__ == my_custom_property_rule_nameable.__name__
+    assert __CustomClass2.get_property_rule("custom_prop").__name__ == my_custom_property_rule_nameable.__name__
 
 
 # noinspection PyProtectedMember,PyAbstractClass,PyUnusedLocal
@@ -126,7 +126,7 @@ def test_can_name_owner_property_rule():
                                                 name="custom_owner_prop")
 
     assert "custom_prop" in __CustomClass3._property_rules.keys()
-    assert __CustomClass3.get_owner_property_rule_by_name(
+    assert __CustomClass3.get_owner_property_rule(
         "custom_owner_prop").__name__ == my_custom_owner_property_rule_nameable.__name__
 
 # def test_property_rule_should_not_validate_on_non_instances_or_subclasses_of_owning_class():
