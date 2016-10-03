@@ -9,11 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-import os
-import shutil
-
 from setuptools import setup, find_packages
-from setuptools.command.install import install
 
 from prestans3 import __version__
 

@@ -1,12 +1,14 @@
 import pytest
 
-from prestans3.types import PropertyRule, ImmutableType, Container
+from prestans3.types import ImmutableType, Container
 
 
+# noinspection PyAbstractClass
 class MyClass(ImmutableType):
     pass
 
 
+# noinspection PyUnusedLocal
 def my_property_rule(instance, config):
     return True
 
@@ -14,10 +16,12 @@ def my_property_rule(instance, config):
 MyClass.register_property_rule(my_property_rule)
 
 
+# noinspection PyAbstractClass
 class MyOtherClass(ImmutableType):
     pass
 
 
+# noinspection PyAbstractClass
 def test_registered_class_has_correct_signature():
     class __ClassToRegisterWith(ImmutableType):
         pass
@@ -37,12 +41,14 @@ def test_registered_class_has_correct_signature():
     assert "expected property_rule function with 2 arguments, received function with 0 argument(s): actually_defined_function()" in str(
         error.value)
 
+    # noinspection PyUnusedLocal
     def proper_property_rule(instance, config):
         pass
 
     __ClassToRegisterWith.register_property_rule(proper_property_rule)
 
 
+# noinspection PyAbstractClass
 def test_valid_signature_of_owner_property_rule():
     class __OtherClassToRegisterWith(Container):
         pass
@@ -55,32 +61,39 @@ def test_valid_signature_of_owner_property_rule():
     assert "expected owner_property_rule function with 3 arguments, received function with 0 argument(s): defined_function()" in \
            str(error.value)
 
+    # noinspection PyUnusedLocal
     def better_defined_function(owner, instance, config):
         return True
 
     __OtherClassToRegisterWith.register_owner_property_rule(better_defined_function)
 
 
+# noinspection PyAbstractClass
 def test_can_store_property_rule_in_type():
     class __CustomClass(ImmutableType):
         pass
 
+    # noinspection PyUnusedLocal
     def my_custom_property_rule(instance, config):
         pass
 
     __CustomClass.register_property_rule(my_custom_property_rule)
+    # noinspection PyProtectedMember
     assert any([True if rule.__name__ == my_custom_property_rule.__name__ else False for rule in
                 __CustomClass._property_rules.values()])
 
 
+# noinspection PyAbstractClass
 def test_can_store_owner_property_rule_in_type():
     class __CustomClass(Container):
         pass
 
+    # noinspection PyUnusedLocal
     def my_custom_owner_property_rule(owner, instance, config):
         pass
 
     __CustomClass.register_owner_property_rule(my_custom_owner_property_rule)
+    # noinspection PyProtectedMember
     assert any([True if rule.__name__ == my_custom_owner_property_rule.__name__ else False for rule in
                 __CustomClass._owner_property_rules.values()])
 
@@ -90,6 +103,7 @@ def test_can_name_property_rule():
     class __CustomClass2(ImmutableType):
         pass
 
+    # noinspection PyUnusedLocal
     def my_custom_property_rule_nameable(instance, config):
         pass
 
@@ -104,11 +118,12 @@ def test_can_name_owner_property_rule():
     class __CustomClass3(Container):
         pass
 
+    # noinspection PyUnusedLocal
     def my_custom_owner_property_rule_nameable(owner, instance, config):
         pass
 
     __CustomClass3.register_owner_property_rule(my_custom_owner_property_rule_nameable,
-                                          name="custom_owner_prop")
+                                                name="custom_owner_prop")
 
     assert "custom_prop" in __CustomClass3._property_rules.keys()
     assert __CustomClass3.get_owner_property_rule_by_name(
