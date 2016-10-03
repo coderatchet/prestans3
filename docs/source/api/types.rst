@@ -10,10 +10,10 @@ ImmutableType
     :show-inheritance:
     :members:
 
-Property
---------
+_Property
+---------
 
-.. autoclass:: Property
+.. autoclass:: _Property
     :members:
     :special-members:
     :exclude-members: __weakref__

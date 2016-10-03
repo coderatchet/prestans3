@@ -1,4 +1,4 @@
-from prestans3.types import Property, Structure
+from prestans3.types import _Property, Structure
 import re
 
 
@@ -47,7 +47,7 @@ class ValidationTree(ValidationTreeNode):
         """
         if not isinstance(node, ValidationTreeNode) or ValidationTreeNode == node.__class__:
             raise TypeError
-        if key not in self._of_type.__dict__ or not isinstance(self._of_type.__dict__[key], Property):
+        if key not in self._of_type.__dict__ or not isinstance(self._of_type.__dict__[key], _Property):
             raise AttributeError(
                 '{} is not a configured prestans attribute of {} class, when trying to set Validation Exception'.format(
                     key, self._of_type.__name__))

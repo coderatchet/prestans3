@@ -90,7 +90,7 @@ class ImmutableType(object):
         :return: configured |Property| Class
         :rtype: |Property|
         """
-        return Property(of_type=cls, **kwargs)
+        return _Property(of_type=cls, **kwargs)
 
     __prestans_attribute__ = True
 
@@ -186,7 +186,7 @@ def _required(owner, instance, config):
     return True if not config else instance is not None
 
 
-class Property(object):
+class _Property(object):
     """
     Base class for all |Property| configurations. not instantiated directly but called from the owning |type|\ 's
     :func:`property()<prestans3.types.ImmutableType.property>` method. A Property is a type descriptor that allows the
@@ -348,7 +348,7 @@ class Structure(Container):
         :return bool: ``True`` if this is a |attribute| or False if otherwise.
         """
         if key in object.__getattribute__(self, '__class__').__dict__ and \
-                isinstance(object.__getattribute__(self, '__class__').__dict__[key], Property):
+                isinstance(object.__getattribute__(self, '__class__').__dict__[key], _Property):
             return True
         else:
             return False

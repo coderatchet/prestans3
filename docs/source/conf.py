@@ -127,8 +127,8 @@ rst_epilog = """
 .. |Float|  replace:: :class:`Float<.float.Float>`
 .. |Floats|  replace:: :class:`Floats<.float.Float>`
 
-.. |Property|  replace:: :class:`Property<.Property>`
-.. |Properties|  replace:: :class:`Properties<.Property>`
+.. |Property|  replace:: :class:`_Property<._Property>`
+.. |Properties|  replace:: :class:`_Properties<._Property>`
 
 .. validation
 .. ----------

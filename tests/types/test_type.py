@@ -1,6 +1,6 @@
 import pytest
 
-from prestans3.types import String, Property, _required, ImmutableType
+from prestans3.types import String, _Property, _required, ImmutableType
 
 from prestans3.types import Structure
 
@@ -10,7 +10,7 @@ class MyClass(Structure):
 
 
 def test_structure_class_can_contain_instances_of_MutableType_Property():
-    assert isinstance(MyClass.__dict__['some_string'], Property)
+    assert isinstance(MyClass.__dict__['some_string'], _Property)
 
 
 def test_required_throws_exception_when_owner_is_none():
