@@ -23,16 +23,16 @@ class ImmutableType(object):
         """
         NOTE: call this method after setting values if validating immediately in order for validation to work!
 
-        if validate_immediately is set, will raise a subclass of |ValidationTreeNode| when initializing the object.
+        if validate_immediately is set, this may possibly raise a |ValidationException| when initializing the object.
         This is the default behaviour of all immutable types.
 
         :param bool validate_immediately: whether to validate this object on construction or defer validation to the
                                           user or prestans3 REST api process
-        :raises: |ValidationTreeNode|
+        :raises: |ValidationException| on invalid state when validate_immediately is True
         """
         if validate_immediately:
             _validation_result = self.validate()
-            if _validation_result is not True:  # assumes we have a ValidationTreeNode(Exception) class instance
+            if _validation_result is not True:  # assumes we have a ValidationException
                 raise _validation_result
 
     @classmethod
@@ -47,11 +47,10 @@ class ImmutableType(object):
 
     def validate(self):
         """
-        validates against own rules and configured attribute's rules. Scalars will return a |ValidationException|
-        whilst |Structures| will return a |ValidationTree| with nested |ValidationTreeNode| subclasses
+        validates against own rules and configured attribute's rules.
 
+        :raises: |ValidationException| on invalid state
         :rtype: ``True``
-        :raises: |ValidationTree| or |ValidationException|
         """
         # # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # # todo then validate against own configured rules
@@ -59,19 +58,20 @@ class ImmutableType(object):
         #     rule(self, )
         # pass
         if isinstance(self, Structure):
-            from prestans3.validation_tree import ValidationTree, ValidationTreeNode
             from prestans3.errors import ValidationException
+            validation_exception = None  # type: ValidationException
             for key, attribute in self.prestans_attributes:
-                tree = None  # type: ValidationTree
                 try:
                     attribute.validate()
-                except ValidationTreeNode as error:
-                    if tree is None:
-                        tree = ValidationTree(self.__class__, (key, error))
+                except ValidationException as error:
+                    if validation_exception is None:
+                        validation_exception = ValidationException(self.__class__, (key, error))
                     else:
-                        tree.add_validation_exception(key, error)
-
-            raise ValidationTree(self.__class__, ValidationException(String, message_or_key_exception_tuple="not-implemented-yet"))
+                        validation_exception.add_validation_exception(key, error)
+            if validation_exception is None:
+                return True
+            else:
+                raise validation_exception  # todo change this, this implementation is incorrect
 
     #
     @classmethod
@@ -228,7 +228,7 @@ class Container(ImmutableType):
     """ subclass of all |types| with containable |attributes| """
 
     # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]
-    # func raises |ValidationTreeNode| on invalidation
+    # func raises |ValidationException| on invalidation
     _owner_property_rules = {}
 
     @classmethod

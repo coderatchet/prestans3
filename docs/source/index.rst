@@ -19,7 +19,7 @@ API Reference
 
    api/single_html
    api/types
-   api/validation
+   api/errors
 
 Peps
 ----

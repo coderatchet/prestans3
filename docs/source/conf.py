@@ -133,13 +133,7 @@ rst_epilog = """
 .. validation
 .. ----------
 
-.. py:currentmodule:: prestans3
-
-.. |ValidationTreeNode|  replace:: :class:`ValidationTreeNode<.validation_tree.ValidationTreeNode>`
-.. |ValidationTreeNodes|  replace:: :class:`ValidationTreeNodes<.validation_tree.ValidationTreeNode>`
-
-.. |ValidationTree|  replace:: :class:`ValidationTree<.validation_tree.ValidationTree>`
-.. |ValidationTrees|  replace:: :class:`ValidationTrees<.validation_tree.ValidationTree>`
+.. py:currentmodule:: prestans3.errors
 
 .. |ValidationExceptionSummary|  replace:: :class:`ValidationExceptionSummary<.validation_tree.ValidationExceptionSummary>`
 .. |ValidationExceptionSummaries|  replace:: :class:`ValidationExceptionSummaries<.validation_tree.ValidationExceptionSummary>`

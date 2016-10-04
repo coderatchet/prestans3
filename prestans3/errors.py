@@ -5,16 +5,16 @@ from prestans3.types import ImmutableType, Structure, _Property
 
 class ValidationExceptionSummary(tuple):
     """
-    Returned when iterating through a |ValidationTree|. Each ValidationExceptionSummary is a
-    (``str``, |ValidationException|)
+    Returned when iterating through a |ValidationException|. Each ValidationExceptionSummary is a
+    (``str``, |list[str]|) which represents a fully qualified name and its list of exception messages
     """
 
     # noinspection PyInitNewSignature
     def __new__(cls, fqn, messages):
         """
-        :param str property_name: the name of the root class of this exception
-        :param str attribute_name: The attribute of the |type| of which this exception refers to
-        :param |ValidationException| validation_exception: The exception detailing the leaf property and it's validation message
+        :param str fqn: the fully qualified name of the class or property with an exception
+        :param messages: The exception detailing the leaf property and it's validation message
+        :type messages: list[str]
         """
         return tuple.__new__(cls, (fqn, messages))
 
@@ -46,11 +46,10 @@ class ValidationException(Exception):
 
     def __init__(self, of_type, message_or_key_exception_tuple=None):
         """
-        :param of_type
-        :type message_or_key_exception_tuple: str or (str, T <= |ValidationException|)
         :param of_type: |type| this validation message applies to.
-        :type of_type: T <= |ImmutableType|\ .1
-        :param str message_or_key_exception_tuple: validation message, user friendly.
+        :type of_type: class<T <= |ImmutableType|\ >
+        :param message_or_key_exception_tuple: validation message, user friendly.
+        :type message_or_key_exception_tuple: str or (str, U <= |ValidationException|)
         """
         if not issubclass(of_type, ImmutableType):
             raise TypeError('validation exceptions are only valid for subclasses of {}'.format(ImmutableType.__name__))
@@ -108,7 +107,6 @@ class ValidationException(Exception):
         iterates through the exceptions and produces a list of |ValidationExceptionSummaries|\ .
 
         :yields: the next summarised exception (|ValidationExceptionSummaries|)
-        :rtype: list[|ValidationExceptionSummary|]
         """
         for key, validation_exception in list(self.validation_exceptions.items()):  # type: (str, ValidationException)
             for summary in list(validation_exception):
