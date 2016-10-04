@@ -11,6 +11,8 @@ ValidationException
 
 .. autoclass:: ValidationException
     :members:
+    :special-members:
+    :exclude-members: __weakref__
 
 ValidationExceptionSummary
 --------------------------

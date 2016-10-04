@@ -20,6 +20,23 @@ class ValidationExceptionSummary(tuple):
 
     @classmethod
     def get_summary_with_new_qualified_name(cls, class_name, attribute_name, summary):
+        """
+        adjusts the key of the provided summary and returns a newly created exception with the properly referenced
+        |attribute|
+
+        e.g.
+
+        >>> from prestans3.errors import ValidationExceptionSummary
+        >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
+        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperStructure', 'my_sub_class', summary1)
+        >>> assert super_summary[0] == 'MySuperStructure.my_sub_class.some_string'
+        >>> assert super_summary[1] == ['String was invalid']
+
+        :param str class_name: the |type|\ 's class that owns the sub |attribute|
+        :param str attribute_name: the name of the configured |attribute| on the owning |type|
+        :param |ValidationExceptionSummary| summary:
+        :return: |ValidationExceptionSummary|
+        """
         _replace_regex = r'^[^.]*'
         return ValidationExceptionSummary(
             re.sub(_replace_regex, "{}.{}".format(class_name, attribute_name), summary[0]), summary[1])
@@ -94,6 +111,10 @@ class ValidationException(Exception):
         self.validation_exceptions.update({key: validation_exception})
 
     def head(self):
+        """
+        :return: the head of the list of summaries
+                 see :func:`~prestans3.errors.ValidationException.__iter__`
+        """
         if self.validation_exceptions:
             return list(self.__iter__())[0]
         else:
@@ -121,6 +142,7 @@ class ValidationException(Exception):
         return "validation error for type {}".format(self.property_type.__name__)
 
     def add_own_validation_message(self, message):
+        """ adds a validation message regarding this current |type| (not one of its |attributes|\ ) """
         self.args[0].append(message)
 
     @property

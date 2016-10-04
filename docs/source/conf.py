@@ -135,11 +135,11 @@ rst_epilog = """
 
 .. py:currentmodule:: prestans3.errors
 
-.. |ValidationExceptionSummary|  replace:: :class:`ValidationExceptionSummary<.validation_tree.ValidationExceptionSummary>`
-.. |ValidationExceptionSummaries|  replace:: :class:`ValidationExceptionSummaries<.validation_tree.ValidationExceptionSummary>`
+.. |ValidationExceptionSummary|  replace:: :class:`ValidationExceptionSummary<.ValidationExceptionSummary>`
+.. |ValidationExceptionSummaries|  replace:: :class:`ValidationExceptionSummaries<.ValidationExceptionSummary>`
 
-.. |ValidationException| replace:: :class:`ValidationException<.validation_tree.ValidationException>`
-.. |ValidationExceptions| replace:: :class:`ValidationExceptions<.validation_tree.ValidationException>`
+.. |ValidationException| replace:: :class:`ValidationException<.ValidationException>`
+.. |ValidationExceptions| replace:: :class:`ValidationExceptions<.ValidationException>`
 """
 
 def skip(app, what, name, obj, skip, options):
