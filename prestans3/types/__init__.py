@@ -47,7 +47,7 @@ class ImmutableType(object):
 
     def validate(self):
         """
-        validates against own rules and configured attribute's rules.
+        validates against own |rules| and configured |attribute|\ 's rules.
 
         :raises: |ValidationException| on invalid state
         :rtype: ``True``
@@ -100,11 +100,11 @@ class ImmutableType(object):
     @classmethod
     def register_property_rule(cls, property_rule, name=None):
         """
-        Register a property rule with all instances and subclasses of this |type|
+        Register a |rule| with all instances and subclasses of this |type|
 
         :param property_rule: callable to be registered
         :type property_rule: rule(instance: ImmutableType, config: any) -> bool
-        :param str name: name of the property rule as will appear in configuring the property:
+        :param str name: name of the |rule| as will appear in configuring the property:
 
         >>> import prestans3.types as types
         >>> class MyClass(Structure):
@@ -136,7 +136,7 @@ class ImmutableType(object):
 
     @classmethod
     def get_property_rule(cls, name):
-        """ retrieve the property rule by name (``str``) """
+        """ retrieve the |rule| by name (``str``) """
         return cls._property_rules[name]
 
 
@@ -209,7 +209,7 @@ class _Property(object):
 
     @property
     def rules_config(self):
-        """ contains the configuration for all the |rules| on this |Property| instance """
+        """ contains the configuration for all the |rules| on this |_Property| instance """
         return self._rules_config
 
     @property
@@ -217,10 +217,11 @@ class _Property(object):
         return self._of_type
 
     def _add_rule_config(self, key, config):
-        """ adds a configuration of a property rule to this instance """
+        """ adds a configuration of a |rule| to this instance """
         self._rules_config.update({key: config})
 
     def get_rule_config(self, key):
+        """ find a |rule|\ 's configuration by its name """
         return self._rules_config[key]
 
 
@@ -249,11 +250,11 @@ class Container(ImmutableType):
     @classmethod
     def register_owner_property_rule(cls, owner_property_rule, name=None):
         """
-        Register an owner type property rule with all instances and subclasses of this |type|
+        Register an owner type |rule| with all instances and subclasses of this |type|
 
         :param owner_property_rule: callable to be registered
         :type owner_property_rule: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
-        :param str name: name of the property rule as will appear in configuring the property:
+        :param str name: name of the |rule| as will appear in configuring the |_Property|:
 
         >>> import prestans3.types as types
         >>> class MyClass(Structure):
@@ -285,7 +286,7 @@ class Container(ImmutableType):
 
     @classmethod
     def get_owner_property_rule(cls, name):
-        """ retrieve the owner property rule by name (``str``) """
+        """ retrieve the owner |rule| by name (``str``) """
         return cls._owner_property_rules[name]
 
 

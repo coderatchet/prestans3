@@ -85,6 +85,9 @@ rst_epilog = """
 .. |attribute|  replace:: :term:`prestans3 attribute`
 .. |attributes|  replace:: :term:`prestans3 attributes<prestans3 attribute>`
 
+.. |rule|  replace:: :term:`property rule`
+.. |rules|  replace:: :term:`property rules<property rule>`
+
 .. |emdash|  unicode:: U+2014  .. em dash
 .. |hellip|  unicode:: U+2026 .. ellipsis
     :ltrim:
