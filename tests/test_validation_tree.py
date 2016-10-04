@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    tests.types.test_validation_tree
+    tests.types.test_errors
     ~~~~~~~~~~~~~~
 
     A WSGI compliant REST micro-framework.
@@ -10,10 +10,9 @@
 """
 
 import pytest
+from prestans3.errors import ValidationException
 from prestans3.types import Integer
-
 from prestans3.types import String, Structure
-from prestans3.validation_tree import ValidationException, ValidationExceptionSummary
 
 exception_1 = ValidationException(String)
 exception_2 = ValidationException(String)
@@ -39,11 +38,13 @@ def test_leaf_validation_exception_has_correct_error_message():
 class MyStructure(Structure):
     some_string = String.property()
 
+
 def test_validation_error_can_have_child_validation_exception():
     validation_exception = ValidationException(String)
     validation_tree = ValidationException(MyStructure, ('some_string', validation_exception))
     assert isinstance(validation_tree.validation_exceptions['some_string'], ValidationException)
     assert validation_exception == validation_tree.validation_exceptions['some_string']
+
 
 # def test_validation_tree_can_accept_single_validation_message_in___init__
 
@@ -96,6 +97,7 @@ def test_should_raise_exception_when_adding_validation_exception_for_attribute_o
 def test_property_type_returns_correct_value():
     assert ValidationException(String).property_type == String
     assert ValidationException(MySuperStructure, ('stringy_1', exception_1)).property_type == MySuperStructure
+
 
 # noinspection PyUnusedLocal
 def test_can_use_iterator_syntax_for_validation_exception():

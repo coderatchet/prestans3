@@ -59,7 +59,8 @@ class ImmutableType(object):
         #     rule(self, )
         # pass
         if isinstance(self, Structure):
-            from prestans3.validation_tree import ValidationTree, ValidationException, ValidationTreeNode
+            from prestans3.validation_tree import ValidationTree, ValidationTreeNode
+            from prestans3.errors import ValidationException
             for key, attribute in self.prestans_attributes:
                 tree = None  # type: ValidationTree
                 try:

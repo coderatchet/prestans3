@@ -5,7 +5,7 @@ from prestans3.types import ImmutableType, Container
 
 # noinspection PyAbstractClass
 from prestans3.types import String
-from prestans3.validation_tree import ValidationException
+from prestans3.errors import ValidationException
 
 
 class MyClass(ImmutableType):
