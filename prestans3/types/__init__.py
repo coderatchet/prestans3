@@ -52,7 +52,6 @@ class ImmutableType(object):
         :raises: |ValidationException| on invalid state
         :rtype: ``True``
         """
-        # # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # # todo then validate against own configured rules
         # for rule in self._property_rules:
         #     rule(self, )
@@ -68,7 +67,10 @@ class ImmutableType(object):
                         validation_exception = ValidationException(self.__class__, (key, error))
                     else:
                         validation_exception.add_validation_exception(key, error)
-            if validation_exception is None:
+            # iterate through own rules
+            for property_rule in self._property_rules:
+                property_rule(self, )
+            if validation_exception is not None:
                 return True
             else:
                 raise validation_exception  # todo change this, this implementation is incorrect
@@ -165,6 +167,7 @@ class _Property(object):
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
+        self._rules_config = {}
         # if 'required' not in kwargs:
         #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
         # if 'default' not in kwargs:
@@ -205,8 +208,20 @@ class _Property(object):
         return instance
 
     @property
+    def rules_config(self):
+        """ contains the configuration for all the |rules| on this |Property| instance """
+        return self._rules_config
+
+    @property
     def property_type(self):
         return self._of_type
+
+    def _add_rule_config(self, key, config):
+        """ adds a configuration of a property rule to this instance """
+        self._rules_config.update({key: config})
+
+    def get_rule_config(self, key):
+        return self._rules_config[key]
 
 
 # noinspection PyAbstractClass

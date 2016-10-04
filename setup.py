@@ -48,7 +48,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[],
-    tests_require=['pytest'],
+    tests_require=['pytest', 'pytest-mock'],
     setup_requires=['pytest-runner'],
     extras_require={
         'SQLAlchemy': ['SQLAlchemy'],

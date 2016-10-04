@@ -1,7 +1,6 @@
-import pytest
+import pytest, pytest_mock
 
-from prestans3.types import ImmutableType, Container
-
+from prestans3.types import ImmutableType, Container, Structure, _Property
 
 # noinspection PyAbstractClass
 from prestans3.types import String
@@ -133,13 +132,70 @@ def test_can_name_owner_property_rule():
     assert __CustomClass3.get_owner_property_rule(
         "custom_owner_prop").__name__ == my_custom_owner_property_rule_nameable.__name__
 
+
+def test_can_add_rule_config(mocker):
+    """
+    :param pytest_mock.MockFixture mocker:
+    """
+    mocker.patch('prestans3.types._Property')
+    _property = _Property()
+    # _property.__class__._property_rules = {"one_rule", lambda _x, _y: print("hello")}
+    _property._add_rule_config("one_rule", "config")
+    assert "one_rule" in _property.rules_config
+    assert "config" == _property.rules_config['one_rule']
+
+def test_can_find_config_by_rule_name(mocker):
+    """
+    :param pytest_mock.MockFixture mocker:
+    """
+    mocker.patch('prestans3.types._Property')
+    _property = _Property()
+    mocker.patch.dict(_property._rules_config, {"one_rule":  "confighere"})
+    assert 'confighere' == _property.get_rule_config('one_rule')
+
+# def test_can_set_default_configuration_for_rule(mocker):
+#     """
+#     :param pytest_mock.MockFixture mocker:
+#     """
+#     mocker.patch('prestans3.types._Property')
+#     MyClass.register_property_rule(lambda x, y: print("hello"), name="default_having_rule", default="default config")
+#     assert "default config" == MyClass.get_property_rule("default_having_rule").default_config
+
+# class _CustomClass4(ImmutableType):
+#     pass
+#
+#
+# # noinspection PyUnusedLocal
+# def one_rule(instance, config):
+#     pass
+#
+#
+# # noinspection PyUnusedLocal
+# def two_rule(instance, config):
+#     pass
+#
+#
+# _CustomClass4.register_property_rule(one_rule)
+# _CustomClass4.register_property_rule(two_rule)
+#
+#
+# # noinspection PyAbstractClass
+# def property_should_contain_a_list_of_pre_curried_rule_configurations():
+#     class __CustomClass5(Structure):
+#         my_class_4 = _CustomClass4.property()
+#
+#     class_ = __CustomClass5()
+
+
 # def test_instance_with_required_property_fails_validation_if_property_not_set():
 #     class __CustomClass3(Container):
 #         my_string = String.property(required=True)
 #
 #     class_ = __CustomClass3(validate_immediately=False)
-#     with pytest.raises(ValidationException):
+#     with pytest.raises(ValidationException) as ve:
 #         class_.validate()
+#     summary = ve[0]
+#     assert summary[0] == '__CustomClass3.my_string'
 
 # def test_property_rule_should_not_validate_on_non_instances_or_subclasses_of_owning_class():
 #     MyClass()
