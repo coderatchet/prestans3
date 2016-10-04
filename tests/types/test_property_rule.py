@@ -4,6 +4,10 @@ from prestans3.types import ImmutableType, Container
 
 
 # noinspection PyAbstractClass
+from prestans3.types import String
+from prestans3.validation_tree import ValidationTreeNode
+
+
 class MyClass(ImmutableType):
     pass
 
@@ -128,6 +132,14 @@ def test_can_name_owner_property_rule():
     assert "custom_prop" in __CustomClass3._property_rules.keys()
     assert __CustomClass3.get_owner_property_rule(
         "custom_owner_prop").__name__ == my_custom_owner_property_rule_nameable.__name__
+
+def test_instance_with_required_property_fails_validation_if_property_not_set():
+    class __CustomClass3(Container):
+        my_string = String.property(required=True)
+
+    class_ = __CustomClass3(validate_immediately=False)
+    with pytest.raises(ValidationTreeNode):
+        class_.validate()
 
 # def test_property_rule_should_not_validate_on_non_instances_or_subclasses_of_owning_class():
 #     MyClass()

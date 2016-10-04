@@ -10,8 +10,6 @@
 """
 import functools
 
-from prestans3.validation_tree import ValidationTree, LeafValidationException
-
 
 class ImmutableType(object):
     """
@@ -38,30 +36,41 @@ class ImmutableType(object):
                 raise _validation_result
 
     @classmethod
-    def property(cls):
+    def property(cls, **kwargs):
         """
         :return: configured |_Property| Class
         :rtype: |_Property|
         """
-        return _Property(of_type=cls)
+        return _Property(of_type=cls, **kwargs)
 
     __prestans_attribute__ = True
 
     def validate(self):
         """
-        validates against own rules and configured attribute's rules. Scalars will return a |LeafValidationException|
+        validates against own rules and configured attribute's rules. Scalars will return a |ValidationException|
         whilst |Structures| will return a |ValidationTree| with nested |ValidationTreeNode| subclasses
 
         :rtype: ``True``
-        :raises: |ValidationTree| or |LeafValidationException|
+        :raises: |ValidationTree| or |ValidationException|
         """
         # # todo for each attribute property, validate and append any exceptions with namespace to exception set
         # # todo then validate against own configured rules
         # for rule in self._property_rules:
         #     rule(self, )
         # pass
-        if isinstance(self, Container):
-            raise ValidationTree(Container, LeafValidationException(String, message="not-implemented-yet"))
+        if isinstance(self, Structure):
+            from prestans3.validation_tree import ValidationTree, ValidationException, ValidationTreeNode
+            for key, attribute in self.prestans_attributes:
+                tree = None  # type: ValidationTree
+                try:
+                    attribute.validate()
+                except ValidationTreeNode as error:
+                    if tree is None:
+                        tree = ValidationTree(self.__class__, (key, error))
+                    else:
+                        tree.add_validation_exception(key, error)
+
+            raise ValidationTree(self.__class__, ValidationException(String, message_or_key_exception_tuple="not-implemented-yet"))
 
     #
     @classmethod
@@ -149,21 +158,19 @@ class _Property(object):
     setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type=None):
+    def __init__(self, of_type=None, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
         # if 'required' not in kwargs:
-        #     kwargs.update(required=lambda is_required, instance: ImmutableType._Property._required(False, instance))
+        #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
         # if 'default' not in kwargs:
         #     kwargs.update(default=lambda default_value, instance: ImmutableType._Property._default(None, instance))
         # for _ in kwargs.keys():
         #     pass
-        # super(ImmutableType._Property, self).__init__(self)
         # todo return ImmutableType whose validate method will call it's validators curried with it's member values
-        pass
 
     def __set__(self, instance, value):
         """
@@ -311,8 +318,8 @@ class Structure(Container):
         else:
             return object.__getattribute__(self, item)
 
-    def __init__(self):
-        super(Structure, self).__init__()
+    def __init__(self, **kwargs):
+        super(Structure, self).__init__(**kwargs)
         self._prestans_attributes = {}
 
     @property

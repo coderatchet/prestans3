@@ -18,16 +18,16 @@ ValidationTree
 .. autoclass:: .ValidationTree
     :members:
 
-LeafValidationException
+ValidationException
 -----------------------
 
-.. autoclass:: .LeafValidationException
+.. autoclass:: .ValidationException
     :members:
 
-LeafValidationSummary
+ValidationExceptionSummary
 ---------------------
 
-.. autoclass:: .LeafValidationSummary
+.. autoclass:: .ValidationExceptionSummary
     :members:
     :special-members: __new__
     :exclude-members: __init__

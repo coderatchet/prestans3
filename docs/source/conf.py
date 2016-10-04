@@ -128,7 +128,7 @@ rst_epilog = """
 .. |Floats|  replace:: :class:`Floats<.float.Float>`
 
 .. |_Property|  replace:: :class:`_Property<._Property>`
-.. |Properties|  replace:: :class:`_Properties<._Property>`
+.. |_Properties|  replace:: :class:`_Properties<._Property>`
 
 .. validation
 .. ----------
@@ -141,11 +141,11 @@ rst_epilog = """
 .. |ValidationTree|  replace:: :class:`ValidationTree<.validation_tree.ValidationTree>`
 .. |ValidationTrees|  replace:: :class:`ValidationTrees<.validation_tree.ValidationTree>`
 
-.. |LeafValidationSummary|  replace:: :class:`LeafValidationSummary<.validation_tree.LeafValidationSummary>`
-.. |LeafValidationSummaries|  replace:: :class:`LeafValidationSummaries<.validation_tree.LeafValidationSummary>`
+.. |ValidationExceptionSummary|  replace:: :class:`ValidationExceptionSummary<.validation_tree.ValidationExceptionSummary>`
+.. |ValidationExceptionSummaries|  replace:: :class:`ValidationExceptionSummaries<.validation_tree.ValidationExceptionSummary>`
 
-.. |LeafValidationException| replace:: :class:`LeafValidationException<.validation_tree.LeafValidationException>`
-.. |LeafValidationExceptions| replace:: :class:`LeafValidationExceptions<.validation_tree.LeafValidationException>`
+.. |ValidationException| replace:: :class:`ValidationException<.validation_tree.ValidationException>`
+.. |ValidationExceptions| replace:: :class:`ValidationExceptions<.validation_tree.ValidationException>`
 """
 
 def skip(app, what, name, obj, skip, options):
