@@ -26,6 +26,11 @@ Prestans 3 is currently undergoing *aggressive development* and will eventually 
 
 We encourage you to join `our list <https://groups.google.com/forum/#!forum/presntas3-discuss>`_ and share any ideas or feature requests.
 
+Running Tox
+-----------
+
+These interpreters should exist in your environment in order to run tox: python2.7, python3.2, python3.4, python3.5, pypy
+
 Feature Requests
 ----------------
 

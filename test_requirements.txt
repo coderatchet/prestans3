@@ -1,2 +1,2 @@
-pytest==3.0.3
-pytest_mock==1.2
+-U pytest
+-U pytest_mock
