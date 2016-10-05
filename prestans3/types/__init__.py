@@ -98,13 +98,15 @@ class ImmutableType(object):
         raise NotImplementedError
 
     @classmethod
-    def register_property_rule(cls, property_rule, name=None, default=None):
+    def register_property_rule(cls, property_rule, name=None, default=None, configurable=True):
         """
         Register a |rule| with all instances and subclasses of this |type|
 
         :param property_rule: callable to be registered
         :type property_rule: rule(instance: ImmutableType, config: any) -> bool
         :param str name: name of the |rule| as will appear in configuring the property:
+        :param object default: the default configuration to apply to this |rule| if none is specified
+        :param bool configurable: when ``False``, adding a rule configuration for this property will throw an error
 
         >>> import prestans3.types as types
         >>> class MyClass(Structure):
@@ -131,6 +133,7 @@ class ImmutableType(object):
             # if not isinstance()
 
         wrapped_pr.default_config = default
+        wrapped_pr.configurable = configurable
         if name is None:
             name = wrapped_pr.__name__
         cls._property_rules.update({name: wrapped_pr})
@@ -162,14 +165,13 @@ class _Property(object):
     setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type=None, default=None):
+    def __init__(self, of_type=None):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
         self._rules_config = {}
-        self._default = None
         # if 'required' not in kwargs:
         #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
         # if 'default' not in kwargs:
@@ -216,10 +218,17 @@ class _Property(object):
 
     @property
     def property_type(self):
+        """
+        :return: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
+        """
         return self._of_type
 
     def _add_rule_config(self, key, config):
         """ adds a configuration of a |rule| to this instance """
+        try:
+            self.property_type.get_property_rule(key)
+        except KeyError:
+            raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         self._rules_config.update({key: config})
 
     def get_rule_config(self, key):
