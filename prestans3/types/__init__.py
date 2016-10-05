@@ -98,7 +98,7 @@ class ImmutableType(object):
         raise NotImplementedError
 
     @classmethod
-    def register_property_rule(cls, property_rule, name=None):
+    def register_property_rule(cls, property_rule, name=None, default=None):
         """
         Register a |rule| with all instances and subclasses of this |type|
 
@@ -130,6 +130,7 @@ class ImmutableType(object):
             result = property_rule(*args)
             # if not isinstance()
 
+        wrapped_pr.default_config = default
         if name is None:
             name = wrapped_pr.__name__
         cls._property_rules.update({name: wrapped_pr})
@@ -161,13 +162,14 @@ class _Property(object):
     setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type=None, **kwargs):
+    def __init__(self, of_type=None, default=None):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
         self._rules_config = {}
+        self._default = None
         # if 'required' not in kwargs:
         #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
         # if 'default' not in kwargs:
@@ -248,7 +250,7 @@ class Container(ImmutableType):
     _owner_property_rules = {}
 
     @classmethod
-    def register_owner_property_rule(cls, owner_property_rule, name=None):
+    def register_owner_property_rule(cls, owner_property_rule, name=None, default=None):
         """
         Register an owner type |rule| with all instances and subclasses of this |type|
 

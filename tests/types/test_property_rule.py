@@ -144,22 +144,32 @@ def test_can_add_rule_config(mocker):
     assert "one_rule" in _property.rules_config
     assert "config" == _property.rules_config['one_rule']
 
+
 def test_can_find_config_by_rule_name(mocker):
     """
     :param pytest_mock.MockFixture mocker:
     """
     mocker.patch('prestans3.types._Property')
     _property = _Property()
-    mocker.patch.dict(_property._rules_config, {"one_rule":  "confighere"})
+    mocker.patch.dict(_property._rules_config, {"one_rule": "confighere"})
     assert 'confighere' == _property.get_rule_config('one_rule')
 
-# def test_can_set_default_configuration_for_rule(mocker):
-#     """
-#     :param pytest_mock.MockFixture mocker:
-#     """
-#     mocker.patch('prestans3.types._Property')
-#     MyClass.register_property_rule(lambda x, y: print("hello"), name="default_having_rule", default="default config")
-#     assert "default config" == MyClass.get_property_rule("default_having_rule").default_config
+
+# noinspection PyAbstractClass
+def test_can_set_default_configuration_for_rule(mocker):
+    """
+    :param pytest_mock.MockFixture mocker:
+    """
+    class _CustomClassDefaultConfiguration(ImmutableType):
+        pass
+
+    _CustomClassDefaultConfiguration._property_rules = {}
+    _CustomClassDefaultConfiguration.register_property_rule(lambda x, y: print("hello"), name="default_having_rule",
+                                                            default="default config")
+    assert "default config" == _CustomClassDefaultConfiguration.get_property_rule(
+        "default_having_rule").default_config
+
+# def test_can_set_rule_as_non_configurable():
 
 # class _CustomClass4(ImmutableType):
 #     pass
