@@ -11,7 +11,8 @@ install:
   - pip install "virtualenv<14.0.0"
   - pip install -U pytest
   - pip install -U pytest-mock
-  - ls $TRAVIS_BUILD_DIR/prestans3
+  - pip install -e .
+  - pip list
 script:
   - tox
 notifications:
