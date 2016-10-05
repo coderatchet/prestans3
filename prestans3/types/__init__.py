@@ -226,9 +226,13 @@ class _Property(object):
     def _add_rule_config(self, key, config):
         """ adds a configuration of a |rule| to this instance """
         try:
-            self.property_type.get_property_rule(key)
+            _rule = self.property_type.get_property_rule(key)
         except KeyError:
             raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
+        if not _rule.configurable:
+            raise ValueError("{} is a non-configurable rule in class {}, (see {}.{}()))" \
+                             .format(key, self.property_type.__name__, ImmutableType.__name__,
+                                     ImmutableType.register_property_rule.__name__))
         self._rules_config.update({key: config})
 
     def get_rule_config(self, key):

@@ -137,6 +137,7 @@ def test_can_add_rule_config(mocker):
     """
     :param pytest_mock.MockFixture mocker:
     """
+
     class __CustomClass(ImmutableType):
         pass
 
@@ -195,13 +196,14 @@ def test_setting_configuration_for_non_existing_rule_raises_value_error():
     assert "{} is not a registered rule of type {}".format("doesnt exist", __CustomClass.__name__) in str(error.value)
 
 
-# def test_adding_configuration_for_non_configurable_property_raises_value_error():
-#     class __CustomClassWithNonConfigurable(ImmutableType):
-#         pass
-#
-#     configurable_property = __CustomClassWithNonConfigurable.property()
-#     with pytest.raises(ValueError) as error:
-#         configurable_property._add_rule_config("non_configurable_rule", "doesn't matter, should throw an error")
-#     assert "non_configurable_rule is a non-configurable rule in class {}, (see {}.{}())" \
-#                .format(__CustomClassWithNonConfigurable.__name__, ImmutableType.__name__,
-#                        ImmutableType.register_property_rule.__name__) in str(error.value)
+def test_adding_configuration_for_non_configurable_property_raises_value_error():
+    class __CustomClassWithNonConfigurable(ImmutableType):
+        pass
+
+    non_configurable_property = __CustomClassWithNonConfigurable.property()
+    with pytest.raises(ValueError) as error:
+        non_configurable_property._add_rule_config("non_configurable_rule", "doesn't matter, should throw an error")
+    assert "non_configurable_rule is a non-configurable rule in class {}, (see {}.{}())" \
+        .format(__CustomClassWithNonConfigurable.__name__,
+                ImmutableType.__name__,
+                ImmutableType.register_property_rule.__name__) in str(error.value)
