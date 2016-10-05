@@ -4,7 +4,7 @@ from prestans3.types import ImmutableType, Container, Structure, _Property
 
 # noinspection PyAbstractClass
 from prestans3.types import String
-from prestans3.errors import ValidationException
+from prestans3.errors import ValidationException, InvalidMethodUseError
 
 
 class MyClass(ImmutableType):
@@ -235,7 +235,17 @@ def test_can_setup_non_configurable_rule_on_init():
     _property = __CustomClass.property()
     "non-configurable_default" == _property.get_rule_config("non_configurable")
 
-# def test_cannot_set_non_configurable_after_initialization()
+def test_setting_non_configurable_after_initialization_causes_value_error():
+    class __CustomClass(ImmutableType):
+        pass
+
+    def non_configurable(instance, config):
+        pass
+
+    __CustomClass.register_property_rule(non_configurable, default="non-configurable-default", configurable=False)
+    _property = __CustomClass.property()
+    with pytest.raises(InvalidMethodUseError) as error:
+        _property._setup_non_configurable_rule_config("non_configurable", "throws error")
 
 # def test_can_add_function_to_list_of_prepared_rules_on_property_init(mocker):
 #     pass

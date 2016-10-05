@@ -259,6 +259,14 @@ class _Property(object):
             self.property_type.get_property_rule(key)
         except KeyError:
             raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
+
+        if key in self.rules_config:
+            from prestans3.errors import InvalidMethodUseError
+            raise InvalidMethodUseError(self.__class__._setup_non_configurable_rule_config,
+                                        "This is an internal method and shouldn't be called directly, "
+                                        "if you wish to make a rule configurable, use the configurable kwarg in "
+                                        "the {}.{}() function".format(ImmutableType.__name__,
+                                                                      ImmutableType.register_property_rule.__name__))
         self._rules_config.update({key: config})
 
 

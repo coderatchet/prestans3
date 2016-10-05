@@ -152,3 +152,11 @@ class ValidationException(Exception):
     @property
     def property_type(self):
         return self._of_type
+
+
+class InvalidMethodUseError(Exception):
+    def __init__(self, method, message=None):
+        self._method = method
+        if message is None:
+            message = ""
+        super(InvalidMethodUseError, self).__init__(message)
