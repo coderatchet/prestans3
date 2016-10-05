@@ -7,10 +7,12 @@ python:
   - "nightly"
   - "pypy"
 install:
-  - pip install -U coveralls
   - pip install tox-travis
+  - pip install "virtualenv<14.0.0"
+  - pip install -U pytest
+  - pip install -U pytest-mock
 script:
-  - coverage run --source=prestans3 setup.py test
+  - tox
 after_success:
   - coveralls
 notifications:
