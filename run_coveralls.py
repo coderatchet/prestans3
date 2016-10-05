@@ -13,6 +13,7 @@ if __name__ == '__main__':
             if not line:
                 break
             print(line)
+        print("coveralls exited with {}".format(rc))
         raise SystemExit(rc)
     else:
         print("skipping coverage for python version: {}".format(
