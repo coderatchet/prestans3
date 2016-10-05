@@ -1,7 +1,7 @@
 #!/bin/env/python
 
 import os
-
+import sys
 from subprocess import Popen, PIPE, STDOUT
 
 if __name__ == '__main__':
@@ -13,3 +13,8 @@ if __name__ == '__main__':
                 break
             print(line)
         raise SystemExit(rc)
+    else:
+        print("skipping coverage for python version: {}",
+              os.environ.get('TRAVIS_PYTHON_VERSION',
+                             ".".join(sys.version_info)))
+        raise SystemExit(0)
