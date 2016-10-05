@@ -10,8 +10,10 @@
 """
 
 from setuptools import setup, find_packages
-
+import sys
 from prestans3 import __version__
+
+virtualenv_version = "<14.0.0" if sys.version_info[0] == 3 and sys.version_info[1] < 3 else ""
 
 setup(
     name="prestans3",
@@ -48,7 +50,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     install_requires=[],
-    tests_require=['virtualenv<14.0.0', 'pytest', 'pytest-mock'],
+    tests_require=['virtualenv{}'.format(virtualenv_version), 'pytest', 'pytest-mock'],
     setup_requires=['pytest-runner'],
     extras_require={
         'SQLAlchemy': ['SQLAlchemy'],
