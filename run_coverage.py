@@ -16,5 +16,5 @@ if __name__ == '__main__':
     else:
         print("skipping coverage for python version: {}",
               os.environ.get('TRAVIS_PYTHON_VERSION',
-                             ".".join(sys.version_info)))
+                             ".".join([str(v) for v in sys.version_info])))
         raise SystemExit(0)
