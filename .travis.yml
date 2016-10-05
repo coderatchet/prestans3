@@ -13,8 +13,6 @@ install:
   - if [[ $TRAVIS_PYTHON_VERSION != 'nightly' ]]; then pip install -U pytest-mock; fi
   - if [[ $TRAVIS_PYTHON_VERSION == 'nightly' ]]; then pip install git+https://github.com/pytest-dev/pytest-mock@931785ca86113c62baaad1e677f5dc61d69ec39a; fi
   - pip list
-after_success:
-  - python run_coveralls.py
 script:
   - tox
 notifications:
