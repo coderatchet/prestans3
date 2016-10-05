@@ -83,7 +83,7 @@ def test_can_store_property_rule_in_type():
     __CustomClass.register_property_rule(my_custom_property_rule)
     # noinspection PyProtectedMember
     assert any([True if rule.__name__ == my_custom_property_rule.__name__ else False for rule in
-                __CustomClass._property_rules.values()])
+                __CustomClass.property_rules.values()])
 
 
 # noinspection PyAbstractClass
@@ -112,7 +112,7 @@ def test_can_name_property_rule():
 
     __CustomClass2.register_property_rule(property_rule=my_custom_property_rule_nameable, name="custom_prop")
 
-    assert "custom_prop" in __CustomClass2._property_rules.keys()
+    assert "custom_prop" in __CustomClass2.property_rules.keys()
     assert __CustomClass2.get_property_rule("custom_prop").__name__ == my_custom_property_rule_nameable.__name__
 
 
@@ -128,7 +128,7 @@ def test_can_name_owner_property_rule():
     __CustomClass3.register_owner_property_rule(my_custom_owner_property_rule_nameable,
                                                 name="custom_owner_prop")
 
-    assert "custom_prop" in __CustomClass3._property_rules.keys()
+    assert "custom_prop" in __CustomClass3.property_rules.keys()
     assert __CustomClass3.get_owner_property_rule(
         "custom_owner_prop").__name__ == my_custom_owner_property_rule_nameable.__name__
 
@@ -142,9 +142,9 @@ def test_can_add_rule_config(mocker):
         pass
 
     mocker.patch('prestans3.types._Property')
-    _property = _Property()
+    _property = _Property(__CustomClass)
     _property._of_type = mocker.Mock()
-    mocker.patch.dict(_property.property_type._property_rules, {"one_rule": lambda _x, _y: print("hello")})
+    mocker.patch.dict(_property.property_type.property_rules, {"one_rule": lambda _x, _y: print("hello")})
     _property._add_rule_config("one_rule", "config")
     assert "one_rule" in _property.rules_config
     assert "config" == _property.rules_config['one_rule']
@@ -154,8 +154,11 @@ def test_can_find_config_by_rule_name(mocker):
     """
     :param pytest_mock.MockFixture mocker:
     """
+    class __CustomClass(ImmutableType):
+        pass
+
     mocker.patch('prestans3.types._Property')
-    _property = _Property()
+    _property = _Property(__CustomClass)
     mocker.patch.dict(_property._rules_config, {"one_rule": "confighere"})
     assert 'confighere' == _property.get_rule_config('one_rule')
 
@@ -207,3 +210,32 @@ def test_adding_configuration_for_non_configurable_property_raises_value_error()
         .format(__CustomClassWithNonConfigurable.__name__,
                 ImmutableType.__name__,
                 ImmutableType.register_property_rule.__name__) in str(error.value)
+
+def test_setup_rules_config_method_on__property_class_merges_defaults_with_kwargs():
+    class __CustomClass(ImmutableType):
+        pass
+
+    __CustomClass.register_property_rule(lambda _x, _y: None, "override_me", default="default_config")
+    __CustomClass.register_property_rule(lambda _x, _y: None, "no_override_me", default="default_config")
+
+    class_property = __CustomClass.property(override_me="overriden_config")
+
+    assert "overriden_config" == class_property.get_rule_config("override_me")
+    assert "default_config" == class_property.get_rule_config("no_override_me")
+
+def test_can_setup_non_configurable_rule_on_init():
+    class __CustomClass(ImmutableType):
+        pass
+
+    def non_configurable(instance, config):
+        pass
+
+    __CustomClass.register_property_rule(non_configurable, default="non-configurable-default", configurable=False)
+
+    _property = __CustomClass.property()
+    "non-configurable_default" == _property.get_rule_config("non_configurable")
+
+# def test_cannot_set_non_configurable_after_initialization()
+
+# def test_can_add_function_to_list_of_prepared_rules_on_property_init(mocker):
+#     pass

@@ -15,9 +15,12 @@ class ImmutableType(object):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
+
+    Attributes:
+        property_rules  registered property rules for this |type|
     """
 
-    _property_rules = {}
+    property_rules = {}
 
     def __init__(self, validate_immediately=True):
         """
@@ -52,10 +55,6 @@ class ImmutableType(object):
         :raises: |ValidationException| on invalid state
         :rtype: ``True``
         """
-        # # todo then validate against own configured rules
-        # for rule in self._property_rules:
-        #     rule(self, )
-        # pass
         if isinstance(self, Structure):
             from prestans3.errors import ValidationException
             validation_exception = None  # type: ValidationException
@@ -68,7 +67,7 @@ class ImmutableType(object):
                     else:
                         validation_exception.add_validation_exception(key, error)
             # iterate through own rules
-            for property_rule in self._property_rules:
+            for property_rule in self.property_rules:
                 property_rule(self, )
             if validation_exception is not None:
                 return True
@@ -136,12 +135,12 @@ class ImmutableType(object):
         wrapped_pr.configurable = configurable
         if name is None:
             name = wrapped_pr.__name__
-        cls._property_rules.update({name: wrapped_pr})
+        cls.property_rules.update({name: wrapped_pr})
 
     @classmethod
     def get_property_rule(cls, name):
         """ retrieve the |rule| by name (``str``) """
-        return cls._property_rules[name]
+        return cls.property_rules[name]
 
 
 def _required(owner, instance, config):
@@ -165,13 +164,14 @@ class _Property(object):
     setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type=None):
+    def __init__(self, of_type, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
         self._rules_config = {}
+        self._setup_rules_config(kwargs)
         # if 'required' not in kwargs:
         #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
         # if 'default' not in kwargs:
@@ -238,6 +238,28 @@ class _Property(object):
     def get_rule_config(self, key):
         """ find a |rule|\ 's configuration by its name """
         return self._rules_config[key]
+
+    def _setup_rules_config(self, kwargs):
+        """
+        merge default rule configs with explicit rule configs in kwargs
+
+        :param dict kwargs:
+        """
+        defaults = {key: rule.default_config for key, rule in list(self.property_type.property_rules.items()) \
+                    if rule.default_config and rule.configurable}
+        all_config = defaults.copy()
+        all_config.update(kwargs)
+        [self._setup_non_configurable_rule_config(key, rule.default_config) \
+         for key, rule in list(self.property_type.property_rules.items()) \
+         if not rule.configurable and rule.default_config]
+        [self._add_rule_config(key, config) for key, config in list(all_config.items())]
+
+    def _setup_non_configurable_rule_config(self, key, config):
+        try:
+            self.property_type.get_property_rule(key)
+        except KeyError:
+            raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
+        self._rules_config.update({key: config})
 
 
 # noinspection PyAbstractClass
