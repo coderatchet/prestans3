@@ -1,6 +1,6 @@
 import pytest
 
-from prestans3.types import String, _Property, _required, ImmutableType
+from prestans3.types import String, _Property, ImmutableType
 
 from prestans3.types import Structure
 
@@ -11,40 +11,6 @@ class MyClass(Structure):
 
 def test_structure_class_can_contain_instances_of_MutableType_Property():
     assert isinstance(MyClass.__dict__['some_string'], _Property)
-
-
-def test_required_throws_exception_when_owner_is_none():
-    with pytest.raises(ValueError) as value_error:
-        _required(None, True, True)
-    assert "owner instance can't be None" in str(value_error.value)
-
-
-def test_required_throws_exception_when_owner_is_not_immutable_type_subclass():
-    with pytest.raises(ValueError) as value_error:
-        _required(True, True, True)
-    assert "owner instance is not a subclass of {}".format(ImmutableType.__name__) in str(value_error.value)
-
-
-def test_required_returns_true_if_provided_instance_not_none_and_config_is_true():
-    # noinspection PyAbstractClass
-    class MyClass2(Structure):
-        def __init__(self, **kwargs):
-            super(MyClass2, self).__init__(**kwargs)
-        my_string = String.property(required=True)
-
-    class_ = MyClass2(validate_immediately=False)
-    assert _required(class_, True, True)
-
-
-def test_required_returns_false_if_provided_instance_none_and_config_is_true():
-    # noinspection PyAbstractClass
-    class MyClass2(Structure):
-        def __init__(self, **kwargs):
-            super(MyClass2, self).__init__(**kwargs)
-        my_string = String.property(required=True)
-
-    class_ = MyClass2(validate_immediately=False)
-    assert not _required(class_, None, True)
 
 #
 # def test_required_returns_true_if_provided_instance_is_none_and_config_is_False():

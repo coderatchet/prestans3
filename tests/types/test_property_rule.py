@@ -144,7 +144,7 @@ def test_can_add_rule_config(mocker):
     mocker.patch('prestans3.types._Property')
     _property = _Property(__CustomClass)
     _property._of_type = mocker.Mock()
-    mocker.patch.dict(_property.property_type.property_rules, {"one_rule": lambda _x, _y: print("hello")})
+    mocker.patch.dict(_property.property_type.property_rules, {"one_rule": lambda _x, _y: None})
     _property._add_rule_config("one_rule", "config")
     assert "one_rule" in _property.rules_config
     assert "config" == _property.rules_config['one_rule']
@@ -172,7 +172,7 @@ def test_can_set_default_configuration_for_rule(mocker):
     class _CustomClassDefaultConfiguration(ImmutableType):
         pass
 
-    _CustomClassDefaultConfiguration.register_property_rule(lambda x, y: print("hello"), name="default_having_rule",
+    _CustomClassDefaultConfiguration.register_property_rule(lambda x, y: None, name="default_having_rule",
                                                             default="default config")
     assert "default config" == _CustomClassDefaultConfiguration.get_property_rule(
         "default_having_rule").default_config
@@ -182,7 +182,7 @@ def test_can_set_rule_as_non_configurable():
     class __CustomClassWithNonConfigurable(ImmutableType):
         pass
 
-    __CustomClassWithNonConfigurable.register_property_rule(lambda x, y: print("hello"), name="non_configurable_rule",
+    __CustomClassWithNonConfigurable.register_property_rule(lambda x, y: None, name="non_configurable_rule",
                                                             configurable=False)
     assert not __CustomClassWithNonConfigurable.get_property_rule("non_configurable_rule").configurable
 

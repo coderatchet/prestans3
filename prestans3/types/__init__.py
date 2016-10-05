@@ -142,21 +142,6 @@ class ImmutableType(object):
         """ retrieve the |rule| by name (``str``) """
         return cls.property_rules[name]
 
-
-def _required(owner, instance, config):
-    """
-    checks if the instance is not None
-    :param instance:
-    :param config:
-    :return:
-    """
-    if owner is None:
-        raise ValueError("owner instance can't be None")
-    if not isinstance(owner, ImmutableType):
-        raise ValueError("owner instance is not a subclass of {}".format(ImmutableType.__name__))
-    return True if not config else instance is not None
-
-
 class _Property(object):
     """
     Base class for all |_Property| configurations. not instantiated directly but called from the owning |type|\ 's
@@ -164,7 +149,7 @@ class _Property(object):
     setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type, **kwargs):
+    def __init__(self, of_type, required=True, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
@@ -172,6 +157,7 @@ class _Property(object):
         self._of_type = of_type
         self._rules_config = {}
         self._setup_rules_config(kwargs)
+        self.required = required
         # if 'required' not in kwargs:
         #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
         # if 'default' not in kwargs:
