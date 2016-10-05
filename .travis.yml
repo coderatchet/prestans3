@@ -9,6 +9,8 @@ python:
 install:
   - pip install tox-travis
   - pip install "virtualenv<14.0.0"
+  - pip install -U setuptools
+  - pip install -U
   - pip install -U pytest
   - pip install -U pytest-mock
   - pip install -e .
