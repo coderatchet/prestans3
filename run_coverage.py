@@ -16,8 +16,7 @@ if __name__ == '__main__':
             if not line:
                 break
             print(line)
-        print("coverage exited with {}".format(rc))
-        raise SystemExit(rc)
+        exit(rc.wait(timeout=5))
     else:
         print("skipping coverage for python version: {}".format(
             os.environ.get('TRAVIS_PYTHON_VERSION',
