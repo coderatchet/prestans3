@@ -1,6 +1,6 @@
 import re
 
-from prestans3.types import ImmutableType, Structure, _Property
+from prestans3.types import ImmutableType, Model, _Property
 
 
 class ValidationExceptionSummary(tuple):
@@ -28,9 +28,8 @@ class ValidationExceptionSummary(tuple):
 
         >>> from prestans3.errors import ValidationExceptionSummary
         >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
-        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperStructure', 'my_sub_class', summary1)
-        >>> assert super_summary[0] == 'MySuperStructure.my_sub_class.some_string'
-        >>> assert super_summary[1] == ['String was invalid']
+        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name(MySuperModely_sub_class', summary1)
+        >>> assert super_summary[0] == 'MySMySuperModel >>> assert super_summary[1] == ['String was invalid']
 
         :param str class_name: the |type|\ 's class that owns the sub |attribute|
         :param str attribute_name: the name of the configured |attribute| on the owning |type|
@@ -92,8 +91,8 @@ class ValidationException(Exception):
         if not isinstance(validation_exception, ValidationException):
             raise TypeError("Expected validation_exception to be subclass of {} but received instance of {}" \
                             .format(ValidationException.__name__, validation_exception.__class__.__name__))
-        if not issubclass(self._of_type, Structure):
-            raise TypeError("only subclasses of {} may have child attributes".format(Structure.__name__))
+        if not issubclass(self._of_type, Model):
+            raise TypeError("only subclasses of {} may have child attributes".format(Model.__name__))
         if not self._of_type.is_prestans_attribute(key):
             # see if the type of this validation error contains this configured key as a prestans attribute
             raise AttributeError(

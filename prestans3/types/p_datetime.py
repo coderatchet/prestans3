@@ -10,10 +10,10 @@
 """
 from datetime import datetime
 
-from . import Structure
+from . import Model
 
 
-class DateTime(datetime, Structure):
+class DateTime(datetime, Model):
     def __init__(self):
         super(DateTime, self).__init__()
     pass

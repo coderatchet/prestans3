@@ -9,7 +9,7 @@ Glossary
 .. glossary::
 
     prestans3 attribute
-        a prestans3 |Structure| may contain one or more |attributes|\ .
+        a prestans3 |Model| may contain one or more |attributes|\ .
 
     prestans3 type
         in general this refers to the subclass of a prestans3 :class:`type <prestans3.types>`

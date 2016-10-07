@@ -10,8 +10,8 @@
 """
 from datetime import time
 
-from . import Structure
+from . import Model
 
 
-class Time(Structure, time):
+class Time(Model, time):
     pass

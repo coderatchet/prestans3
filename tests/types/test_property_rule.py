@@ -1,6 +1,6 @@
 import pytest, pytest_mock
 
-from prestans3.types import ImmutableType, Container, Structure, _Property
+from prestans3.types import ImmutableType, Container, Model, _Property
 
 # noinspection PyAbstractClass
 from prestans3.types import String

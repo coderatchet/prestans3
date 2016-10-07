@@ -10,10 +10,10 @@
 """
 from datetime import date
 
-from . import Structure
+from . import Model
 
 
-class Date(date, Structure):
+class Date(date, Model):
     """
     Prestans3 Date Type.
     """

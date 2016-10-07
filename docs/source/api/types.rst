@@ -26,10 +26,10 @@ Container
     :special-members:
     :exclude-members: __weakref__
 
-Structure
+Model
 ---------
 
-.. autoclass:: Structure
+.. autoclass:: Model
     :members:
     :special-members:
     :exclude-members: __weakref__, __init__

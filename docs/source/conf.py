@@ -109,8 +109,8 @@ rst_epilog = """
 .. |MutableContainer|  replace:: :class:`._MutableContainer`
 .. |MutableContainers|  replace:: :class:`._MutableContainers<_MutableContainer>`
 
-.. |Structure|  replace:: :class:`Structure<.Structure>`
-.. |Structures|  replace:: :class:`Structures<.Structure>`
+.. |Model|  replace:: :class:`Model<.Model>`
+.. |Models|  replace:: :class:`Models<.Model>`
 
 .. |String|  replace:: :class:`~.String`
 .. |Strings|  replace:: :class:`Strings<.string.String>`

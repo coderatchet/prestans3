@@ -55,7 +55,7 @@ class ImmutableType(object):
         :raises: |ValidationException| on invalid state
         :rtype: ``True``
         """
-        if isinstance(self, Structure):
+        if isinstance(self, Model):
             from prestans3.errors import ValidationException
             validation_exception = None  # type: ValidationException
             for key, attribute in self.prestans_attributes:
@@ -81,11 +81,11 @@ class ImmutableType(object):
         returns the wrapped instance of this |type| from a given value. subclasses of |ImmutableType| must override this
         method if prestans should attempt to assign a |_Property| to an object other than an instance of this class.
 
-        for a |Structure| containing a |String| |_Property|, this will allow an api developer to set the contents of the
-        structure to a native python string:
+        for a |Model| containing a |String| |_Property|, this will allow an api developer to set the contents of the
+        |String| |type| to a native python ``str``:
 
         >>> import prestans3.types as types
-        >>> class MyClass(types.Structure):
+        >>> class MyClass(types.Model):
         ...     name = String.property()
         ...
         >>> my_class = MyClass()
@@ -108,14 +108,14 @@ class ImmutableType(object):
         :param bool configurable: when ``False``, adding a rule configuration for this property will throw an error
 
         >>> import prestans3.types as types
-        >>> class MyClass(Structure):
+        >>> class MyClass(Model):
         ...     pass
         ...
         >>> def my_property_rule(instance, config):  # assuming config is a bool
         ...     pass
         ...
         >>> MyClass.register_property_rule(my_property_rule, name="custom_prop")
-        >>> class MyOwningClass(Structure):
+        >>> class MyOwningClass(Model):
         ...     sub_prop = MyClass.property(custom_prop=True)  # should now configure the custom_prop
         """
         arg_count = property_rule.__code__.co_argcount
@@ -289,14 +289,14 @@ class Container(ImmutableType):
         :param str name: name of the |rule| as will appear in configuring the |_Property|:
 
         >>> import prestans3.types as types
-        >>> class MyClass(Structure):
+        >>> class MyClass(Model):
         ...     pass
         ...
         >>> def my_owner_property_rule(owner, instance, config):  # assuming config is a bool
         ...     pass
         ...
         >>> MyClass.register_property_rule(my_owner_property_rule, name="custom_owner_prop")
-        >>> class MyOwningClass(Structure):
+        >>> class MyOwningClass(Model):
         ...     sub_owner_prop = MyClass.property(custom_owner_prop=True)  # should now configure the custom_prop
         """
         argcount = owner_property_rule.__code__.co_argcount
@@ -323,9 +323,9 @@ class Container(ImmutableType):
 
 
 # noinspection PyAbstractClass
-class Structure(Container):
+class Model(Container):
     """
-    Base class of complex |types|. may contain other |Structures| and/or |Scalars|.
+    Base class of complex |types|. may contain other |Models| and/or |Scalars|.
     """
 
     def __setattr__(self, key, value):
@@ -343,7 +343,7 @@ class Structure(Container):
     @classmethod
     def is_prestans_attribute(cls, key):
         """
-        Determines if the key provides is a configured |attribute| of this |Structure|\ .
+        Determines if the key provides is a configured |attribute| of this |Model|\ .
 
         :param str key: name of the attribute
         :return bool: ``True`` if this is a |attribute| or False if otherwise.
@@ -366,7 +366,7 @@ class Structure(Container):
             return object.__getattribute__(self, item)
 
     def __init__(self, **kwargs):
-        super(Structure, self).__init__(**kwargs)
+        super(Model, self).__init__(**kwargs)
         self._prestans_attributes = {}
 
     @property
@@ -379,14 +379,14 @@ class Structure(Container):
         return self._prestans_attributes
 
     def mutable(self):
-        class _PrivateMutable(_MutableStructure, self.__class__):
+        class _PrivateMutable(_MutableModel, self.__class__):
             pass
 
         return _PrivateMutable()
 
 
 # noinspection PyAbstractClass
-class _MutableStructure(Structure):
+class _MutableModel(Model):
     """
     Not instantiated directly, instead call the :func:`.Container.mutable()` method to retrieve an instance of this
     |type| that may be mutated. Validation will now not happen on __init__
@@ -400,9 +400,9 @@ class _MutableStructure(Structure):
         are transient to the client requesting the object.
 
         :param str key: the name of the attribute or regular python property to set on the object.
-        :param value: the value to set on this |MutableStructure|. if the key refers a prestans attribute,
-                                             it is stored in the internal :attr:`.Structure._prestans_attributes` store.
-                                             otherwise it is stored in the :attr:`.Structure.__dict__` as normal.
+        :param value: the value to set on this |MutableModel|. if the key refers a prestans attribute,
+                                             it is stored in the internal :attr:`.Model._prestans_attributes` store.
+                                             otherwise it is stored in the :attr:`.Model.__dict__` as normal.
         :type value: |ImmutableType| or any
         """
         # if the key being set is a |attribute| then store the value in the self._prestans_attributes dictionary
@@ -413,12 +413,12 @@ class _MutableStructure(Structure):
             )
         # else default super behaviour
         else:
-            super(_MutableStructure, self).__setattr__(key, value)
+            super(_MutableModel, self).__setattr__(key, value)
         pass
 
     @classmethod
     def from_immutable(cls, instance):
-        class _Mute(_MutableStructure, instance.__class__):
+        class _Mute(_MutableModel, instance.__class__):
             pass
 
         pass
@@ -441,7 +441,6 @@ from .boolean import Boolean as Boolean
 from .number import Number as Number
 from .integer import Integer as Integer
 from .float import Float as Float
-from .model import Model as Model
 from .p_date import Date as Date
 from .p_datetime import DateTime as DateTime
 from .string import String as String

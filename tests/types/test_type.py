@@ -2,14 +2,14 @@ import pytest
 
 from prestans3.types import String, _Property, ImmutableType
 
-from prestans3.types import Structure
+from prestans3.types import Model
 
 
-class MyClass(Structure):
+class MyClass(Model):
     some_string = String.property()
 
 
-def test_structure_class_can_contain_instances_of_MutableType_Property():
+def test_model_class_can_contain_instances_of_MutableType_Property():
     assert isinstance(MyClass.__dict__['some_string'], _Property)
 
 #
@@ -23,7 +23,7 @@ def test_structure_class_can_contain_instances_of_MutableType_Property():
 #     # depends on validation conditions present
 #     pass
 #
-# def test_immutable_structure_cant_set_attributes():
+# def test_immutable_model_cant_set_attributes():
 #     # depends on above test
 #     my_class = MyClass()
 #     with pytest.raises(Exception):
@@ -36,9 +36,9 @@ def test_structure_class_can_contain_instances_of_MutableType_Property():
 #     assert isinstance(my_class.some_string, String)
 #
 # def test_required_rule():
-#     class MyStructure(Structure):
+#     class MyModel(Model):
 #         some_string = String.property(required=True)
 #
-#     my_class = MyStructure()
+#     my_class = MyModel()
 #     validation = my_class.validate()
 #     # assert validation is not None and not validation
