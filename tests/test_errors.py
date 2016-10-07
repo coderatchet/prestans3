@@ -10,7 +10,7 @@
 """
 
 from prestans3.errors import ValidationException, InvalidMethodUseError
-from prestans3.types import String, Model
+from prestans3.types import String
 
 exception_1 = ValidationException(String)
 exception_2 = ValidationException(String)
@@ -33,29 +33,16 @@ def test_leaf_validation_exception_has_correct_error_message():
     assert exception.messages[0] == blurg
 
 
-class MyModel(Model):
-    some_string = String.property()
-
-
-# def test_validation_tree_can_accept_single_validation_message_in___init__
-
-class MySuperModel(Model):
-    some_model = MyModel.property()
-    stringy_1 = String.property()
-    stringy_2 = String.property()
-
-
 # noinspection PyTypeChecker
 
 
 def test_property_type_returns_correct_value():
     assert ValidationException(String).property_type == String
-    assert ValidationException(MySuperModel, ('stringy_1', exception_1)).property_type == MySuperModel
 
 
 # noinspection PyUnusedLocal
 def test_can_use_iterator_syntax_for_validation_exception():
-    exception = ValidationException(MyModel)
+    exception = ValidationException(String)
     exception.add_validation_message("yeah")
     tree_ = exception[0]
     for summary in exception:

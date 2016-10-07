@@ -1,9 +1,22 @@
 import pytest
 from prestans3.errors import ValidationException
-from prestans3.types import Integer, String
+from prestans3.types import Integer, String, Model
 from prestans3.types.model import ModelValidationException
-from tests.test_errors import MySuperModel, exception_1, MyModel, exception_2
 
+
+exception_1 = ValidationException(String)
+exception_2 = ValidationException(String)
+
+class MyModel(Model):
+    some_string = String.property()
+
+
+# def test_validation_tree_can_accept_single_validation_message_in___init__
+
+class MySuperModel(Model):
+    some_model = MyModel.property()
+    stringy_1 = String.property()
+    stringy_2 = String.property()
 
 def test_should_raise_exception_when_adding_validation_exception_for_attribute_of_different_type():
     exception_integer = ValidationException(Integer)
@@ -68,3 +81,6 @@ def test_cannot_add_validation_exception_to_scalar_validation_exception():
     with pytest.raises(TypeError):
         # noinspection PyUnresolvedReferences
         model_exception.add_validation_exception('not way', ValidationException(String, "error"))
+
+def test_property_type_returns_correct_value():
+    assert ModelValidationException(MySuperModel, ('stringy_1', exception_1)).property_type == MySuperModel

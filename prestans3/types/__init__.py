@@ -335,7 +335,7 @@ from .number import Number as Number
 from .integer import Integer as Integer
 from .float import Float as Float
 from .string import String as String
-# from .p_date import Date as Date
-# from .p_datetime import DateTime as DateTime
-# from .time import Time as Time
 from .model import Model as Model
+from .p_date import Date as Date
+from .p_datetime import DateTime as DateTime
+from .time import Time as Time
