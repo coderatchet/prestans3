@@ -1,10 +1,7 @@
-import pytest, pytest_mock
-
-from prestans3.types import ImmutableType, Container, Model, _Property
-
-# noinspection PyAbstractClass
-from prestans3.types import String
-from prestans3.errors import ValidationException, InvalidMethodUseError
+import pytest
+import pytest_mock
+from prestans3.errors import InvalidMethodUseError
+from prestans3.types import ImmutableType, Container, _Property
 
 
 class MyClass(ImmutableType):
@@ -251,17 +248,3 @@ def test_setting_non_configurable_after_initialization_causes_value_error():
     with pytest.raises(InvalidMethodUseError) as error:
         _property._setup_non_configurable_rule_config("non_configurable", "throws error")
 
-
-def test_cannot_add_validation_exception_to_scalar_validation_exception():
-    exception = ValidationException(String, "error")
-    with pytest.raises(TypeError):
-        exception.add_validation_exception('not way', ValidationException(String, "error"))
-
-
-def test_head_retrieves_first_exception_from_validation_exception():
-    exception = ValidationException(String, "first error")
-    exception.add_own_validation_message("second error")
-    assert "first error" in str(exception.head)
-
-def test_invalid_method_user_error_has_empty_message_if_not_specified():
-    assert InvalidMethodUseError(lambda _: None).args[0] == ""

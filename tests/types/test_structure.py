@@ -1,7 +1,4 @@
-import pytest
-
 from prestans3.types import Model
-from prestans3.types import _MutableModel
 from prestans3.types import String
 
 

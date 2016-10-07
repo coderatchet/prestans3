@@ -34,9 +34,7 @@ class ImmutableType(object):
         :raises: |ValidationException| on invalid state when validate_immediately is True
         """
         if validate_immediately:
-            _validation_result = self.validate()
-            if _validation_result is not True:  # assumes we have a ValidationException
-                raise _validation_result
+            self.validate()
 
     @classmethod
     def property(cls, **kwargs):
@@ -48,31 +46,23 @@ class ImmutableType(object):
 
     __prestans_attribute__ = True
 
-    def validate(self):
+    def validate(self, validation_exception=None):
         """
         validates against own |rules| and configured |attribute|\ 's rules.
 
+        :
         :raises: |ValidationException| on invalid state
         :rtype: ``True``
         """
-        if isinstance(self, Model):
-            from prestans3.errors import ValidationException
-            validation_exception = None  # type: ValidationException
-            for key, attribute in self.prestans_attributes:
-                try:
-                    attribute.validate()
-                except ValidationException as error:
-                    if validation_exception is None:
-                        validation_exception = ValidationException(self.__class__, (key, error))
-                    else:
-                        validation_exception.add_validation_exception(key, error)
-            # iterate through own rules
-            for property_rule in self.property_rules:
-                property_rule(self)
-            if validation_exception is not None:
-                return True
-            else:
-                raise validation_exception  # todo change this, this implementation is incorrect
+
+        # iterate through own rules
+        for property_rule in self.property_rules:
+            pass
+            # property_rule(self)
+        if validation_exception is not None:
+            return True
+        else:
+            raise validation_exception  # todo change this, this implementation is incorrect
 
     #
     @classmethod
@@ -142,6 +132,7 @@ class ImmutableType(object):
     def get_property_rule(cls, name):
         """ retrieve the |rule| by name (``str``) """
         return cls.property_rules[name]
+
 
 class _Property(object):
     """
@@ -267,6 +258,10 @@ class Scalar(ImmutableType):
         - |Number|
             - |Integer|
             - |Float|
+        - |String|
+        - |Date|
+        - |DateTime|
+        - |Time|
     """
     pass
 
@@ -323,108 +318,6 @@ class Container(ImmutableType):
 
 
 # noinspection PyAbstractClass
-class Model(Container):
-    """
-    Base class of complex |types|. may contain other |Models| and/or |Scalars|.
-    """
-
-    def __setattr__(self, key, value):
-
-        """
-        This is an immutable type, You should not set values directly through here, set them through the main init
-        method.
-
-        i.e. We'll fire you if you override this method. `see_stackoverflow`_
-
-        .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
-        """
-        raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
-
-    @classmethod
-    def is_prestans_attribute(cls, key):
-        """
-        Determines if the key provides is a configured |attribute| of this |Model|\ .
-
-        :param str key: name of the attribute
-        :return bool: ``True`` if this is a |attribute| or False if otherwise.
-        """
-        if key in cls.__dict__ and isinstance(cls.__dict__[key], _Property):
-            return True
-        else:
-            return False
-
-    def __getattribute__(self, item):
-        """
-        will use the |_Property|\ 's __get__ method if the item is a |attribute| otherwise retrieves the regular
-        python attribute as normal
-        """
-        if object.__getattribute__(self, 'is_prestans_attribute')(item):
-            return object.__getattribute__(self, '__class__').__dict__[item].__get__(
-                object.__getattribute__(self, '_prestans_attributes')[item],
-                object.__getattribute__(self, '_prestans_attributes')[item].__class__)
-        else:
-            return object.__getattribute__(self, item)
-
-    def __init__(self, **kwargs):
-        super(Model, self).__init__(**kwargs)
-        self._prestans_attributes = {}
-
-    @property
-    def prestans_attributes(self):
-        """
-        returns a dictionary of prestan attribute names to their values
-
-        :rtype: dict[str -> |ImmutableType|\ ]
-        """
-        return self._prestans_attributes
-
-    def mutable(self):
-        class _PrivateMutable(_MutableModel, self.__class__):
-            pass
-
-        return _PrivateMutable()
-
-
-# noinspection PyAbstractClass
-class _MutableModel(Model):
-    """
-    Not instantiated directly, instead call the :func:`.Container.mutable()` method to retrieve an instance of this
-    |type| that may be mutated. Validation will now not happen on __init__
-    """
-
-    def __setattr__(self, key, value):
-        """
-        |types| maintain an internal dictionary of attribute names to their values for easy demarcation between prestans
-        attributes and native python object attributes. This enables the user to set arbitrary values on the object
-        without affecting the final serialization of the object. In other words: regular python properties on an object
-        are transient to the client requesting the object.
-
-        :param str key: the name of the attribute or regular python property to set on the object.
-        :param value: the value to set on this |MutableModel|. if the key refers a prestans attribute,
-                                             it is stored in the internal :attr:`.Model._prestans_attributes` store.
-                                             otherwise it is stored in the :attr:`.Model.__dict__` as normal.
-        :type value: |ImmutableType| or any
-        """
-        # if the key being set is a |attribute| then store the value in the self._prestans_attributes dictionary
-        if self.is_prestans_attribute(key):
-            object.__getattribute__(self, '__class__').__dict__[key].__set__(
-                object.__getattribute__(self, '_prestans_attributes'),
-                (key, value)
-            )
-        # else default super behaviour
-        else:
-            super(_MutableModel, self).__setattr__(key, value)
-        pass
-
-    @classmethod
-    def from_immutable(cls, instance):
-        class _Mute(_MutableModel, instance.__class__):
-            pass
-
-        pass
-
-
-# noinspection PyAbstractClass
 class Iterable(Container):
     # todo construct entire object in __init__
     # todo __setitem__ raises error
@@ -441,7 +334,8 @@ from .boolean import Boolean as Boolean
 from .number import Number as Number
 from .integer import Integer as Integer
 from .float import Float as Float
-from .p_date import Date as Date
-from .p_datetime import DateTime as DateTime
 from .string import String as String
-from .time import Time as Time
+# from .p_date import Date as Date
+# from .p_datetime import DateTime as DateTime
+# from .time import Time as Time
+from .model import Model as Model

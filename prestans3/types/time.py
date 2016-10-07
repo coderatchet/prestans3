@@ -13,5 +13,5 @@ from datetime import time
 from . import Model
 
 
-class Time(Model, time):
+class Time(time, Model):
     pass
