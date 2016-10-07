@@ -110,15 +110,13 @@ class ValidationException(Exception):
             ))
         self.validation_exceptions.update({key: validation_exception})
 
+    @property
     def head(self):
         """
         :return: the head of the list of summaries
                  see :func:`~prestans3.errors.ValidationException.__iter__`
         """
-        if self.validation_exceptions:
-            return list(self.__iter__())[0]
-        else:
-            return None
+        return list(self.__iter__())[0]
 
     def __getitem__(self, item):
         return list(self.__iter__())[item]

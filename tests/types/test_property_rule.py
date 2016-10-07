@@ -154,6 +154,7 @@ def test_can_find_config_by_rule_name(mocker):
     """
     :param pytest_mock.MockFixture mocker:
     """
+
     class __CustomClass(ImmutableType):
         pass
 
@@ -207,9 +208,10 @@ def test_adding_configuration_for_non_configurable_property_raises_value_error()
     with pytest.raises(ValueError) as error:
         non_configurable_property._add_rule_config("non_configurable_rule", "doesn't matter, should throw an error")
     assert "non_configurable_rule is a non-configurable rule in class {}, (see {}.{}())" \
-        .format(__CustomClassWithNonConfigurable.__name__,
-                ImmutableType.__name__,
-                ImmutableType.register_property_rule.__name__) in str(error.value)
+               .format(__CustomClassWithNonConfigurable.__name__,
+                       ImmutableType.__name__,
+                       ImmutableType.register_property_rule.__name__) in str(error.value)
+
 
 def test_setup_rules_config_method_on__property_class_merges_defaults_with_kwargs():
     class __CustomClass(ImmutableType):
@@ -223,6 +225,7 @@ def test_setup_rules_config_method_on__property_class_merges_defaults_with_kwarg
     assert "overriden_config" == class_property.get_rule_config("override_me")
     assert "default_config" == class_property.get_rule_config("no_override_me")
 
+
 def test_can_setup_non_configurable_rule_on_init():
     class __CustomClass(ImmutableType):
         pass
@@ -234,6 +237,7 @@ def test_can_setup_non_configurable_rule_on_init():
 
     _property = __CustomClass.property()
     "non-configurable_default" == _property.get_rule_config("non_configurable")
+
 
 def test_setting_non_configurable_after_initialization_causes_value_error():
     class __CustomClass(ImmutableType):
@@ -247,7 +251,17 @@ def test_setting_non_configurable_after_initialization_causes_value_error():
     with pytest.raises(InvalidMethodUseError) as error:
         _property._setup_non_configurable_rule_config("non_configurable", "throws error")
 
+
 def test_cannot_add_validation_exception_to_scalar_validation_exception():
     exception = ValidationException(String, "error")
     with pytest.raises(TypeError):
         exception.add_validation_exception('not way', ValidationException(String, "error"))
+
+
+def test_head_retrieves_first_exception_from_validation_exception():
+    exception = ValidationException(String, "first error")
+    exception.add_own_validation_message("second error")
+    assert "first error" in str(exception.head)
+
+def test_invalid_method_user_error_has_empty_message_if_not_specified():
+    assert InvalidMethodUseError(lambda _: None).args[0] == ""
