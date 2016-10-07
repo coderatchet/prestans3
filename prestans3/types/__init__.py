@@ -68,7 +68,7 @@ class ImmutableType(object):
                         validation_exception.add_validation_exception(key, error)
             # iterate through own rules
             for property_rule in self.property_rules:
-                property_rule(self, )
+                property_rule(self)
             if validation_exception is not None:
                 return True
             else:
@@ -129,6 +129,7 @@ class ImmutableType(object):
         @functools.wraps(property_rule)
         def wrapped_pr(*args):
             result = property_rule(*args)
+            return result
             # if not isinstance()
 
         wrapped_pr.default_config = default
@@ -337,19 +338,17 @@ class Structure(Container):
 
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
         """
-        # todo: added by brad because otherwise an object could not even be instantiated
-        if key != "_prestans_attributes":
-            raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
+        raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
 
-    def is_prestans_attribute(self, key):
+    @classmethod
+    def is_prestans_attribute(cls, key):
         """
         Determines if the key provides is a configured |attribute| of this |Structure|\ .
 
         :param str key: name of the attribute
         :return bool: ``True`` if this is a |attribute| or False if otherwise.
         """
-        if key in object.__getattribute__(self, '__class__').__dict__ and \
-                isinstance(object.__getattribute__(self, '__class__').__dict__[key], _Property):
+        if key in cls.__dict__ and isinstance(cls.__dict__[key], _Property):
             return True
         else:
             return False

@@ -247,5 +247,7 @@ def test_setting_non_configurable_after_initialization_causes_value_error():
     with pytest.raises(InvalidMethodUseError) as error:
         _property._setup_non_configurable_rule_config("non_configurable", "throws error")
 
-# def test_can_add_function_to_list_of_prepared_rules_on_property_init(mocker):
-#     pass
+def test_cannot_add_validation_exception_to_scalar_validation_exception():
+    exception = ValidationException(String, "error")
+    with pytest.raises(TypeError):
+        exception.add_validation_exception('not way', ValidationException(String, "error"))

@@ -94,7 +94,7 @@ class ValidationException(Exception):
                             .format(ValidationException.__name__, validation_exception.__class__.__name__))
         if not issubclass(self._of_type, Structure):
             raise TypeError("only subclasses of {} may have child attributes".format(Structure.__name__))
-        if key not in self._of_type.__dict__ or not isinstance(self._of_type.__dict__[key], _Property):
+        if not self._of_type.is_prestans_attribute(key):
             # see if the type of this validation error contains this configured key as a prestans attribute
             raise AttributeError(
                 '{} is not a configured prestans attribute of {} class, when trying to set validation exception'.format(
