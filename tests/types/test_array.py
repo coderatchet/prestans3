@@ -72,3 +72,7 @@ def test_array_can_retrieve_head():
 
 def test_array_can_retrieve_last():
     assert array.last() == 'ham'
+
+def test_can_drop_n_elements():
+    __my_array = Array([1, 2, 3, 4, 5, 6, 7, 8, 9], validate_immediately=False)
+    __my_array.drop(3) == [4, 5, 6, 7, 8, 9]
