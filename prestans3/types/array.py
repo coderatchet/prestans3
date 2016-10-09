@@ -45,7 +45,6 @@ class Array(Container):
         return self._values[key]
 
     def __setitem__(self, key, value):
-        # todo __setitem__ raises error
         raise AttributeError("__setitem__ called on an immutable {class_name}, "
                              "for a mutable array, initialise with {class_name}.mutable()"
                              .format(class_name=self.__name__))
