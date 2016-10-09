@@ -37,9 +37,8 @@ def test_array_has_get_item():
         array[2]
 
 
+# noinspection PyUnusedLocal
+def test_array_has_iter():
+    for i in array:
+        pass
 
-
-# def test_iterable_set_item_raises_error():
-#     iterable = MyIterable()
-#     with pytest.raises(Exception):
-#         iterable[0] = 'raises exception'
