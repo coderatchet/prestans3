@@ -152,6 +152,14 @@ rst_epilog = """
 
 .. |ValidationException| replace:: :class:`ValidationException<.ValidationException>`
 .. |ValidationExceptions| replace:: :class:`ValidationExceptions<.ValidationException>`
+
+.. py:currentmodule:: prestans.types.model
+
+.. |ModelValidationException|  replace:: :class:`ModelValidationException<.ModelValidationException>`
+.. |ModelValidationExceptions|  replace:: :class:`ModelValidationExceptions<.ModelValidationException>`
+
+.. |AttributeValidationExceptionSummary|  replace:: :class:`AttributeValidationExceptionSummary<.AttributeValidationExceptionSummary>`
+.. |AttributeValidationExceptionSummaries|  replace:: :class:`AttributeValidationExceptionSummaries<.AttributeValidationExceptionSummary>`
 """
 
 def skip(app, what, name, obj, skip, options):

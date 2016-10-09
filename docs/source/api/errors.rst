@@ -14,6 +14,7 @@ ValidationException
     :special-members:
     :exclude-members: __weakref__
 
+
 ValidationExceptionSummary
 --------------------------
 
@@ -22,3 +23,24 @@ ValidationExceptionSummary
     :special-members: __new__
     :exclude-members: __init__
 
+
+.. py:currentmodule:: prestans3.types.model
+
+ModelValidationException
+------------------------
+
+.. autoclass:: ModelValidationException
+    :show-inheritance:
+    :members:
+    :special-members:
+    :exclude-members: __init__
+
+
+AttributeValidationExceptionSummary
+-----------------------------------
+
+.. autoclass:: AttributeValidationExceptionSummary
+    :show-inheritance:
+    :members:
+    :special-members: __new__
+    :exclude-members: __init__

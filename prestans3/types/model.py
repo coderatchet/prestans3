@@ -21,9 +21,7 @@ class AttributeValidationExceptionSummary(ValidationExceptionSummary):
     def __new__(cls, class_name, attribute_name, summary):
         """
         adjusts the key of the provided summary and returns a newly created exception with the properly referenced
-        |attribute|
-
-        e.g.
+        |attribute|\ :
 
         >>> from prestans3.errors import ValidationExceptionSummary
         >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
@@ -32,8 +30,8 @@ class AttributeValidationExceptionSummary(ValidationExceptionSummary):
 
         :param str class_name: the |type|\ 's class that owns the sub |attribute|
         :param str attribute_name: the name of the configured |attribute| on the owning |type|
-        :param |ValidationExceptionSummary| summary:
-        :return: |ValidationExceptionSummary|
+        :param |AttributeValidationExceptionSummary| summary: a modified validation summary to qualified with the name
+               of the attribute with the parent class
         """
         _replace_regex = r'^[^.]*'
         return super(AttributeValidationExceptionSummary, cls).__new__(cls,
