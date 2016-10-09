@@ -317,25 +317,13 @@ class Container(ImmutableType):
         return cls._owner_property_rules[name]
 
 
-# noinspection PyAbstractClass
-class Iterable(Container):
-    # todo construct entire object in __init__
-    # todo __setitem__ raises error
-    pass
-
-
-# noinspection PyAbstractClass
-class _MutableIterable(Iterable):
-    # todo __setitem__ should not raise error.
-    pass
-
-
 from .boolean import Boolean as Boolean
 from .number import Number as Number
 from .integer import Integer as Integer
 from .float import Float as Float
 from .string import String as String
 from .model import Model as Model
+from .iterable import Iterable as Iterable
 from .p_date import Date as Date
 from .p_datetime import DateTime as DateTime
 from .time import Time as Time
