@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+from prestans3.errors import ValidationException, ValidationExceptionSummary
 from prestans3.types import Container
 
 
@@ -21,4 +22,12 @@ class Iterable(Container):
 # noinspection PyAbstractClass
 class _MutableIterable(Iterable):
     # todo __setitem__ should not raise error.
+    pass
+
+
+class IterableValidationException(ValidationException):
+    pass
+
+
+class ElementValidationExceptionSummary(ValidationExceptionSummary):
     pass
