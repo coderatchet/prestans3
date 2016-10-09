@@ -18,22 +18,6 @@ _Property
     :special-members:
     :exclude-members: __weakref__
 
-Container
----------
-
-.. autoclass:: Container
-    :members:
-    :special-members:
-    :exclude-members: __weakref__
-
-Model
----------
-
-.. autoclass:: Model
-    :members:
-    :special-members:
-    :exclude-members: __weakref__, __init__
-
 Scalar
 ------
 
@@ -90,6 +74,29 @@ Float
     :show-inheritance:
     :members:
     :exclude-members: __init__
+
+Container
+---------
+
+.. autoclass:: Container
+    :members:
+    :special-members:
+    :exclude-members: __weakref__
+
+Model
+-----
+
+.. autoclass:: Model
+    :members:
+    :special-members:
+    :exclude-members: __weakref__, __init__
+
+Array
+-----
+
+.. autoclass:: Array
+    :members:
+    :exclude-members: __weakref__
 
 Date
 ----

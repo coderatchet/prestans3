@@ -130,6 +130,9 @@ rst_epilog = """
 .. |Float|  replace:: :class:`Float<.float.Float>`
 .. |Floats|  replace:: :class:`Floats<.float.Float>`
 
+.. |Array|  replace:: :class:`Array<.array.Array>`
+.. |Arrays|  replace:: :class:`Arrays<.array.Array>`
+
 .. |Date|  replace:: :class:`Date<.p_date.Date>`
 .. |Dates|  replace:: :class:`Dates<.p_date.Date>`
 

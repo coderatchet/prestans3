@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
     prestans3.types
-    ~~~~~~~~~~~~~~
+    ~~~~~~~~~~~~~~~
     
     A WSGI compliant REST micro-framework.
 
@@ -323,7 +323,7 @@ from .integer import Integer as Integer
 from .float import Float as Float
 from .string import String as String
 from .model import Model as Model
-from .iterable import Iterable as Iterable
+from .array import Array as Array
 from .p_date import Date as Date
 from .p_datetime import DateTime as DateTime
 from .time import Time as Time
