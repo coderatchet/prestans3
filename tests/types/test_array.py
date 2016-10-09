@@ -29,6 +29,16 @@ def test_array_has_len():
     assert len(Array(validate_immediately=False)) == 0
 
 
+# noinspection PyStatementEffect
+def test_array_has_get_item():
+    assert array[0] == 'spam'
+    assert array[1] == 'ham'
+    with pytest.raises(IndexError):
+        array[2]
+
+
+
+
 # def test_iterable_set_item_raises_error():
 #     iterable = MyIterable()
 #     with pytest.raises(Exception):
