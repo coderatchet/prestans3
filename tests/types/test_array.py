@@ -42,3 +42,6 @@ def test_array_has_iter():
     for i in array:
         pass
 
+
+def test_array_has_reversed():
+    assert reversed(array) == ['ham', 'spam']

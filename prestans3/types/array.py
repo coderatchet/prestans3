@@ -11,6 +11,7 @@
 
 from prestans3.errors import ValidationException, ValidationExceptionSummary
 from prestans3.types import Container
+from collections import Iterable
 
 
 # noinspection PyAbstractClass
@@ -18,16 +19,13 @@ class Array(Container):
     def __init__(self, iterable=None, **kwargs):
         if iterable is None:
             iterable = []
-        # todo expand to allow list-like objects
-        elif not isinstance(iterable, list) and not isinstance(iterable, tuple):
-            raise Exception("iterable is not a list")
-        if isinstance(iterable, tuple):
-            iterable = list(iterable)
-        self._values = iterable
+        elif not isinstance(iterable, Iterable):
+            raise Exception(
+                "iterable argument of type {} is not an Iterable object".format(iterable.__class__.__name__))
+        self._values = list(iterable)
         super(Array, self).__init__(**kwargs)
 
-
-#### list like magic methods
+    #### list like magic methods
 
     def __eq__(self, other):
         if isinstance(other, Array):
@@ -55,7 +53,7 @@ class Array(Container):
         return iter(self._values)
 
     def __reversed__(self):
-        return Array(reversed(self._values))
+        return Array(reversed(self._values), validate_immediately=False)
 
     def append(self, value):
         self._values.append(value)
@@ -66,11 +64,11 @@ class Array(Container):
 
     def tail(self):
         # get all elements after the first
-        return Array(self._values[1:])
+        return Array(self._values[1:], validate_immediately=False)
 
     def init(self):
         # get elements up to the last
-        return Array(self._values[:-1])
+        return Array(self._values[:-1], validate_immediately=False)
 
     def last(self):
         # get last element
@@ -78,11 +76,12 @@ class Array(Container):
 
     def drop(self, n):
         # get all elements except first n
-        return Array(self._values[n:])
+        return Array(self._values[n:], validate_immediately=False)
 
     def take(self, n):
         # get first n elements
-        return Array(self._values[:n])
+        return Array(self._values[:n], validate_immediately=False)
+
 
 #### list like magic methods
 
