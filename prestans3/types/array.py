@@ -12,6 +12,7 @@
 from prestans3.errors import ValidationException, ValidationExceptionSummary
 from prestans3.types import Container
 from collections import Iterable
+from copy import copy
 
 
 # noinspection PyAbstractClass
@@ -32,6 +33,9 @@ class Array(Container):
             return self._values == other._values
         else:
             return self._values == other
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
 
     def __len__(self):
         return len(self._values)
@@ -83,7 +87,7 @@ class Array(Container):
         return Array(self._values[:n], validate_immediately=False)
 
     def copy(self):
-        return Array(self._values.copy(), validate_immediately=False)
+        return Array(copy(self._values), validate_immediately=False)
 
 
 # noinspection PyAbstractClass
