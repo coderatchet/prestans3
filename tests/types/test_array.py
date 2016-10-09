@@ -87,3 +87,7 @@ def test_can_take_n_elements():
 def test_immutable_array_set_item_raises_error():
     with pytest.raises(AttributeError):
         array[0] = 'pinnaple'
+
+def test_deleting_item_in_array_raises_error():
+    with pytest.raises(AttributeError):
+        del array[0]

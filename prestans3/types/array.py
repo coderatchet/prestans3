@@ -50,7 +50,9 @@ class Array(Container):
                              .format(class_name=self.__name__))
 
     def __delitem__(self, key):
-        del self._values[key]
+        raise AttributeError("__delitem__ called on an immutable {class_name}, "
+                             "for a mutable array, initialise with {class_name}.mutable()"
+                             .format(class_name=self.__name__))
 
     def __iter__(self):
         return iter(self._values)
