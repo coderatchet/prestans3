@@ -23,6 +23,12 @@ def test_array_can_perform_ne_with_array_like_object():
     assert array != Array(['no'], validate_immediately=False)
     assert not array != Array(['spam', 'ham'], validate_immediately=False)
 
+
+def test_array_has_len():
+    assert len(Array(['no', 'way', 'hozay'], validate_immediately=False)) == 3
+    assert len(Array(validate_immediately=False)) == 0
+
+
 # def test_iterable_set_item_raises_error():
 #     iterable = MyIterable()
 #     with pytest.raises(Exception):
