@@ -37,12 +37,20 @@ class AttributeValidationExceptionSummary(ValidationExceptionSummary):
         """
         _replace_regex = r'^[^.]*'
         return super(AttributeValidationExceptionSummary, cls).__new__(cls,
-            re.sub(_replace_regex, "{}.{}".format(class_name, attribute_name), summary[0]),
-            summary[1])
+                                                                       re.sub(_replace_regex, "{}.{}".format(class_name,
+                                                                                                             attribute_name),
+                                                                              summary[0]),
+                                                                       summary[1])
 
 
 class ModelValidationException(ValidationException):
     def __init__(self, of_type, message_or_key_exception_tuple=None):
+        """
+        :param of_type: |type| in error.
+        :type of_type: T <= |Model|
+        :param message_or_key_exception_tuple:
+        :type message_or_key_exception_tuple: str or (str, ValidationException)
+        """
         self.validation_exceptions = {}
         if isinstance(message_or_key_exception_tuple, tuple):
             super(ModelValidationException, self).__init__(of_type)
@@ -54,6 +62,7 @@ class ModelValidationException(ValidationException):
             super(ModelValidationException, self).__init__(of_type)
 
     def __iter__(self):
+        """ iterate through the summaries for this exception """
         for summary in list(super(ModelValidationException, self).__iter__()):
             yield summary
         for key, validation_exception in list(self.validation_exceptions.items()):  # type: (str, ValidationException)
@@ -64,8 +73,7 @@ class ModelValidationException(ValidationException):
         """
         :param str key: the attribute name whose validation failed. This name must be a configured attribute property of
                     this tree's ``self._of_type``
-        :param validation_exception: the validation_exception to add to this |ValidationException|\ 's list of exceptions
-        :type validation_exception: |ValidationException|
+        :param |ValidationException| validation_exception: the validation_exception to add to this |ValidationException|\ 's list of exceptions
         """
         if not isinstance(validation_exception, ValidationException):
             raise TypeError("Expected validation_exception to be subclass of {} but received instance of {}" \
