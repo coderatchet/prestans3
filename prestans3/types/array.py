@@ -21,6 +21,8 @@ class Array(Container):
         # todo expand to allow list-like objects
         elif not isinstance(iterable, list) and not isinstance(iterable, tuple):
             raise Exception("iterable is not a list")
+        if isinstance(iterable, tuple):
+            iterable = list(iterable)
         self._values = iterable
         super(Array, self).__init__(**kwargs)
 
