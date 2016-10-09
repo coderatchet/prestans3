@@ -70,9 +70,14 @@ def test_array_can_retrieve_init():
 def test_array_can_retrieve_head():
     assert array.head() == 'spam'
 
+
 def test_array_can_retrieve_last():
     assert array.last() == 'ham'
 
+
 def test_can_drop_n_elements():
-    __my_array = Array([1, 2, 3, 4, 5, 6, 7, 8, 9], validate_immediately=False)
-    __my_array.drop(3) == [4, 5, 6, 7, 8, 9]
+    Array([1, 2, 3, 4, 5, 6, 7, 8, 9], validate_immediately=False).drop(3) == [4, 5, 6, 7, 8, 9]
+
+
+def test_can_take_n_elements():
+    Array([1, 2, 3, 4, 5], validate_immediately=False).take(3) == [1, 2, 3]

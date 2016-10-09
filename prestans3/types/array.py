@@ -86,8 +86,6 @@ class Array(Container):
         return Array(self._values.copy(), validate_immediately=False)
 
 
-#### list like magic methods
-
 # noinspection PyAbstractClass
 class _MutableArray(Array):
     # todo __setitem__ should not raise error.
