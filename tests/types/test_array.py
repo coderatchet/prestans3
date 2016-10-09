@@ -46,6 +46,7 @@ def test_array_has_iter():
 def test_array_has_reversed():
     assert reversed(array) == ['ham', 'spam']
 
+
 def test_array_can_copy_itself():
     __copy = array.copy()
     assert __copy == array
@@ -61,5 +62,13 @@ def test_array_can_append():
 def test_array_can_retrieve_tail():
     assert array.tail() == ['ham']
 
+
 def test_array_can_retrieve_init():
-    __my_array = array.init() == ['spam']
+    assert array.init() == ['spam']
+
+
+def test_array_can_retrieve_head():
+    assert array.head() == 'spam'
+
+def test_array_can_retrieve_last():
+    assert array.last() == 'ham'
