@@ -90,3 +90,33 @@ Float
     :show-inheritance:
     :members:
     :exclude-members: __init__
+
+Date
+----
+
+.. py:currentmodule:: prestans3.types.p_date
+
+.. autoclass:: Date
+    :show-inheritance:
+    :members:
+    :exclude-members: __init__
+
+DateTime
+--------
+
+.. py:currentmodule:: prestans3.types.p_datetime
+
+.. autoclass:: DateTime
+    :show-inheritance:
+    :members:
+    :exclude-members: __init__
+
+Time
+----
+
+.. py:currentmodule:: prestans3.types.time
+
+.. autoclass:: Time
+    :show-inheritance:
+    :members:
+    :exclude-members: __init__

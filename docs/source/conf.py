@@ -130,6 +130,15 @@ rst_epilog = """
 .. |Float|  replace:: :class:`Float<.float.Float>`
 .. |Floats|  replace:: :class:`Floats<.float.Float>`
 
+.. |Date|  replace:: :class:`Date<.p_date.Date>`
+.. |Dates|  replace:: :class:`Dates<.p_date.Date>`
+
+.. |DateTime|  replace:: :class:`DateTime<.p_datetime.DateTime>`
+.. |DateTimes|  replace:: :class:`DateTimes<.p_datetime.DateTime>`
+
+.. |Time|  replace:: :class:`Time<.time.Time>`
+.. |Times|  replace:: :class:`Times<.time.Time>`
+
 .. |_Property|  replace:: :class:`_Property<._Property>`
 .. |_Properties|  replace:: :class:`_Properties<._Property>`
 
