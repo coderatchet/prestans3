@@ -60,3 +60,6 @@ def test_array_can_append():
 
 def test_array_can_retrieve_tail():
     assert array.tail() == ['ham']
+
+def test_array_can_retrieve_init():
+    __my_array = array.init() == ['spam']
