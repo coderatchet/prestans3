@@ -45,3 +45,18 @@ def test_array_has_iter():
 
 def test_array_has_reversed():
     assert reversed(array) == ['ham', 'spam']
+
+def test_array_can_copy_itself():
+    __copy = array.copy()
+    assert __copy == array
+    assert __copy is not array
+
+
+def test_array_can_append():
+    __my_array = array.copy()
+    __my_array.append('jam')
+    assert __my_array == ['spam', 'ham', 'jam']
+
+
+def test_array_can_retrieve_tail():
+    assert array.tail() == ['ham']

@@ -82,6 +82,9 @@ class Array(Container):
         # get first n elements
         return Array(self._values[:n], validate_immediately=False)
 
+    def copy(self):
+        return Array(self._values.copy(), validate_immediately=False)
+
 
 #### list like magic methods
 
