@@ -3,9 +3,9 @@ from prestans3.errors import ValidationException
 from prestans3.types import Integer, String, Model
 from prestans3.types.model import ModelValidationException
 
-
 exception_1 = ValidationException(String)
 exception_2 = ValidationException(String)
+
 
 class MyModel(Model):
     some_string = String.property()
@@ -17,6 +17,7 @@ class MySuperModel(Model):
     some_model = MyModel.property()
     stringy_1 = String.property()
     stringy_2 = String.property()
+
 
 def test_should_raise_exception_when_adding_validation_exception_for_attribute_of_different_type():
     exception_integer = ValidationException(Integer)
@@ -69,6 +70,7 @@ def test_can_retrieve_dict_of_validation_exceptions_by_qualified_name():
     sub_model_exception = ModelValidationException(MyModel, ('some_string', sub_sub_exception))
     model_exception = ModelValidationException(MySuperModel, ('some_model', sub_model_exception))
 
+
 def test_nested_exception_message_correctly_constructed_from_root_exception_class():
     validation_exception = ValidationException(String, "error with string")
     sub_validation_exception = ModelValidationException(MyModel, ('some_string', validation_exception))
@@ -76,11 +78,23 @@ def test_nested_exception_message_correctly_constructed_from_root_exception_clas
     expected_message = 'MySuperModel.some_model.some_string was invalid: ["error with string"]'
     assert expected_message == str(super_validation_exception[0])
 
+
 def test_cannot_add_validation_exception_to_scalar_validation_exception():
     model_exception = ModelValidationException(String, "error")
     with pytest.raises(TypeError):
         # noinspection PyUnresolvedReferences
         model_exception.add_validation_exception('not way', ValidationException(String, "error"))
 
+
 def test_property_type_returns_correct_value():
     assert ModelValidationException(MySuperModel, ('stringy_1', exception_1)).property_type == MySuperModel
+
+
+def test_can_make_mutable_version_of_model_class():
+    mutable_model = MyModel.mutable()
+    mutable_model.some_string = 'potato'
+
+
+def test_cannot_make_mutable_of_base_model_class():
+    with pytest.raises(TypeError):
+        Model.mutable()

@@ -14,6 +14,7 @@ import re
 from prestans3.errors import ValidationException, ValidationExceptionSummary
 from prestans3.types import Container, _Property
 from prestans3.utils import is_str
+from copy import copy
 
 
 class AttributeValidationExceptionSummary(ValidationExceptionSummary):
@@ -111,7 +112,12 @@ class Model(Container):
 
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
         """
-        raise AttributeError("Prestans3 ImmutableType should instantiate object attributes at object creation")
+        if self.is_prestans_attribute(key):
+            raise ("attempted to set value of prestans3 attribute on an immutable Model, "
+                   "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+                class_name=self.__class__.__name__))
+        else:
+            super(Model, self).__setattr__(key, value)
 
     def validate(self, validation_exception=None):
         for key, attribute in self.prestans_attributes:
@@ -162,12 +168,20 @@ class Model(Container):
         """
         return self._prestans_attributes
 
-    def mutable(self):
-        # noinspection PyAbstractClass
-        class _PrivateMutable(_MutableModel, self.__class__):
-            pass
+    @classmethod
+    def mutable(cls, **kwargs):
+        if cls is Model:
+            raise TypeError("mutable called on base Model class. must call mutable on a concrete subclass of Model")
+        else:
+            # noinspection PyAbstractClass
+            _bases = copy(cls.__class__.__bases__)
+            index_of_model = _bases.index(Model)
+            _bases.insert(index_of_model, _MutableModel)
+            __PrivateMutableModel = type(_MutableModel, bases=_bases, dict=copy(cls.__class__.__dict__))
+            return __PrivateMutableModel(validate_immediately=False, **kwargs)
 
-        return _PrivateMutable()
+    def mutable_copy(self):
+        pass
 
 
 # noinspection PyAbstractClass
@@ -199,12 +213,4 @@ class _MutableModel(Model):
         # else default super behaviour
         else:
             super(_MutableModel, self).__setattr__(key, value)
-        pass
-
-    @classmethod
-    def from_immutable(cls, instance):
-        # noinspection PyAbstractClass
-        class _Mute(_MutableModel, instance.__class__):
-            pass
-
         pass

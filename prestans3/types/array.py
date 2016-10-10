@@ -90,10 +90,8 @@ class Array(Container):
     def copy(self):
         return Array(copy(self._values), validate_immediately=False)
 
-
 # noinspection PyAbstractClass
 class _MutableArray(Array):
-    # todo __setitem__ should not raise error.
     pass
 
 
