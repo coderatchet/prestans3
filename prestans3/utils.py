@@ -9,7 +9,6 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 from copy import copy
-from functools import lru_cache
 
 try:
     # noinspection PyUnresolvedReferences,PyStatementEffect
@@ -30,7 +29,9 @@ def prefix_with_injected(template_class, class_to_inject, target_base_class):
     return "Injected{}".format(template_class.__name__)
 
 
-@lru_cache(maxsize=100)
+injected_class_cache = dict()
+
+
 def inject_class(template_class, class_to_inject, target_base_class=object, new_type_name_func=None):
     """
     injects a class above a target class in the mro of the specified class. New class's default name is
@@ -44,6 +45,9 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
      :type new_type_name_func: (type, type, type) -> str
     :return: the new modified type
     """
+    args_key = (template_class, class_to_inject, target_base_class, new_type_name_func)
+    if args_key in injected_class_cache:
+        return injected_class_cache[args_key]
     if new_type_name_func is None:
         new_type_name_func = prefix_with_injected
 
@@ -57,6 +61,9 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
                 new_bases += [class_to_inject, target_base_class]
             else:
                 new_bases.append(inject_class(base, class_to_inject, target_base_class))
-        return type(new_type_name, tuple(new_bases), dict(template_class.__dict__))
+        new_type = type(new_type_name, tuple(new_bases), dict(template_class.__dict__))
+        injected_class_cache.update({args_key: new_type})
+        return new_type
     else:
+        injected_class_cache.update({args_key: template_class})
         return template_class
