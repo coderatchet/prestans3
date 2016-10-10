@@ -94,7 +94,6 @@ def test_can_make_mutable_version_of_model_class():
     mutable_model = MyModel.mutable()
     mutable_model.some_string = 'potato'
 
-
 def test_cannot_make_mutable_of_base_model_class():
     with pytest.raises(TypeError):
         Model.mutable()

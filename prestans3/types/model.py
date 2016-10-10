@@ -13,7 +13,7 @@ import re
 
 from prestans3.errors import ValidationException, ValidationExceptionSummary
 from prestans3.types import Container, _Property
-from prestans3.utils import is_str
+from prestans3.utils import is_str, inject_class
 from copy import copy
 
 
@@ -173,12 +173,10 @@ class Model(Container):
         if cls is Model:
             raise TypeError("mutable called on base Model class. must call mutable on a concrete subclass of Model")
         else:
-            # noinspection PyAbstractClass
-            _bases = copy(cls.__class__.__bases__)
-            index_of_model = _bases.index(Model)
-            _bases.insert(index_of_model, _MutableModel)
-            __PrivateMutableModel = type(_MutableModel, bases=_bases, dict=copy(cls.__class__.__dict__))
-            return __PrivateMutableModel(validate_immediately=False, **kwargs)
+            new_mutable_model_subclass = inject_class(cls, _MutableModel, Model,
+                                                      new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
+                                                          x.__name__))
+            return new_mutable_model_subclass(validate_immediately=False, **kwargs)
 
     def mutable_copy(self):
         pass
