@@ -10,19 +10,26 @@
 """
 
 from prestans3.errors import ValidationException, ValidationExceptionSummary
-from prestans3.types import Container
+from prestans3.types import Container, ImmutableType
 from collections import Iterable
 from copy import copy
 
 
 # noinspection PyAbstractClass
 class Array(Container):
-    def __init__(self, iterable=None, **kwargs):
+    def __init__(self, of_type, iterable=None, **kwargs):
         if iterable is None:
             iterable = []
-        elif not isinstance(iterable, Iterable):
-            raise Exception(
+        if not isinstance(of_type, type):
+            raise TypeError("of_type must be a subclass of {} type object, received {}".format(ImmutableType.__name__,
+                                                                                               of_type.__class__.__name__))
+        elif not issubclass(of_type, ImmutableType):
+            raise TypeError("of_type must be a subclass of {} type object, received {}".format(ImmutableType.__name__,
+                                                                                               of_type.__name__))
+        if not isinstance(iterable, Iterable):
+            raise TypeError(
                 "iterable argument of type {} is not an Iterable object".format(iterable.__class__.__name__))
+        self._of_type = of_type
         self._values = list(iterable)
         super(Array, self).__init__(**kwargs)
 
@@ -58,7 +65,7 @@ class Array(Container):
         return iter(self._values)
 
     def __reversed__(self):
-        return Array(reversed(self._values), validate_immediately=False)
+        return Array(self._of_type, reversed(self._values), validate_immediately=False)
 
     def append(self, value):
         self._values.append(value)
@@ -69,11 +76,11 @@ class Array(Container):
 
     def tail(self):
         # get all elements after the first
-        return Array(self._values[1:], validate_immediately=False)
+        return Array(self._of_type, self._values[1:], validate_immediately=False)
 
     def init(self):
         # get elements up to the last
-        return Array(self._values[:-1], validate_immediately=False)
+        return Array(self._of_type, self._values[:-1], validate_immediately=False)
 
     def last(self):
         # get last element
@@ -81,18 +88,20 @@ class Array(Container):
 
     def drop(self, n):
         # get all elements except first n
-        return Array(self._values[n:], validate_immediately=False)
+        return Array(self._of_type, self._values[n:], validate_immediately=False)
 
     def take(self, n):
         # get first n elements
-        return Array(self._values[:n], validate_immediately=False)
+        return Array(self._of_type, self._values[:n], validate_immediately=False)
 
     def copy(self):
-        return Array(copy(self._values), validate_immediately=False)
+        return Array(self._of_type, copy(self._values), validate_immediately=False)
+
 
 # noinspection PyAbstractClass
 class _MutableArray(Array):
-    pass
+    def __setitem__(self, key, value):
+        pass
 
 
 class ArrayValidationException(ValidationException):
