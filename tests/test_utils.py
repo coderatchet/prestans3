@@ -37,6 +37,7 @@ def test_can_inject_class_with_more_than_one_subclass():
     assert second_base.__name__ == 'Injected{}'.format(__B.__name__)
     assert second_base.__bases__ == (InjectableClass, object)
 
+
 def test_can_inject_before_custom_class():
     class __A(object):
         pass
@@ -46,3 +47,12 @@ def test_can_inject_before_custom_class():
 
     class __C(__A, __B):
         pass
+
+    new_type = inject_class(__C, InjectableClass, __B)
+    assert new_type.__name__ == 'Injected{}'.format(__C.__name__)
+    assert len(new_type.__bases__) == 3
+    assert new_type.__bases__[0] is __A
+    new_base = new_type.__bases__[1]
+    assert new_base is InjectableClass
+    assert new_type.__bases__[2] is __B
+    assert new_type.mro() == [new_type, __A, InjectableClass, __B, object]
