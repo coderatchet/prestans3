@@ -93,3 +93,17 @@ def test_inject_class_returns_original_class_if_target_base_class_is_not_in_mro(
 
     assert __A not in __C.mro()
     assert __C is inject_class(__C, InjectableClass, __A)
+
+
+def test_can_customize_new_class_name():
+    class __A(object):
+        pass
+
+    class __B(__A):
+        pass
+
+    def custom_name(x, _y, _z):
+        return "Custom{}".format(x.__name__)
+
+    new_type = inject_class(__B, InjectableClass, new_type_name_func=custom_name)
+    assert new_type.__name__ == 'Custom{}'.format(__B.__name__)
