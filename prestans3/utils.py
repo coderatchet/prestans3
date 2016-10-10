@@ -35,11 +35,11 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
     """
     injects a class above a target class in the mro of the specified class. New class's default name is
     Injected<name of template_class>. If the target_base_class is not in the template class's method resolution order
-    (MRO), the template_class is returned to the caller instead.
+    (MRO), the original template_class is returned to the caller.
 
     :param type template_class: the class to have its hierarchy modified to create a new class
     :param type class_to_inject: the class to inject about the target_base_class
-    :param type target_base_class: the class to inject the class above (i.e. type(class_to_inject, bases=target_base_class, dict=class_to_inject.__dict__))
+    :param type target_base_class: the class to inject the class before
     :param new_type_name_func: function that determines the name of the new class to be generated
      :type new_type_name_func: (type, type, type) -> str
     :return: the new modified type
@@ -60,4 +60,3 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
         return type(new_type_name, tuple(new_bases), dict(template_class.__dict__))
     else:
         return template_class
-
