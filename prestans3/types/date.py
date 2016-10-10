@@ -13,7 +13,7 @@ from datetime import date
 from . import Model
 
 
-class Date(date, Model):
+class Date(Model):
     """
     Prestans3 Date Type.
     """
