@@ -11,7 +11,7 @@
 
 import re
 
-from prestans3.errors import ValidationException, ValidationExceptionSummary
+from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
 from prestans3.types import Container, _Property
 from prestans3.utils import is_str, inject_class
 from copy import copy
@@ -113,11 +113,19 @@ class Model(Container):
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
         """
         if self.is_prestans_attribute(key):
-            raise ("attempted to set value of prestans3 attribute on an immutable Model, "
-                   "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+            raise AccessError("attempted to set value of prestans3 attribute on an immutable Model, "
+                            "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
             super(Model, self).__setattr__(key, value)
+
+    def __delattr__(self, item):
+        if self.is_prestans_attribute(item):
+            raise AccessError("attempted to delete value of prestans3 attribute on an immutable Model, "
+                            "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+                class_name=self.__class__.__name__))
+        else:
+            super(Model, self).__delattr__(item)
 
     def validate(self, validation_exception=None):
         for key, attribute in self.prestans_attributes:
@@ -211,4 +219,3 @@ class _MutableModel(Model):
         # else default super behaviour
         else:
             super(_MutableModel, self).__setattr__(key, value)
-        pass

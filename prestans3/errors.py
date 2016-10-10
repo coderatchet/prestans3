@@ -108,3 +108,10 @@ class InvalidMethodUseError(Exception):
         if message is None:
             message = ""
         super(InvalidMethodUseError, self).__init__(message)
+
+
+class AccessError(Exception):
+    def __init__(self, cls, message=None):
+        if message is None:
+            message = "invalid access on class: {}".format(cls.__name__)
+        super(AccessError, self).__init__(message)

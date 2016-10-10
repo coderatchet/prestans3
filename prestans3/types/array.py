@@ -9,7 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from prestans3.errors import ValidationException, ValidationExceptionSummary
+from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
 from prestans3.types import Container, ImmutableType
 from collections import Iterable
 from copy import copy
@@ -52,14 +52,14 @@ class Array(Container):
         return self._values[key]
 
     def __setitem__(self, key, value):
-        raise AttributeError("__setitem__ called on an immutable {class_name}, "
-                             "for a mutable array, initialise with {class_name}.mutable()"
-                             .format(class_name=self.__name__))
+        raise AccessError(self.__class__, "__setitem__ called on an immutable {class_name}, "
+                          "for a mutable array, initialise with {class_name}.mutable()"
+                          .format(class_name=self.__class__.__name__))
 
     def __delitem__(self, key):
-        raise AttributeError("__delitem__ called on an immutable {class_name}, "
-                             "for a mutable array, initialise with {class_name}.mutable()"
-                             .format(class_name=self.__name__))
+        raise AccessError(self.__class__, "__delitem__ called on an immutable {class_name}, "
+                          "for a mutable array, initialise with {class_name}.mutable()"
+                          .format(class_name=self.__class__.__name__))
 
     def __iter__(self):
         return iter(self._values)
@@ -72,8 +72,9 @@ class Array(Container):
             try:
                 value = self._of_type.from_value(value)
             except:
-                raise ValueError("value is not an instance of {}, one of its subclasses or a coercable type: received value type: {}"
-                             .format(self._of_type.__name__, value.__class__.__name__))
+                raise ValueError(
+                    "value is not an instance of {}, one of its subclasses or a coercable type: received value type: {}"
+                    .format(self._of_type.__name__, value.__class__.__name__))
         self._values.append(value)
 
     def head(self):

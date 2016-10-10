@@ -1,4 +1,5 @@
 import pytest
+from prestans3.errors import AccessError
 from prestans3.types import Array
 from prestans3.types import String
 
@@ -92,12 +93,12 @@ def test_can_take_n_elements():
 
 # noinspection PyStatementEffect
 def test_immutable_array_set_item_raises_error():
-    with pytest.raises(AttributeError):
+    with pytest.raises(AccessError):
         array[0] = 'pinnaple'
 
 
 def test_deleting_item_in_array_raises_error():
-    with pytest.raises(AttributeError):
+    with pytest.raises(AccessError):
         del array[0]
 
 
@@ -111,3 +112,4 @@ def test_adding_non_of_type_subclass_to_array_raises_value_error():
     __array.append(MySuperString('this is also a string'))
     with pytest.raises(ValueError):
         __array.append(1)
+
