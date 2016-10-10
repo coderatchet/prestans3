@@ -34,7 +34,8 @@ def prefix_with_injected(template_class, class_to_inject, target_base_class):
 def inject_class(template_class, class_to_inject, target_base_class=object, new_type_name_func=None):
     """
     injects a class above a target class in the mro of the specified class. New class's default name is
-    Injected<name of template_class>
+    Injected<name of template_class>. If the target_base_class is not in the template class's method resolution order
+    (MRO), the template_class is returned to the caller instead.
 
     :param type template_class: the class to have its hierarchy modified to create a new class
     :param type class_to_inject: the class to inject about the target_base_class
@@ -49,12 +50,14 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
     new_type_name = new_type_name_func(template_class, class_to_inject, target_base_class)
 
     _bases = list(copy(template_class.__bases__))
-    if target_base_class in _bases:
-        index_of_target = _bases.index(target_base_class)
-        _bases.insert(index_of_target, class_to_inject)
-        return type(new_type_name, tuple(_bases), dict(class_to_inject.__dict__))
+    if target_base_class in template_class.mro():
+        new_bases = []
+        for base in _bases:
+            if base is target_base_class:
+                new_bases += [class_to_inject, target_base_class]
+            else:
+                new_bases.append(inject_class(base, class_to_inject, target_base_class))
+        return type(new_type_name, tuple(new_bases), dict(template_class.__dict__))
     else:
-        _bases = [inject_class(base, class_to_inject, target_base_class, new_type_name_func)
-                  for base in _bases if target_base_class in base.mro()] \
-                 + [base for base in _bases if target_base_class not in base.mro()]
-        return type(new_type_name, tuple(_bases), dict(template_class.__dict__))
+        return template_class
+

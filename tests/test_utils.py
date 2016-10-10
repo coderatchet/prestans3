@@ -56,3 +56,40 @@ def test_can_inject_before_custom_class():
     assert new_base is InjectableClass
     assert new_type.__bases__[2] is __B
     assert new_type.mro() == [new_type, __A, InjectableClass, __B, object]
+
+
+def test_can_inject_class_in_complex_hierarchy():
+    class __A(object):
+        pass
+
+    class __B(object):
+        pass
+
+    class __X(__A, __B):
+        pass
+
+    class __Y(__A):
+        pass
+
+    class __Z(__X, __Y, __B):
+        pass
+
+    new_type = inject_class(__Z, InjectableClass, __B)
+    assert len(new_type.__bases__) == 4
+    __new_X = new_type.__bases__[0]
+    assert __new_X.__name__ == 'Injected{}'.format(__X.__name__)
+    assert len(__new_X.__bases__) == 3
+
+
+def test_inject_class_returns_original_class_if_target_base_class_is_not_in_mro():
+    class __A(object):
+        pass
+
+    class __B(object):
+        pass
+
+    class __C(__B):
+        pass
+
+    assert __A not in __C.mro()
+    assert __C is inject_class(__C, InjectableClass, __A)
