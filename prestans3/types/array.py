@@ -68,6 +68,12 @@ class Array(Container):
         return Array(self._of_type, reversed(self._values), validate_immediately=False)
 
     def append(self, value):
+        if not isinstance(value, self._of_type):
+            try:
+                value = self._of_type.from_value(value)
+            except:
+                raise ValueError("value is not an instance of {}, one of its subclasses or a coercable type: received value type: {}"
+                             .format(self._of_type.__name__, value.__class__.__name__))
         self._values.append(value)
 
     def head(self):

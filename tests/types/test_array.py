@@ -7,12 +7,15 @@ def test_array_can_be_set_with_initial_iterable():
     array = Array(String, ['spam', 'ham'], validate_immediately=False)
     array_2 = Array(String, ('ham', 'spam'), validate_immediately=False)
 
+
 def test_array_must_have_type_arg():
     with pytest.raises(TypeError):
         Array(['spam'], ['ham'], validate_immediately=False)
     array = Array(String, [], validate_immediately=False)
 
+
 array = Array(String, ['spam', 'ham'], validate_immediately=False)
+
 
 def test_array_can_equate_array_like_object():
     assert array == ['spam', 'ham']
@@ -96,3 +99,15 @@ def test_immutable_array_set_item_raises_error():
 def test_deleting_item_in_array_raises_error():
     with pytest.raises(AttributeError):
         del array[0]
+
+
+def test_adding_non_of_type_subclass_to_array_raises_value_error():
+    class MySuperString(String):
+        pass
+
+    __array = Array(String, validate_immediately=False)
+    __array.append('this is a string')
+    __array.append(String('this is a string'))
+    __array.append(MySuperString('this is also a string'))
+    with pytest.raises(ValueError):
+        __array.append(1)

@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+from prestans3.utils import is_str
 
 from . import Scalar
 
@@ -18,7 +19,7 @@ class String(Scalar, str):
 
     @classmethod
     def from_value(cls, value, *args, **kwargs):
-        if not isinstance(value, str):
+        if not is_str(value):
             raise TypeError
         return String(value)
     pass
