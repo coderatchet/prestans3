@@ -20,6 +20,7 @@ API Reference
    api/single_html
    api/types
    api/errors
+   api/utils
 
 Peps
 ----

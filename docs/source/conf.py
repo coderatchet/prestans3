@@ -156,6 +156,9 @@ rst_epilog = """
 .. |ValidationException| replace:: :class:`ValidationException<.ValidationException>`
 .. |ValidationExceptions| replace:: :class:`ValidationExceptions<.ValidationException>`
 
+.. |AccessError|  replace:: :class:`AccessError`<.AccessError>`
+.. |AccessErrors|  replace:: :class:`AccessErrors`<.AccessError>`
+
 .. py:currentmodule:: prestans.types.model
 
 .. |ModelValidationException|  replace:: :class:`ModelValidationException<.ModelValidationException>`
@@ -163,6 +166,15 @@ rst_epilog = """
 
 .. |AttributeValidationExceptionSummary|  replace:: :class:`AttributeValidationExceptionSummary<.AttributeValidationExceptionSummary>`
 .. |AttributeValidationExceptionSummaries|  replace:: :class:`AttributeValidationExceptionSummaries<.AttributeValidationExceptionSummary>`
+
+.. utils
+.. -----
+
+.. py:currentmodule:: prestans3.utils
+
+.. |MergingProxyDictionary|  replace:: :class:`MergingProxyDictionary<.MergingProxyDictionary>`
+.. |MergingProxyDictionaries|  replace:: :class:`MergingProxyDictionaries<.MergingProxyDictionary>`
+
 """
 
 def skip(app, what, name, obj, skip, options):

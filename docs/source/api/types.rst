@@ -75,6 +75,9 @@ Float
     :members:
     :exclude-members: __init__
 
+
+.. py:currentmodule:: prestans3.types
+
 Container
 ---------
 
@@ -121,7 +124,7 @@ DateTime
 Time
 ----
 
-.. py:currentmodule:: prestans3.types.time
+.. py:currentmodule:: prestans3.types.p_time
 
 .. autoclass:: Time
     :show-inheritance:
