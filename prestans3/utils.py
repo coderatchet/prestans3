@@ -142,3 +142,6 @@ class MergingProxyDictionary(dict):
 
     def update(self, other=None, **kwargs):
         raise AccessError(MergingProxyDictionary)
+
+    def values(self):
+        return self.copy().values()
