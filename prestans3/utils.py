@@ -175,5 +175,10 @@ class MergingProxyDictionary(dict):
     def setdefault(self, key, default=None):
         raise AccessError(MergingProxyDictionary)
 
+    def pop(self, key, default=None):
+        raise AccessError(MergingProxyDictionary)
+
+
+
 
 
