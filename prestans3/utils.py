@@ -170,15 +170,17 @@ class MergingProxyDictionary(dict):
         return self.copy().items()
 
     def popitem(self):
+        """ :raises AccessError: when attempting to call this function. """
         raise AccessError(MergingProxyDictionary)
 
     def setdefault(self, key, default=None):
+        """ :raises AccessError: when attempting to call this function. """
         raise AccessError(MergingProxyDictionary)
 
     def pop(self, key, default=None):
+        """ :raises AccessError: when attempting to call this function. """
         raise AccessError(MergingProxyDictionary)
 
-
-
-
-
+    def clear(self):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(MergingProxyDictionary)
