@@ -14,7 +14,6 @@ import re
 from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
 from prestans3.types import Container, _Property
 from prestans3.utils import is_str, inject_class
-from copy import copy
 
 
 class AttributeValidationExceptionSummary(ValidationExceptionSummary):
@@ -127,16 +126,23 @@ class Model(Container):
         else:
             super(Model, self).__delattr__(item)
 
-    def validate(self, validation_exception=None):
+    def validate(self):
+        validation_exception = None
         for key, attribute in self.prestans_attributes:
             try:
                 attribute.validate()
             except ValidationException as error:
                 if validation_exception is None:
                     validation_exception = ModelValidationException(self.__class__)
-                else:
-                    validation_exception.add_validation_exception(key, error)
-        super(Model, self).validate(validation_exception)
+                validation_exception.add_validation_exception(key, error)
+        try:
+            super(Model, self).validate()
+        except ValidationException as error:
+            if validation_exception is None:
+                validation_exception = ModelValidationException(self.__class__)
+            validation_exception.add_validation_messages(error.messages)
+            raise validation_exception
+
 
     @classmethod
     def is_prestans_attribute(cls, key):
@@ -164,8 +170,8 @@ class Model(Container):
             return object.__getattribute__(self, item)
 
     def __init__(self, **kwargs):
-        super(Model, self).__init__(**kwargs)
         self._prestans_attributes = {}
+        super(Model, self).__init__(**kwargs)
 
     @property
     def prestans_attributes(self):

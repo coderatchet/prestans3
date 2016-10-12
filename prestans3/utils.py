@@ -67,3 +67,23 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
     else:
         injected_class_cache.update({args_key: template_class})
         return template_class
+
+
+def with_metaclass(meta, *bases):
+    """
+    Create a base class with a metaclass.
+
+    code from `six`_ pypi package licenced under `MIT licence`_
+
+    .. _MIT Licence: https://opensource.org/licenses/MIT
+    .. _six: https://pypi.python.org/pypi/six
+    """
+
+    # This requires a bit of explanation: the basic idea is to make a dummy
+    # metaclass for one level of class instantiation that replaces itself with
+    # the actual metaclass.
+    class metaclass(meta):
+        def __new__(cls, name, this_bases, d):
+            return meta(name, bases, d)
+
+    return type.__new__(metaclass, 'temporary_class', (), {})

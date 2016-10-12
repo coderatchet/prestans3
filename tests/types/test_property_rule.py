@@ -113,23 +113,6 @@ def test_can_name_property_rule():
     assert __CustomClass2.get_property_rule("custom_prop").__name__ == my_custom_property_rule_nameable.__name__
 
 
-# noinspection PyProtectedMember,PyAbstractClass,PyUnusedLocal
-def test_can_name_owner_property_rule():
-    class __CustomClass3(Container):
-        pass
-
-    # noinspection PyUnusedLocal
-    def my_custom_owner_property_rule_nameable(owner, instance, config):
-        pass
-
-    __CustomClass3.register_owner_property_rule(my_custom_owner_property_rule_nameable,
-                                                name="custom_owner_prop")
-
-    assert "custom_prop" in __CustomClass3.property_rules.keys()
-    assert __CustomClass3.get_owner_property_rule(
-        "custom_owner_prop").__name__ == my_custom_owner_property_rule_nameable.__name__
-
-
 def test_can_add_rule_config(mocker):
     """
     :param pytest_mock.MockFixture mocker:
@@ -201,6 +184,9 @@ def test_adding_configuration_for_non_configurable_property_raises_value_error()
     class __CustomClassWithNonConfigurable(ImmutableType):
         pass
 
+    __CustomClassWithNonConfigurable.register_property_rule(lambda _x, _y: None, name="non_configurable_rule",
+                                                            configurable=False)
+
     non_configurable_property = __CustomClassWithNonConfigurable.property()
     with pytest.raises(ValueError) as error:
         non_configurable_property._add_rule_config("non_configurable_rule", "doesn't matter, should throw an error")
@@ -248,3 +234,30 @@ def test_setting_non_configurable_after_initialization_causes_value_error():
     with pytest.raises(InvalidMethodUseError) as error:
         _property._setup_non_configurable_rule_config("non_configurable", "throws error")
 
+
+def test_unrelated_class_does_not_have_unrelated_rule():
+    class __OneClass(ImmutableType):
+        pass
+
+    class __UnrelatedClass(ImmutableType):
+        pass
+
+    __OneClass.register_property_rule(lambda _x, _y: None, "unrelated_rule")
+    assert "unrelated_rule" not in __UnrelatedClass.property_rules
+    assert "unrelated_rule" in __OneClass.property_rules
+
+
+def test_subclass_of_immutable_types_inherit_rules():
+    class __MyClass(ImmutableType):
+        pass
+
+    class __MySubClass(__MyClass):
+        pass
+
+    __MyClass.register_property_rule(lambda _x, _y: None, name="my_class_rule")
+    __MySubClass.register_property_rule(lambda _x, _y: None, name="my_sub_class_rule")
+
+    assert "my_class_rule" in __MyClass.property_rules
+    assert "my_sub_class_rule" not in __MyClass.property_rules
+    assert "my_sub_class_rule" in __MySubClass.property_rules
+    assert "my_class_rule" in __MySubClass.property_rules

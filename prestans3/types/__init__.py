@@ -9,9 +9,36 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import functools
+from prestans3.utils import with_metaclass
+import pprint
 
 
-class ImmutableType(object):
+class _OneWayGraph(dict):
+    def __missing__(self, cls):
+        _property_rules = {}
+        for base in list(reversed(cls.__bases__)):
+            if issubclass(base, ImmutableType):
+                _property_rules.update(_property_rule_graph[base])
+        self[cls] = _property_rules
+        # super(_OneWayGraph, self).__setitem__(cls, _property_rules)
+        return _property_rules
+
+
+_property_rule_graph = _OneWayGraph()
+
+
+class _PropertyRules(object):
+    # noinspection PyUnusedLocal
+    def __get__(self, cls, _mcs):
+        return _property_rule_graph[cls]
+
+
+class _PrestansTypeMeta(type):
+
+    property_rules = _PropertyRules()
+
+
+class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
@@ -19,8 +46,6 @@ class ImmutableType(object):
     Attributes:
         property_rules  registered property rules for this |type|
     """
-
-    property_rules = {}
 
     def __init__(self, validate_immediately=True):
         """
@@ -46,23 +71,26 @@ class ImmutableType(object):
 
     __prestans_attribute__ = True
 
-    def validate(self, validation_exception=None):
+    def validate(self):
         """
         validates against own |rules| and configured |attribute|\ 's rules.
 
         :
         :raises: |ValidationException| on invalid state
-        :rtype: ``True``
         """
 
         # iterate through own rules
-        for property_rule in self.property_rules:
-            pass
-            # property_rule(self)
-        if validation_exception is not None:
-            return True
-        else:
-            raise validation_exception  # todo change this, this implementation is incorrect
+        exception_messages = []
+        from prestans3.errors import ValidationException
+        for rule_name, rule in list(self.__class__.property_rules.items()):
+            try:
+                rule(self)
+            except ValidationException as ex:
+                exception_messages += ex.messages
+        if exception_messages:
+            this_type_exception = ValidationException(self.__class__)
+            this_type_exception.add_validation_messages(exception_messages)
+            raise this_type_exception
 
     #
     @classmethod

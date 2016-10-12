@@ -14,7 +14,7 @@ class MyModel(Model):
 # def test_validation_tree_can_accept_single_validation_message_in___init__
 
 class MySuperModel(Model):
-    some_model = MyModel.property()
+    some_model = MyModel.property(required=True)
     stringy_1 = String.property()
     stringy_2 = String.property()
 
