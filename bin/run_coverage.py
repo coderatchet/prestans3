@@ -8,8 +8,9 @@ from subprocess import Popen, PIPE, STDOUT
 if __name__ == '__main__':
     if 'TRAVIS' in os.environ and os.environ.get('TRAVIS_PYTHON_VERSION', 'unknown-version') == '3.5':
         current_dir = os.path.dirname(os.path.abspath(__file__))
-        setup_file = os.path.join(current_dir, "setup.py")
-        rc = Popen(['coverage', 'run', '--source=prestans3',
+        setup_file = os.path.join(current_dir, os.pardir, "setup.py")
+        source = os.path.join(current_dir, os.pardir, 'prestans3')
+        rc = Popen(['coverage', 'run', '--source={}'.format(source),
                     setup_file, 'test'], stdout=PIPE, stderr=STDOUT)
         while True:
             line = rc.stdout.readline()
