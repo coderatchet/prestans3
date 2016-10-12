@@ -172,3 +172,8 @@ class MergingProxyDictionary(dict):
     def popitem(self):
         raise AccessError(MergingProxyDictionary)
 
+    def setdefault(self, key, default=None):
+        raise AccessError(MergingProxyDictionary)
+
+
+

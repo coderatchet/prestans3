@@ -213,3 +213,9 @@ def test_pop_item_raises_exception():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
     with pytest.raises(AccessError):
         dictionary.popitem()
+
+
+def test_set_default_raises_exception():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    with pytest.raises(AccessError):
+        dictionary.setdefault('doesnt', 'matter')
