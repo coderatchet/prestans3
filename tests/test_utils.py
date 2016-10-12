@@ -194,3 +194,8 @@ def test_merging_dictionary_can_return_keys():
     assert len(keys) == 2
     assert 'foo' in keys
     assert 'bar' in keys
+
+def test_key_not_found_raises_key_error():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar':'ham'})
+    with pytest.raises(KeyError):
+        dictionary['notthere']

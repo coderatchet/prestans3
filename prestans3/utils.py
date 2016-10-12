@@ -104,8 +104,12 @@ class MergingProxyDictionary(dict):
 
     def __getitem__(self, item):
         try:
+            if not self._me:
+                raise KeyError(item)
             return self._me[item]
-        except KeyError:
+        except KeyError as error:
+            if not self._other:
+                raise error
             return self._other[item]
 
     def __setitem__(self, key, value):
@@ -116,9 +120,6 @@ class MergingProxyDictionary(dict):
         if not in_me and self._other:
             in_me = item in self._other
         return in_me
-
-    def keys(self):
-        return set(self._me.keys() + self._other.keys())
 
     def __delitem__(self, key):
         raise AccessError(MergingProxyDictionary)
