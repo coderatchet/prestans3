@@ -1,4 +1,5 @@
-from prestans3.utils import is_str, inject_class
+import pytest
+from prestans3.utils import is_str, inject_class, MergingProxyDictionary
 
 
 def test_is_str():
@@ -107,3 +108,38 @@ def test_can_customize_new_class_name():
 
     new_type = inject_class(__B, InjectableClass, new_type_name_func=custom_name)
     assert new_type.__name__ == 'Custom{}'.format(__B.__name__)
+
+
+def test_merging_dictionary_can_exist():
+    dictionary = MergingProxyDictionary()
+    assert len(dictionary) == 0
+
+
+def test_merging_dictionary_can_access_all_keys():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
+    assert 'foo' in dictionary
+    assert 'bar' in dictionary
+
+
+def test_merging_dictionary_can_retrieve_values():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
+    assert dictionary['foo'] == 'spam'
+    assert dictionary['bar'] == 'ham'
+
+
+def test_merging_dictionary_overrides_later_dictionariys_values():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'foo': 'ham'})
+    assert dictionary['foo'] == 'spam'
+    assert len(dictionary) == 1
+
+
+def test_merging_dictionary_raises_exception_when_setting_item():
+    dictionary = MergingProxyDictionary()
+    with pytest.raises(Exception):
+        dictionary['foo'] = 'bar'
+
+
+def test_merging_dictionary_raises_exception_when_deleting_items():
+    dictionary = MergingProxyDictionary({'foo': 'bar'})
+    with pytest.raises(Exception):
+        del dictionary['foo']

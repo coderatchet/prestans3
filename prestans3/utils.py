@@ -87,3 +87,41 @@ def with_metaclass(meta, *bases):
             return meta(name, bases, d)
 
     return type.__new__(metaclass, 'temporary_class', (), {})
+
+
+class MergingProxyDictionary(dict):
+    def __init__(self, *args):
+        if len(args) > 0:
+            super(MergingProxyDictionary, self).__init__(args[0])
+            self._other = MergingProxyDictionary(*args[1:])
+        else:
+            super(MergingProxyDictionary, self).__init__()
+
+    def __getitem__(self, item):
+        try:
+            return super(MergingProxyDictionary, self).__getitem__(item)
+        except KeyError:
+            return self._other[item]
+
+    def __setitem__(self, key, value):
+        raise NotImplementedError
+
+    def __contains__(self, item):
+        return super(MergingProxyDictionary, self).__contains__(item) or item in self._other
+
+    def keys(self):
+        return set(super(MergingProxyDictionary, self).keys() + self._other.keys())
+
+    def __delitem__(self, key):
+        raise NotImplementedError
+
+    def __copy__(self):
+        return self.copy()
+
+    def copy(self):
+        _copy = self._other.copy()
+        _copy.update(copy(super(MergingProxyDictionary, self)))
+        return _copy
+
+    def __str__(self):
+        str(self.copy())
