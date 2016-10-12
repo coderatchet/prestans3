@@ -178,10 +178,19 @@ def test_updating_merging_dictionary_raises_exception():
     with pytest.raises(AccessError):
         dictionary.update({"shouldnt": "work"})
 
+
 def test_merging_dictionary_can_return_values():
-    dictionary = MergingProxyDictionary({'foo':'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
     values = dictionary.values()
     assert len(values) == 2
     assert 'spam' in values
     assert 'ham' in values
     assert 'thankyouman' not in values
+
+
+def test_merging_dictionary_can_return_keys():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    keys = dictionary.keys()
+    assert len(keys) == 2
+    assert 'foo' in keys
+    assert 'bar' in keys
