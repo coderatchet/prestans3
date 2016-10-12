@@ -92,7 +92,20 @@ def with_metaclass(meta, *bases):
 
 
 class MergingProxyDictionary(dict):
+    """
+    A MergingProxyDictionary allows for the merging of dictionaries without copying their values. for this reason,
+    mutation of the contained dictionaries is not allowed directly through this class's interface. changing the
+    referenced dictionaries outside this class will be reflected when accessing the keys through this interface. The
+    dictionary will resolve keys with left to right priority on dictionaries provided in the __init__ function.
+
+    :raises |AccessError|: If an attempt to mutate the dictionary is made.
+    """
+
     def __init__(self, *args):
+        """
+        :param list[dict] args: the dictionaries to proxy against. key and value resolution is done in the order provided
+               to this init function (left to right).
+        """
         self._me = None
         self._other = None
         if len(args) > 0:
@@ -113,7 +126,8 @@ class MergingProxyDictionary(dict):
             return self._other[item]
 
     def __setitem__(self, key, value):
-        raise AccessError(MergingProxyDictionary)
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(key)
 
     def __contains__(self, item):
         in_me = item in self._me
@@ -122,7 +136,8 @@ class MergingProxyDictionary(dict):
         return in_me
 
     def __delitem__(self, key):
-        raise AccessError(MergingProxyDictionary)
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(key)
 
     def __copy__(self):
         return self.copy()
@@ -142,6 +157,7 @@ class MergingProxyDictionary(dict):
         return repr(self.copy())
 
     def update(self, other=None, **kwargs):
+        """ :raises AccessError: when attempting to call this function. """
         raise AccessError(MergingProxyDictionary)
 
     def values(self):

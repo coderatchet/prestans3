@@ -13,32 +13,44 @@ import functools
 from prestans3.utils import with_metaclass, MergingProxyDictionary
 
 
-class _MergingDictionaryWithOwnValues(MergingProxyDictionary):
-    def __init__(self, of_type, dictionary):
-        """
+class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
+    """
+        |MergingProxyDictionary| that has reference to read-only dictionary values whilst still being able to mutate
+        own values.
+    """
 
-        :param of_type:
-        :type of_type: T <= |ImmutableType|
-        :param MergingProxyDictionary dictionary:
+    def __init__(self, dictionary):
         """
-        self._of_type = of_type
+        :param MergingProxyDictionary dictionary: the read-only inherited values
+        """
         self._own_values = {}
         self._inherited_values = dictionary
-        super(_MergingDictionaryWithOwnValues, self).__init__(self._own_values, self._inherited_values)
+        super(_MergingDictionaryWithMutableOwnValues, self).__init__(self._own_values, self._inherited_values)
 
     def __setitem__(self, key, value):
+        """ allows for setting own values (not inherited values)"""
         self._own_values[key] = value
 
 
 class _LazyGraph(dict):
     def __missing__(self, prestans_type):
+        """
+        lazily sets and returns the initialized dictionary values for each |type|\ . Each type will have it's own
+        mutable values whilst maintaining a proxied read-only reference to it's base class's values using the
+        |MergingProxyDictionary| \.
+        :param prestans_type: the |type| to find the value for
+        :type prestans_type: T <= |ImmutableType|
+        :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
+                 class value on this graph.
+        """
         _property_rules = {}
-        new_dict = MergingProxyDictionary(*[_property_rule_graph[base]
-                                            for base in prestans_type.__bases__ if issubclass(base, ImmutableType)])
+        merging_proxy_dictionary = MergingProxyDictionary(*[_property_rule_graph[base]
+                                                            for base in prestans_type.__bases__ if
+                                                            issubclass(base, ImmutableType)])
         for base in list(reversed(prestans_type.__bases__)):
             if issubclass(base, ImmutableType):
                 _property_rules.update(_property_rule_graph[base])
-        self[prestans_type] = _MergingDictionaryWithOwnValues(prestans_type, new_dict)
+        self[prestans_type] = _MergingDictionaryWithMutableOwnValues(merging_proxy_dictionary)
         # super(_OneWayGraph, self).__setitem__(cls, _property_rules)
         return self[prestans_type]
 
