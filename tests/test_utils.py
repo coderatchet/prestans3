@@ -1,4 +1,7 @@
+from copy import copy
+
 import pytest
+from prestans3.errors import AccessError
 from prestans3.utils import is_str, inject_class, MergingProxyDictionary
 
 
@@ -121,10 +124,26 @@ def test_merging_dictionary_can_access_all_keys():
     assert 'bar' in dictionary
 
 
+def test_can_copy_merging_dictionary():
+    dictionary = MergingProxyDictionary({'foo': 'bar'})
+    copy1 = copy(dictionary)
+    assert 'foo' in copy1
+    assert copy1 is not dictionary
+
+
 def test_merging_dictionary_can_retrieve_values():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
     assert dictionary['foo'] == 'spam'
     assert dictionary['bar'] == 'ham'
+
+
+def test_merging_dictionary_reports_correct_length():
+    dictionary = MergingProxyDictionary()
+    assert len(dictionary) == 0
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
+    assert len(dictionary) == 2
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'foo': 'ham'})
+    assert len(dictionary) == 1
 
 
 def test_merging_dictionary_overrides_later_dictionariys_values():
@@ -143,3 +162,18 @@ def test_merging_dictionary_raises_exception_when_deleting_items():
     dictionary = MergingProxyDictionary({'foo': 'bar'})
     with pytest.raises(Exception):
         del dictionary['foo']
+
+
+def test_mutating_dictionaries_outside_affects_item_retrieval():
+    my_dict = {}
+    dictionary = MergingProxyDictionary(my_dict)
+    assert len(dictionary) == 0
+    my_dict['foo'] = 'bar'
+    assert len(dictionary) == 1
+    assert 'foo' in dictionary
+
+
+def test_updating_merging_dictionary_raises_exception():
+    dictionary = MergingProxyDictionary()
+    with pytest.raises(AccessError):
+        dictionary.update({"shouldnt": "work"})

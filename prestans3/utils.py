@@ -10,6 +10,8 @@
 """
 from copy import copy
 
+from prestans3.errors import AccessError
+
 try:
     # noinspection PyUnresolvedReferences,PyStatementEffect
     basestring
@@ -91,37 +93,52 @@ def with_metaclass(meta, *bases):
 
 class MergingProxyDictionary(dict):
     def __init__(self, *args):
+        self._me = None
+        self._other = None
         if len(args) > 0:
-            super(MergingProxyDictionary, self).__init__(args[0])
-            self._other = MergingProxyDictionary(*args[1:])
+            self._me = args[0]
+            if len(args) > 1:
+                self._other = MergingProxyDictionary(*args[1:])
         else:
             super(MergingProxyDictionary, self).__init__()
 
     def __getitem__(self, item):
         try:
-            return super(MergingProxyDictionary, self).__getitem__(item)
+            return self._me[item]
         except KeyError:
             return self._other[item]
 
     def __setitem__(self, key, value):
-        raise NotImplementedError
+        raise AccessError(MergingProxyDictionary)
 
     def __contains__(self, item):
-        return super(MergingProxyDictionary, self).__contains__(item) or item in self._other
+        in_me = item in self._me
+        if not in_me and self._other:
+            in_me = item in self._other
+        return in_me
 
     def keys(self):
-        return set(super(MergingProxyDictionary, self).keys() + self._other.keys())
+        return set(self._me.keys() + self._other.keys())
 
     def __delitem__(self, key):
-        raise NotImplementedError
+        raise AccessError(MergingProxyDictionary)
 
     def __copy__(self):
         return self.copy()
 
     def copy(self):
-        _copy = self._other.copy()
-        _copy.update(copy(super(MergingProxyDictionary, self)))
+        _copy = {} if not self._other else self._other.copy()
+        _copy.update(copy(self._me)) if self._me else None
         return _copy
 
+    def __len__(self):
+        return len(self.copy())
+
     def __str__(self):
-        str(self.copy())
+        return str(self.copy())
+
+    def __repr__(self):
+        return repr(self.copy())
+
+    def update(self, other=None, **kwargs):
+        raise AccessError(MergingProxyDictionary)
