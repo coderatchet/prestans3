@@ -49,26 +49,6 @@ def test_registered_class_has_correct_signature():
 
 
 # noinspection PyAbstractClass
-def test_valid_signature_of_owner_property_rule():
-    class __OtherClassToRegisterWith(Container):
-        pass
-
-    def defined_function():
-        return True
-
-    with pytest.raises(ValueError) as error:
-        __OtherClassToRegisterWith.register_owner_property_rule(defined_function)
-    assert "expected owner_property_rule function with 3 arguments, received function with 0 argument(s): defined_function()" in \
-           str(error.value)
-
-    # noinspection PyUnusedLocal
-    def better_defined_function(owner, instance, config):
-        return True
-
-    __OtherClassToRegisterWith.register_owner_property_rule(better_defined_function)
-
-
-# noinspection PyAbstractClass
 def test_can_store_property_rule_in_type():
     class __CustomClass(ImmutableType):
         pass
@@ -79,23 +59,7 @@ def test_can_store_property_rule_in_type():
 
     __CustomClass.register_property_rule(my_custom_property_rule)
     # noinspection PyProtectedMember
-    assert any([True if rule.__name__ == my_custom_property_rule.__name__ else False for rule in
-                __CustomClass.property_rules.values()])
-
-
-# noinspection PyAbstractClass
-def test_can_store_owner_property_rule_in_type():
-    class __CustomClass(Container):
-        pass
-
-    # noinspection PyUnusedLocal
-    def my_custom_owner_property_rule(owner, instance, config):
-        pass
-
-    __CustomClass.register_owner_property_rule(my_custom_owner_property_rule)
-    # noinspection PyProtectedMember
-    assert any([True if rule.__name__ == my_custom_owner_property_rule.__name__ else False for rule in
-                __CustomClass._owner_property_rules.values()])
+    assert my_custom_property_rule.__name__ in __CustomClass.property_rules
 
 
 # noinspection PyProtectedMember,PyAbstractClass,PyUnusedLocal
@@ -260,4 +224,29 @@ def test_subclass_of_immutable_types_inherit_rules():
     assert "my_class_rule" in __MyClass.property_rules
     assert "my_sub_class_rule" not in __MyClass.property_rules
     assert "my_sub_class_rule" in __MySubClass.property_rules
+    assert "my_class_rule" in __MySubClass.property_rules
+
+
+def test_registering_rule_after_property_rules_accessed_correctly_reflects_changes():
+    class __MyClass(ImmutableType):
+        pass
+
+    class __MySubClass(__MyClass):
+        pass
+
+    __MyClass.register_property_rule(lambda _x, _y: None, name="my_class_rule")
+    __MySubClass.register_property_rule(lambda _x, _y: None, name="my_sub_class_rule")
+
+    assert "my_class_rule" in __MyClass.property_rules
+    assert "my_sub_class_rule" not in __MyClass.property_rules
+    assert "my_sub_class_rule" in __MySubClass.property_rules
+    assert "my_class_rule" in __MySubClass.property_rules
+
+    __MyClass.register_property_rule(lambda _x, _y: None, name="injected_after_access")
+
+    assert "my_class_rule" in __MyClass.property_rules
+    assert "injected_after_access" in __MyClass.property_rules
+    assert "my_sub_class_rule" not in __MyClass.property_rules
+    assert "my_sub_class_rule" in __MySubClass.property_rules
+    assert "injected_after_access" in __MySubClass.property_rules
     assert "my_class_rule" in __MySubClass.property_rules

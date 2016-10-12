@@ -199,3 +199,8 @@ def test_key_not_found_raises_key_error():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar':'ham'})
     with pytest.raises(KeyError):
         dictionary['notthere']
+
+def test_merging_dictionary_can_see_items():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    items = dictionary.items()
+    assert len(items) == 2

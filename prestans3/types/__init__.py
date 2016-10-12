@@ -9,22 +9,41 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import functools
-from prestans3.utils import with_metaclass
-import pprint
+
+from prestans3.utils import with_metaclass, MergingProxyDictionary
 
 
-class _OneWayGraph(dict):
-    def __missing__(self, cls):
+class _MergingDictionaryWithOwnValues(MergingProxyDictionary):
+    def __init__(self, of_type, dictionary):
+        """
+
+        :param of_type:
+        :type of_type: T <= |ImmutableType|
+        :param MergingProxyDictionary dictionary:
+        """
+        self._of_type = of_type
+        self._own_values = {}
+        self._inherited_values = dictionary
+        super(_MergingDictionaryWithOwnValues, self).__init__(self._own_values, self._inherited_values)
+
+    def __setitem__(self, key, value):
+        self._own_values[key] = value
+
+
+class _LazyGraph(dict):
+    def __missing__(self, prestans_type):
         _property_rules = {}
-        for base in list(reversed(cls.__bases__)):
+        new_dict = MergingProxyDictionary(*[_property_rule_graph[base]
+                                            for base in prestans_type.__bases__ if issubclass(base, ImmutableType)])
+        for base in list(reversed(prestans_type.__bases__)):
             if issubclass(base, ImmutableType):
                 _property_rules.update(_property_rule_graph[base])
-        self[cls] = _property_rules
+        self[prestans_type] = _MergingDictionaryWithOwnValues(prestans_type, new_dict)
         # super(_OneWayGraph, self).__setitem__(cls, _property_rules)
-        return _property_rules
+        return self[prestans_type]
 
 
-_property_rule_graph = _OneWayGraph()
+_property_rule_graph = _LazyGraph()
 
 
 class _PropertyRules(object):
@@ -34,7 +53,6 @@ class _PropertyRules(object):
 
 
 class _PrestansTypeMeta(type):
-
     property_rules = _PropertyRules()
 
 
@@ -154,7 +172,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         wrapped_pr.configurable = configurable
         if name is None:
             name = wrapped_pr.__name__
-        cls.property_rules.update({name: wrapped_pr})
+        cls.property_rules[name] = wrapped_pr
 
     @classmethod
     def get_property_rule(cls, name):
@@ -178,13 +196,6 @@ class _Property(object):
         self._rules_config = {}
         self._setup_rules_config(kwargs)
         self.required = required
-        # if 'required' not in kwargs:
-        #     kwargs.update(required=lambda is_required, instance: _required(True, instance))
-        # if 'default' not in kwargs:
-        #     kwargs.update(default=lambda default_value, instance: ImmutableType._Property._default(None, instance))
-        # for _ in kwargs.keys():
-        #     pass
-        # todo return ImmutableType whose validate method will call it's validators curried with it's member values
 
     def __set__(self, instance, value):
         """
@@ -300,49 +311,6 @@ class Container(ImmutableType):
 
     # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]
     # func raises |ValidationException| on invalidation
-    _owner_property_rules = {}
-
-    @classmethod
-    def register_owner_property_rule(cls, owner_property_rule, name=None, default=None):
-        """
-        Register an owner type |rule| with all instances and subclasses of this |type|
-
-        :param owner_property_rule: callable to be registered
-        :type owner_property_rule: rule(owner: T <= Container.__class__, instance: ImmutableType, config: any) -> bool
-        :param str name: name of the |rule| as will appear in configuring the |_Property|:
-
-        >>> import prestans3.types as types
-        >>> class MyClass(Model):
-        ...     pass
-        ...
-        >>> def my_owner_property_rule(owner, instance, config):  # assuming config is a bool
-        ...     pass
-        ...
-        >>> MyClass.register_property_rule(my_owner_property_rule, name="custom_owner_prop")
-        >>> class MyOwningClass(Model):
-        ...     sub_owner_prop = MyClass.property(custom_owner_prop=True)  # should now configure the custom_prop
-        """
-        argcount = owner_property_rule.__code__.co_argcount
-        if argcount != 3:
-            func_name = owner_property_rule.__name__
-            func_args = owner_property_rule.__code__.co_varnames
-            raise ValueError(
-                "expected owner_property_rule function with 3 arguments, received function with {} argument(s): {}({})" \
-                    .format(argcount, func_name, ", ".join(func_args)))
-
-        @functools.wraps(owner_property_rule)
-        def wrapped_opr(*args):
-            result = owner_property_rule(*args)
-            # if not isinstance()
-
-        if name is None:
-            name = wrapped_opr.__name__
-        cls._owner_property_rules.update({name: wrapped_opr})
-
-    @classmethod
-    def get_owner_property_rule(cls, name):
-        """ retrieve the owner |rule| by name (``str``) """
-        return cls._owner_property_rules[name]
 
 
 from .boolean import Boolean as Boolean

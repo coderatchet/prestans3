@@ -149,3 +149,6 @@ class MergingProxyDictionary(dict):
 
     def keys(self):
         return self.copy().keys()
+
+    def items(self):
+        return self.copy().items()
