@@ -195,12 +195,21 @@ def test_merging_dictionary_can_return_keys():
     assert 'foo' in keys
     assert 'bar' in keys
 
+
 def test_key_not_found_raises_key_error():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar':'ham'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
     with pytest.raises(KeyError):
+        # noinspection PyStatementEffect
         dictionary['notthere']
+
 
 def test_merging_dictionary_can_see_items():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
     items = dictionary.items()
     assert len(items) == 2
+
+
+def test_pop_item_raises_exception():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    with pytest.raises(AccessError):
+        dictionary.popitem()

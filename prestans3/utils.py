@@ -168,3 +168,7 @@ class MergingProxyDictionary(dict):
 
     def items(self):
         return self.copy().items()
+
+    def popitem(self):
+        raise AccessError(MergingProxyDictionary)
+
