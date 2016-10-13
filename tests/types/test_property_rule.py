@@ -262,3 +262,15 @@ def test_property_default_gets_overriden_when_set():
     model = __MyModel.mutable()
     model.my_string_with_default = 'not default'
     assert model.my_string_with_default == 'not default'
+
+
+def test_property_rule_with_no_config_is_not_run():
+    class _HasRule(ImmutableType):
+        pass
+
+    def __must_have_config(instance, config):
+        raise ValidationException(instance.__class__, "test failure")
+
+    _HasRule.register_property_rule(__must_have_config, name="must")
+    _HasRule()
+

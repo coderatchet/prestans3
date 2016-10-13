@@ -39,6 +39,7 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
                 [self._own_values.__setitem__(k, other[k]) for k in other]
             else:
                 [self._own_values.__setitem__(k, v) for k, v in list(other.items())]
+
         if other:
             _update(other)
         for k, v in list(kwargs.items()):
@@ -125,10 +126,15 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
         # iterate through own rules
         exception_messages = []
+        if config is None:
+            config = {}
         from prestans3.errors import ValidationException
         for rule_name, rule in list(self.__class__.property_rules.items()):
             try:
-                rule(self, rule.default_config if rule.default_config else None)
+                if rule_name in config:
+                    rule(self, config[rule_name])
+                elif rule.default_config:
+                    rule(self, rule.default_config)
             except ValidationException as ex:
                 exception_messages += ex.messages
         if exception_messages:
@@ -138,7 +144,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
     #
     @classmethod
-    def from_value(cls, value, *args, **kwargs):
+    def from_value(cls, value):
         """
         returns the wrapped instance of this |type| from a given value. subclasses of |ImmutableType| must override this
         method if prestans should attempt to assign a |_Property| to an object other than an instance of this class.
