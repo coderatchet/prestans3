@@ -33,15 +33,15 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
         """ allows for setting own values (not inherited values)"""
         self._own_values[key] = value
 
-    def update(self, E=None, **F):
-        def _update(E):
-            if 'keys' in E.__class__.__dict__:
-                [self._own_values.__setitem__(k, E[k]) for k in E]
+    def update(self, other=None, **kwargs):
+        def _update(other):
+            if 'keys' in other.__class__.__dict__:
+                [self._own_values.__setitem__(k, other[k]) for k in other]
             else:
-                [self._own_values.__setitem__(k, v) for k, v in list(E.items())]
-        if E:
-            _update(E)
-        for k, v in list(F.items()):
+                [self._own_values.__setitem__(k, v) for k, v in list(other.items())]
+        if other:
+            _update(other)
+        for k, v in list(kwargs.items()):
             self[k] = v
 
     def is_own_key(self, key):

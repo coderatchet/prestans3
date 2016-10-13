@@ -58,34 +58,3 @@ def test_update_behaves_like_normal_dict_update():
     assert dictionary['bar'] == 'ham'
     assert dictionary['foo'] == merging_dictionary['foo']
     assert dictionary['bar'] == merging_dictionary['bar']
-
-#
-# def test_required_returns_true_if_provided_instance_is_none_and_config_is_False():
-#     assert _required(None, False)
-#
-# def test_required_returns_false_if_provided_instance_is_false_and_config_is_True():
-#     assert not _required(None, True)
-
-# def test_invalid_instantiated_type_raises_exception():
-#     # depends on validation conditions present
-#     pass
-#
-# def test_immutable_model_cant_set_attributes():
-#     # depends on above test
-#     my_class = MyClass()
-#     with pytest.raises(Exception):
-#         my_class.some_string = "jum"
-#
-#
-# def test_prestans_attribute_is_instance_of_ImmutbaleType():
-#     my_class = MyClass()
-#     my_class.some_string = "jum"
-#     assert isinstance(my_class.some_string, String)
-#
-# def test_required_rule():
-#     class MyModel(Model):
-#         some_string = String.property(required=True)
-#
-#     my_class = MyModel()
-#     validation = my_class.validate()
-#     # assert validation is not None and not validation
