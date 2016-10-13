@@ -123,9 +123,9 @@ def test_model_validation_exception_iters_own_messages_and_attribute_messages():
     def invalid_format(name, message):
         return '{} is invalid: ["{}"]'.format(name, message)
 
-    assert invalid_format(__Model.__name__, "own message") in str(exception[0])
-    assert invalid_format("{}.{}".format(__Model.__name__, 'my_string'), "invalid") in str(exception[1])
-    assert invalid_format("{}.{}".format(__Model.__name__, 'my_int'), "invalid") in str(exception[2])
+    assert invalid_format(__Model.__name__, "own message") in str(exception)
+    assert invalid_format("{}.{}".format(__Model.__name__, 'my_string'), "invalid") in str(exception)
+    assert invalid_format("{}.{}".format(__Model.__name__, 'my_int'), "invalid") in str(exception)
 
 
 def test_immutable_type_cannot_set_prestans_attributes():
@@ -136,3 +136,38 @@ def test_immutable_type_cannot_set_prestans_attributes():
     with pytest.raises(AccessError) as error:
         model.my_string = "should not work"
     assert 'attempted to set value of prestans3 attribute on an immutable Model' in str(error.value)
+
+
+def test_model_can_provide_initial_values_through_init_method():
+    class _Model(Model):
+        my_string = String.property()
+        my_int = Integer.property()
+
+        def __init__(self, my_string, my_int):
+            super(_Model, self).__init__({'my_string': my_string, 'my_int': my_int})
+
+    model = _Model('string', 1)
+    assert model.my_int == 1
+    assert model.my_string == 'string'
+
+
+def test_cannot_del_prestans_attribute_on_immutable_model():
+    class _Model(Model):
+        def __init__(self, string):
+            super(_Model, self).__init__({'my_string': 'cannot delete'})
+
+        my_string = String.property(required=False)
+
+    model = _Model('cannot delete')
+    assert model.my_string == 'cannot delete'
+    with pytest.raises(AccessError) as error:
+        del model.my_string
+    assert 'attempted to delete value of prestans3 attribute on an immutable Model' in str(error.value)
+
+def test_cannot_pass_non_prestans_attributes_to_super_init_method():
+    class _Model(Model):
+        def __init__(self):
+            super(_Model, self).__init__({'not_an_attribute': 'doesn\'t matter'})
+
+    with pytest.raises(ValueError):
+        _Model()

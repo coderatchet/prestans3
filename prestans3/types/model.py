@@ -13,7 +13,7 @@ import re
 
 from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
 from prestans3.types import Container, _Property
-from prestans3.utils import is_str, inject_class
+from prestans3.utils import is_str, inject_class, MergingProxyDictionary
 
 
 class AttributeValidationExceptionSummary(ValidationExceptionSummary):
@@ -101,6 +101,20 @@ class Model(Container):
     Base class of complex |types|. may contain other |Models| and/or |Scalars|.
     """
 
+    def __init__(self, initial_values=None, **kwargs):
+        self._prestans_attributes = {}
+        if initial_values is not None:
+            for key, value in list(initial_values.items()):
+                if self.is_prestans_attribute(key):
+                    self.__class__.__dict__[key].__set__(
+                        self._prestans_attributes,
+                        (key, value)
+                    )
+                else:
+                    raise ValueError("Model.__init__ called with an invalid initial_values parameter: "
+                                     "{} is not a configured prestans attribute of {}".format(key, self.__class__.__name__))
+        super(Model, self).__init__(**kwargs)
+
     def __setattr__(self, key, value):
 
         """
@@ -120,7 +134,7 @@ class Model(Container):
 
     def __delattr__(self, item):
         if self.is_prestans_attribute(item):
-            raise AccessError("attempted to delete value of prestans3 attribute on an immutable Model, "
+            raise AccessError(self.__class__, "attempted to delete value of prestans3 attribute on an immutable Model, "
                               "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
@@ -172,10 +186,6 @@ class Model(Container):
         else:
             return object.__getattribute__(self, item)
 
-    def __init__(self, **kwargs):
-        self._prestans_attributes = {}
-        super(Model, self).__init__(**kwargs)
-
     @property
     def prestans_attributes(self):
         """
@@ -183,7 +193,7 @@ class Model(Container):
 
         :rtype: dict[str -> |ImmutableType|\ ]
         """
-        return self._prestans_attributes
+        return MergingProxyDictionary(self._prestans_attributes)
 
     @classmethod
     def mutable(cls, **kwargs):
