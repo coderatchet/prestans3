@@ -256,8 +256,6 @@ class _Property(object):
         :param value: a subclass or coercible value of this class's |type|\ .
         :type value: T <= G
         """
-        # _prestans_attributes.update()
-        print("set value: {}".format(value))
         # if value is a ImmutableType then set it otherwise construct it from variable
         if isinstance(value[1], self._of_type):
             instance[value[0]] = value[1]

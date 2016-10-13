@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    prestans.types.string
+    prestans.types.p_time
     ~~~~~~~~~~~~~~~~~~~~~
     
     A WSGI compliant REST micro-framework.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    tests.types.test_errors
-    ~~~~~~~~~~~~~~
+    tests.test_errors
+    ~~~~~~~~~~~~~~~~~
 
     A WSGI compliant REST micro-framework.
 

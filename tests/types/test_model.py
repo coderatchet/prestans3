@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+    tests.types.test_model
+    ~~~~~~~~~~~~~~~~~~~~~~
+
+    A WSGI compliant REST micro-framework.
+
+    :copyright: (c) 2016 Anomaly Software
+    :license: Apache 2.0, see LICENSE for more details.
+"""
 import pytest
 from prestans3.errors import ValidationException
 from prestans3.types import Integer, String, Model
@@ -75,7 +85,7 @@ def test_nested_exception_message_correctly_constructed_from_root_exception_clas
     validation_exception = ValidationException(String, "error with string")
     sub_validation_exception = ModelValidationException(MyModel, ('some_string', validation_exception))
     super_validation_exception = ModelValidationException(MySuperModel, ('some_model', sub_validation_exception))
-    expected_message = 'MySuperModel.some_model.some_string was invalid: ["error with string"]'
+    expected_message = 'MySuperModel.some_model.some_string is invalid: ["error with string"]'
     assert expected_message == str(super_validation_exception[0])
 
 

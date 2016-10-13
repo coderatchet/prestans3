@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+    tests.types.test_property_rule
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+    A WSGI compliant REST micro-framework.
+
+    :copyright: (c) 2016 Anomaly Software
+    :license: Apache 2.0, see LICENSE for more details.
+"""
 import pytest
 import pytest_mock
 from prestans3.errors import InvalidMethodUseError, ValidationException
@@ -273,4 +283,3 @@ def test_property_rule_with_no_config_is_not_run():
 
     _HasRule.register_property_rule(__must_have_config, name="must")
     _HasRule()
-
