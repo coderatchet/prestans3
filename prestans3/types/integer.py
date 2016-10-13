@@ -40,6 +40,12 @@ def _max(instance, config):
                                   "{} property is {}, however the configured maximum value is {}".format(
                                       instance.__class__, instance, config))
 
+def _choices(instance, config):
+    if instance not in config:
+        raise ValidationException(instance.__class__,
+                                  "{} property is {}, valid choices are [{}]"
+                                  .format(instance.__class__, instance, ", ".join([str(item) for item in config])))
 
 Integer.register_property_rule(_min, name="min")
 Integer.register_property_rule(_max, name="max")
+Integer.register_property_rule(_choices, name="choices")

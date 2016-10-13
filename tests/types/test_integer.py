@@ -81,4 +81,19 @@ def test_max_property_rule_works():
     with pytest.raises(ValidationException) as ex:
         model.validate()
     assert "{} property is {}, however the configured maximum value is {}".format(
-        Integer, 2, 1)
+        Integer, 2, 1) in str(ex)
+
+
+def test_choices_property_rule_works():
+    class __Model(Model):
+        my_int = Integer.property(choices=[1, 5])
+
+    model = __Model.mutable()
+    model.my_int = 1
+    model.validate()
+    model.my_int = 5
+    model.validate()
+    model.my_int = 3
+    with pytest.raises(ValidationException) as ex:
+        model.validate()
+    assert "{} property is {}, valid choices are {}".format(Integer, 3, '[1, 5]') in str(ex)

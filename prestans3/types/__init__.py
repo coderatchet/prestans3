@@ -60,13 +60,9 @@ class _LazyGraph(dict):
         :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
                  class value on this graph.
         """
-        _property_rules = {}
         merging_proxy_dictionary = MergingProxyDictionary(*[_property_rule_graph[base]
                                                             for base in prestans_type.__bases__ if
                                                             issubclass(base, ImmutableType)])
-        for base in list(reversed(prestans_type.__bases__)):
-            if issubclass(base, ImmutableType):
-                _property_rules.update(_property_rule_graph[base])
         self[prestans_type] = _MergingDictionaryWithMutableOwnValues(merging_proxy_dictionary)
         return self[prestans_type]
 
