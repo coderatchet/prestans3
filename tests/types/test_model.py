@@ -9,7 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
-from prestans3.errors import ValidationException
+from prestans3.errors import ValidationException, AccessError
 from prestans3.types import Integer, String, Model
 from prestans3.types.model import ModelValidationException
 
@@ -108,3 +108,31 @@ def test_can_make_mutable_version_of_model_class():
 def test_cannot_make_mutable_of_base_model_class():
     with pytest.raises(TypeError):
         Model.mutable()
+
+
+def test_model_validation_exception_iters_own_messages_and_attribute_messages():
+    class __Model(Model):
+        my_string = String.property()
+        my_int = Integer.property()
+
+    exception = ModelValidationException(__Model)
+    exception.add_validation_messages(["own message"])
+    exception.add_validation_exception("my_string", ValidationException(String, "invalid"))
+    exception.add_validation_exception("my_int", ValidationException(Integer, "invalid"))
+
+    def invalid_format(name, message):
+        return '{} is invalid: ["{}"]'.format(name, message)
+
+    assert invalid_format(__Model.__name__, "own message") in str(exception[0])
+    assert invalid_format("{}.{}".format(__Model.__name__, 'my_string'), "invalid") in str(exception[1])
+    assert invalid_format("{}.{}".format(__Model.__name__, 'my_int'), "invalid") in str(exception[2])
+
+
+def test_immutable_type_cannot_set_prestans_attributes():
+    class __Model(Model):
+        my_string = String.property(required=False)
+
+    model = __Model()
+    with pytest.raises(AccessError) as error:
+        model.my_string = "should not work"
+    assert 'attempted to set value of prestans3 attribute on an immutable Model' in str(error.value)

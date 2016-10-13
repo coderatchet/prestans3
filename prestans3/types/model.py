@@ -112,7 +112,7 @@ class Model(Container):
         .. _see_stackoverflow: http://stackoverflow.com/a/2425818/735284
         """
         if self.is_prestans_attribute(key):
-            raise AccessError("attempted to set value of prestans3 attribute on an immutable Model, "
+            raise AccessError(self.__class__, "attempted to set value of prestans3 attribute on an immutable Model, "
                               "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
