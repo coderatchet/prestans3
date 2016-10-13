@@ -231,3 +231,4 @@ def test_clear_raises_exception():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
     with pytest.raises(AccessError):
         dictionary.clear()
+

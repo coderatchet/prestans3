@@ -1,7 +1,9 @@
 import pytest
 import pytest_mock
-from prestans3.errors import InvalidMethodUseError
+from prestans3.errors import InvalidMethodUseError, ValidationException
 from prestans3.types import ImmutableType, Container, _Property
+from prestans3.types import Model
+from prestans3.types import String
 
 
 class MyClass(ImmutableType):
@@ -77,23 +79,6 @@ def test_can_name_property_rule():
     assert __CustomClass2.get_property_rule("custom_prop").__name__ == my_custom_property_rule_nameable.__name__
 
 
-def test_can_add_rule_config(mocker):
-    """
-    :param pytest_mock.MockFixture mocker:
-    """
-
-    class __CustomClass(ImmutableType):
-        pass
-
-    mocker.patch('prestans3.types._Property')
-    _property = _Property(__CustomClass)
-    _property._of_type = mocker.Mock()
-    mocker.patch.dict(_property.property_type.property_rules, {"one_rule": lambda _x, _y: None})
-    _property._add_rule_config("one_rule", "config")
-    assert "one_rule" in _property.rules_config
-    assert "config" == _property.rules_config['one_rule']
-
-
 def test_can_find_config_by_rule_name(mocker):
     """
     :param pytest_mock.MockFixture mocker:
@@ -102,9 +87,10 @@ def test_can_find_config_by_rule_name(mocker):
     class __CustomClass(ImmutableType):
         pass
 
+    __CustomClass.register_property_rule(lambda _x, _y: None, name="one_rule")
+
     mocker.patch('prestans3.types._Property')
-    _property = _Property(__CustomClass)
-    mocker.patch.dict(_property._rules_config, {"one_rule": "confighere"})
+    _property = _Property(__CustomClass, one_rule='confighere')
     assert 'confighere' == _property.get_rule_config('one_rule')
 
 
@@ -132,19 +118,19 @@ def test_can_set_rule_as_non_configurable():
     assert not __CustomClassWithNonConfigurable.get_property_rule("non_configurable_rule").configurable
 
 
-def test_setting_configuration_for_non_existing_rule_raises_value_error():
+def test_check_rule_config_for_non_existing_rule_raises_value_error():
     class __CustomClass(ImmutableType):
         pass
 
     __CustomClass.register_property_rule(lambda _x, _y: None, name="exists")
     _prop = __CustomClass.property()
-    _prop._add_rule_config("exists", "should work")
+    _prop._check_rule_config("exists", "should work")
     with pytest.raises(ValueError) as error:
-        _prop._add_rule_config("doesnt exist", "should throw error")
+        _prop._check_rule_config("doesnt exist", "should throw error")
     assert "{} is not a registered rule of type {}".format("doesnt exist", __CustomClass.__name__) in str(error.value)
 
 
-def test_adding_configuration_for_non_configurable_property_raises_value_error():
+def test_check_rules_config_for_non_configurable_property_raises_value_error():
     class __CustomClassWithNonConfigurable(ImmutableType):
         pass
 
@@ -153,7 +139,8 @@ def test_adding_configuration_for_non_configurable_property_raises_value_error()
 
     non_configurable_property = __CustomClassWithNonConfigurable.property()
     with pytest.raises(ValueError) as error:
-        non_configurable_property._add_rule_config("non_configurable_rule", "doesn't matter, should throw an error")
+        non_configurable_property._check_rules_config(
+            {"non_configurable_rule": "doesn't matter, should throw an error"})
     assert "non_configurable_rule is a non-configurable rule in class {}, (see {}.{}())" \
                .format(__CustomClassWithNonConfigurable.__name__,
                        ImmutableType.__name__,
@@ -184,19 +171,6 @@ def test_can_setup_non_configurable_rule_on_init():
 
     _property = __CustomClass.property()
     "non-configurable_default" == _property.get_rule_config("non_configurable")
-
-
-def test_setting_non_configurable_after_initialization_causes_value_error():
-    class __CustomClass(ImmutableType):
-        pass
-
-    def non_configurable(instance, config):
-        pass
-
-    __CustomClass.register_property_rule(non_configurable, default="non-configurable-default", configurable=False)
-    _property = __CustomClass.property()
-    with pytest.raises(InvalidMethodUseError) as error:
-        _property._setup_non_configurable_rule_config("non_configurable", "throws error")
 
 
 def test_unrelated_class_does_not_have_unrelated_rule():
@@ -250,3 +224,25 @@ def test_registering_rule_after_property_rules_accessed_correctly_reflects_chang
     assert "my_sub_class_rule" in __MySubClass.property_rules
     assert "injected_after_access" in __MySubClass.property_rules
     assert "my_class_rule" in __MySubClass.property_rules
+
+
+def test_required_attributes_on_class_get_checked_on_validation():
+    class __MyModel(Model):
+        my_string = String.property(required=True)
+        my_unrequired_string = String.property(required=False)
+
+    my_model = __MyModel.mutable()
+    my_model.my_string = "some_string"
+
+    my_model.validate()
+
+
+def test_required_attributes_raises_error_if_not_present():
+    class __MyModel(Model):
+        my_string = String.property(required=True)
+        my_unrequired_string = String.property(required=False)
+
+    my_model = __MyModel.mutable()
+
+    with pytest.raises(ValidationException):
+        my_model.validate()

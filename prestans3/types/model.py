@@ -113,7 +113,7 @@ class Model(Container):
         """
         if self.is_prestans_attribute(key):
             raise AccessError("attempted to set value of prestans3 attribute on an immutable Model, "
-                            "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+                              "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
             super(Model, self).__setattr__(key, value)
@@ -121,28 +121,31 @@ class Model(Container):
     def __delattr__(self, item):
         if self.is_prestans_attribute(item):
             raise AccessError("attempted to delete value of prestans3 attribute on an immutable Model, "
-                            "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+                              "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
             super(Model, self).__delattr__(item)
 
-    def validate(self):
+    def validate(self, **kwargs):
         validation_exception = None
-        for key, attribute in self.prestans_attributes:
+        for p_attr_name, p_attr in list(self.prestans_attribute_properties().items()):
             try:
-                attribute.validate()
+                attr = self.__getattribute__(p_attr_name)  # T <= ImmutableType
+                attr.validate(p_attr.rules_config)
+            except KeyError:
+                pass
             except ValidationException as error:
                 if validation_exception is None:
                     validation_exception = ModelValidationException(self.__class__)
-                validation_exception.add_validation_exception(key, error)
+                validation_exception.add_validation_exception(p_attr, error)
         try:
-            super(Model, self).validate()
+            super(Model, self).validate(self.__class__.default_rules_config())
         except ValidationException as error:
             if validation_exception is None:
                 validation_exception = ModelValidationException(self.__class__)
             validation_exception.add_validation_messages(error.messages)
+        if validation_exception:
             raise validation_exception
-
 
     @classmethod
     def is_prestans_attribute(cls, key):
@@ -193,7 +196,50 @@ class Model(Container):
             return new_mutable_model_subclass(validate_immediately=False, **kwargs)
 
     def mutable_copy(self):
-        pass
+        raise NotImplementedError
+
+    @classmethod
+    def prestans_attribute_properties(cls):
+        return {name: p_property for name, p_property in list(cls.__dict__.items()) if
+                isinstance(p_property, _Property)}
+
+    @classmethod
+    def get_prestans_attribute_property(cls, attr_name):
+        p_attrs = cls.prestans_attribute_properties()
+        if attr_name in cls.__dict__ and attr_name not in p_attrs:
+            raise AttributeError(
+                "{} is a normal python attribute, not a {} instance".format(attr_name, _Property.__name__))
+        else:
+            return p_attrs[attr_name]
+
+
+def check_required_attributes(instance, config=True):
+    """ iterates through all prestans attributes and checks if required attributes are not None """
+    if config:
+        p_attrs = instance.__class__.prestans_attribute_properties()
+        validation_exception = None
+        for p_attr_name, p_attr in list(p_attrs.items()):
+            if p_attr.required:
+                try:
+                    getattribute__ = instance.__getattribute__(p_attr_name)
+                    if not getattribute__:
+                        if validation_exception is None:
+                            validation_exception = ValidationException(instance.__class__)
+                        validation_exception.add_validation_message(
+                            "required prestans attribute '{}' is None".format(p_attr_name))
+                except KeyError:
+                    if validation_exception is None:
+                        validation_exception = ValidationException(instance.__class__)
+                    validation_exception.add_validation_message(
+                        "required prestans attribute '{}' does not exist on this instance of {}".format(
+                            p_attr_name, instance.__class__.__name__)
+                    )
+        if validation_exception:
+            raise validation_exception
+
+
+Model.register_property_rule(check_required_attributes, name="check_required_attributes", configurable=False,
+                             default=True)
 
 
 # noinspection PyAbstractClass

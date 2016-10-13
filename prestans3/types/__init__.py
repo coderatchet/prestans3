@@ -31,6 +31,20 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
         """ allows for setting own values (not inherited values)"""
         self._own_values[key] = value
 
+    def update(self, E=None, **F):
+        def _update(E):
+            if 'keys' in E.__class__.__dict__:
+                [self._own_values.__setitem__(k, E[k]) for k in E]
+            else:
+                [self._own_values.__setitem__(k, v) for k, v in list(E.items())]
+        if E:
+            _update(E)
+        for f in F:
+            _update(f)
+
+    def is_own_key(self, key):
+        return key in self._own_values
+
 
 class _LazyGraph(dict):
     def __missing__(self, prestans_type):
@@ -51,7 +65,6 @@ class _LazyGraph(dict):
             if issubclass(base, ImmutableType):
                 _property_rules.update(_property_rule_graph[base])
         self[prestans_type] = _MergingDictionaryWithMutableOwnValues(merging_proxy_dictionary)
-        # super(_OneWayGraph, self).__setitem__(cls, _property_rules)
         return self[prestans_type]
 
 
@@ -101,11 +114,10 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
     __prestans_attribute__ = True
 
-    def validate(self):
+    def validate(self, config=None):
         """
         validates against own |rules| and configured |attribute|\ 's rules.
 
-        :
         :raises: |ValidationException| on invalid state
         """
 
@@ -114,7 +126,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         from prestans3.errors import ValidationException
         for rule_name, rule in list(self.__class__.property_rules.items()):
             try:
-                rule(self)
+                rule(self, rule.default_config if rule.default_config else None)
             except ValidationException as ex:
                 exception_messages += ex.messages
         if exception_messages:
@@ -191,6 +203,17 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         """ retrieve the |rule| by name (``str``) """
         return cls.property_rules[name]
 
+    @classmethod
+    def default_rules_config(cls):
+        """
+        returns any rule_names paired with their default configuration. If no default is present, then no pair is
+        produced.
+
+        :return: dict (str -> any)
+        """
+        return {rule_name: rule.default_config for rule_name, rule in list(cls.property_rules.items())
+                if rule.default_config}
+
 
 class _Property(object):
     """
@@ -199,14 +222,19 @@ class _Property(object):
     setting of prestans attributes on it's containing class
     """
 
+    @property
+    def property_rules(self):
+        return [lambda x, this=self: rule(x, this.get_rule_config(key)) for (key, rule) in
+                list(self._of_type.property_rules.items())]
+
     def __init__(self, of_type, required=True, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
-        self._rules_config = {}
-        self._setup_rules_config(kwargs)
+        self._rules_config = _MergingDictionaryWithMutableOwnValues(of_type.default_rules_config())
+        self._check_rules_config(kwargs)
         self.required = required
 
     def __set__(self, instance, value):
@@ -252,7 +280,7 @@ class _Property(object):
         """
         return self._of_type
 
-    def _add_rule_config(self, key, config):
+    def _check_rule_config(self, key, config):
         """ adds a configuration of a |rule| to this instance """
         try:
             _rule = self.property_type.get_property_rule(key)
@@ -268,35 +296,13 @@ class _Property(object):
         """ find a |rule|\ 's configuration by its name """
         return self._rules_config[key]
 
-    def _setup_rules_config(self, kwargs):
+    def _check_rules_config(self, kwargs):
         """
         merge default rule configs with explicit rule configs in kwargs
 
         :param dict kwargs:
         """
-        defaults = {key: rule.default_config for key, rule in list(self.property_type.property_rules.items()) \
-                    if rule.default_config and rule.configurable}
-        all_config = defaults.copy()
-        all_config.update(kwargs)
-        [self._setup_non_configurable_rule_config(key, rule.default_config) \
-         for key, rule in list(self.property_type.property_rules.items()) \
-         if not rule.configurable and rule.default_config]
-        [self._add_rule_config(key, config) for key, config in list(all_config.items())]
-
-    def _setup_non_configurable_rule_config(self, key, config):
-        try:
-            self.property_type.get_property_rule(key)
-        except KeyError:
-            raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
-
-        if key in self.rules_config:
-            from prestans3.errors import InvalidMethodUseError
-            raise InvalidMethodUseError(self.__class__._setup_non_configurable_rule_config,
-                                        "This is an internal method and shouldn't be called directly, "
-                                        "if you wish to make a rule configurable, use the configurable kwarg in "
-                                        "the {}.{}() function".format(ImmutableType.__name__,
-                                                                      ImmutableType.register_property_rule.__name__))
-        self._rules_config.update({key: config})
+        [self._check_rule_config(key, config) for key, config in list(kwargs.items())]
 
 
 # noinspection PyAbstractClass

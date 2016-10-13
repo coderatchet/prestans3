@@ -1,8 +1,9 @@
 import pytest
 
-from prestans3.types import String, _Property, ImmutableType
+from prestans3.types import String, _Property, ImmutableType, _MergingDictionaryWithMutableOwnValues
 
 from prestans3.types import Model
+from prestans3.utils import MergingProxyDictionary
 
 
 class MyClass(Model):
@@ -11,6 +12,26 @@ class MyClass(Model):
 
 def test_model_class_can_contain_instances_of_MutableType_Property():
     assert isinstance(MyClass.__dict__['some_string'], _Property)
+
+def test_default_rules_config_returns_correctly():
+    class __MyType(ImmutableType):
+        pass
+
+    __MyType.register_property_rule(lambda _x, _y: None, name="foo", default="baz")
+    __MyType.register_property_rule(lambda _x, _y: None, name="bar")
+
+    default_config = __MyType.default_rules_config()
+    assert 'foo' in default_config
+    assert 'bar' not in default_config
+    assert default_config['foo'] == 'baz'
+
+def test_merging_dictionary_with_own_mutable_values_returns_correct_value_for_is_own_key():
+    dictionary = _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary({'foo': 'spam'}, {'bar': 'baz'}))
+    dictionary['bar'] = 'ham'
+    assert dictionary.is_own_key('bar')
+    assert not dictionary.is_own_key('foo')
+    assert dictionary['bar'] == 'ham'
+
 
 #
 # def test_required_returns_true_if_provided_instance_is_none_and_config_is_False():
