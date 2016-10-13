@@ -127,7 +127,7 @@ class MergingProxyDictionary(dict):
 
     def __setitem__(self, key, value):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(key)
+        raise AccessError(self.__class__, key)
 
     def __contains__(self, item):
         in_me = item in self._me
@@ -137,7 +137,7 @@ class MergingProxyDictionary(dict):
 
     def __delitem__(self, key):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(key)
+        raise AccessError(self.__class__, key)
 
     def __copy__(self):
         return self.copy()
@@ -158,7 +158,7 @@ class MergingProxyDictionary(dict):
 
     def update(self, other=None, **kwargs):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(MergingProxyDictionary)
+        raise AccessError(self.__class__)
 
     def values(self):
         return self.copy().values()
@@ -171,16 +171,16 @@ class MergingProxyDictionary(dict):
 
     def popitem(self):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(MergingProxyDictionary)
+        raise AccessError(self.__class__)
 
     def setdefault(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(MergingProxyDictionary)
+        raise AccessError(self.__class__)
 
     def pop(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(MergingProxyDictionary)
+        raise AccessError(self.__class__)
 
     def clear(self):
         """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(MergingProxyDictionary)
+        raise AccessError(self.__class__)

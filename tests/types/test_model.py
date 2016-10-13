@@ -164,6 +164,7 @@ def test_cannot_del_prestans_attribute_on_immutable_model():
         del model.my_string
     assert 'attempted to delete value of prestans3 attribute on an immutable Model' in str(error.value)
 
+
 def test_cannot_pass_non_prestans_attributes_to_super_init_method():
     class _Model(Model):
         def __init__(self):
@@ -171,3 +172,37 @@ def test_cannot_pass_non_prestans_attributes_to_super_init_method():
 
     with pytest.raises(ValueError):
         _Model()
+
+
+def test_can_retrieve_prestans_attributes_via_properties():
+    class _Model(Model):
+        my_string = String.property()
+
+        def __init__(self):
+            super(_Model, self).__init__({'my_string': 'default'})
+
+    model = _Model()
+    attributes = model.prestans_attributes
+    assert attributes['my_string'] == 'default'
+
+
+def test_cannot_mutate_prestans_attributes_for_immutable_model():
+    class _Model(Model):
+        my_string = String.property()
+
+        def __init__(self):
+            super(_Model, self).__init__({'my_string': 'default'})
+
+    model = _Model()
+    attributes = model.prestans_attributes
+    with pytest.raises(AccessError):
+        attributes['my_string'] = 'should not work'
+
+# def test_can_mutate_prestans_attributes_for_mutable_model():
+#     class _Model(Model):
+#         my_string = String.property()
+#         def __init__(self):
+#             super(_Model, self).__init__({'my_string': 'default'})
+#
+#     model = _Model.mutable()
+#     attributes = model.prestans_attributes
