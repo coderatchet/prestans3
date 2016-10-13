@@ -14,6 +14,12 @@ from . import Number
 
 
 class Integer(int, Number):
+
+    @classmethod
+    def from_value(cls, integer):
+        if isinstance(integer, Integer):
+            return integer
+
     # @property_rule
     @classmethod
     def _min(cls, min_value=0, instance=None):
