@@ -137,7 +137,7 @@ class Model(Container):
             except ValidationException as error:
                 if validation_exception is None:
                     validation_exception = ModelValidationException(self.__class__)
-                validation_exception.add_validation_exception(p_attr, error)
+                validation_exception.add_validation_exception(p_attr_name, error)
         try:
             super(Model, self).validate(self.__class__.default_rules_config())
         except ValidationException as error:

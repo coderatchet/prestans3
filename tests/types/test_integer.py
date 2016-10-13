@@ -1,8 +1,9 @@
 """ coding=utf-8 """
 
 import pytest
+from prestans3.errors import ValidationException
 
-from prestans3.types import Integer
+from prestans3.types import Integer, Model
 
 
 def test_can_create_integer():
@@ -36,6 +37,7 @@ def test_from_value_with_native_int_succeeds():
     value = Integer.from_value(integer)
     assert value == Integer(1)
 
+
 def test_from_value_raises_value_error_on_non_int_subclass():
     with pytest.raises(ValueError):
         Integer.from_value('string')
@@ -44,6 +46,17 @@ def test_from_value_raises_value_error_on_non_int_subclass():
     with pytest.raises(ValueError):
         Integer.from_value(0.3)
 
+
+def test_min_property_rule_works():
+    class __Model(Model):
+        my_int = Integer.property(min=1)
+
+    model = __Model.mutable()
+    model.my_int = 1
+    model.validate()
+    model.my_int = 0
+    with pytest.raises(ValidationException):
+        model.validate()
 
 #
 # # noinspection PyTypeChecker

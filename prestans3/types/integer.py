@@ -10,6 +10,8 @@
 """
 import pprint
 
+from prestans3.errors import ValidationException
+
 from . import Number
 
 
@@ -24,3 +26,9 @@ class Integer(int, Number):
 
     def __init__(self, value, base=10):
         int.__init__(value, base)
+
+def _min(instance, config):
+    if instance < config:
+        raise ValidationException(instance.__class__, "{} property is {}, however the configured minimum value is {}".format(instance.__class__, instance, config))
+
+Integer.register_property_rule(_min, name="min")
