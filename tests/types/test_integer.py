@@ -24,15 +24,26 @@ def test_integer_behaves_like_native_integer():
     myInt *= 3
     assert myInt == 3
 
+
 def test_from_value_with_integer_instance_succeeds():
     integer = Integer(1)
     value = Integer.from_value(integer)
     assert value == integer
 
+
 def test_from_value_with_native_int_succeeds():
     integer = 1
     value = Integer.from_value(integer)
     assert value == Integer(1)
+
+def test_from_value_raises_value_error_on_non_int_subclass():
+    with pytest.raises(ValueError):
+        Integer.from_value('string')
+    with pytest.raises(ValueError):
+        Integer.from_value({})
+    with pytest.raises(ValueError):
+        Integer.from_value(0.3)
+
 
 #
 # # noinspection PyTypeChecker
