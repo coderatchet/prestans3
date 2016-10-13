@@ -19,11 +19,13 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
         own values.
     """
 
-    def __init__(self, dictionary):
+    def __init__(self, dictionary=None):
         """
         :param MergingProxyDictionary dictionary: the read-only inherited values
         """
         self._own_values = {}
+        if dictionary is None:
+            dictionary = {}
         self._inherited_values = dictionary
         super(_MergingDictionaryWithMutableOwnValues, self).__init__(self._own_values, self._inherited_values)
 

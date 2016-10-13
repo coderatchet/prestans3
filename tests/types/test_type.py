@@ -32,6 +32,19 @@ def test_merging_dictionary_with_own_mutable_values_returns_correct_value_for_is
     assert not dictionary.is_own_key('foo')
     assert dictionary['bar'] == 'ham'
 
+def test_direct_instance_of_immutable_type_raises_error_on_from_value():
+    with pytest.raises(NotImplementedError):
+        ImmutableType().from_value('irrelevant')
+
+def test_update_on_merging_dict_with_mutable_own_values_can_accept_dict_lick_with_no_keys():
+    class DictLike(object):
+        def items(self):
+            yield ('foo', 'bar')
+
+    dictionary = _MergingDictionaryWithMutableOwnValues()
+    dictionary.update(DictLike())
+    assert 'foo' in dictionary
+    assert dictionary['foo'] == 'bar'
 
 #
 # def test_required_returns_true_if_provided_instance_is_none_and_config_is_False():
