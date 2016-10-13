@@ -57,3 +57,10 @@ def test_head_retrieves_first_exception_from_validation_exception():
 
 def test_invalid_method_user_error_has_empty_message_if_not_specified():
     assert InvalidMethodUseError(lambda _: None).args[0] == ""
+
+
+def test_str_method_on_exception_produces_valid_string():
+    exception = ValidationException(String)
+    exception.add_validation_messages(["some error", 'other error'])
+    string = str(exception)
+    assert '{} is invalid: ["some error", "other error"]'.format(String.__name__) in string

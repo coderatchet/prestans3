@@ -222,7 +222,7 @@ def check_required_attributes(instance, config=True):
             if p_attr.required:
                 try:
                     getattribute__ = instance.__getattribute__(p_attr_name)
-                    if not getattribute__:
+                    if getattribute__ is None:
                         if validation_exception is None:
                             validation_exception = ValidationException(instance.__class__)
                         validation_exception.add_validation_message(

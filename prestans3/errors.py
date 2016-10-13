@@ -37,7 +37,7 @@ class ValidationExceptionSummary(tuple):
 
         :rtype: str
         """
-        return "{} was invalid: {}".format(self[0], '["{}"]'.format('", "'.join([str(item) for item in self[1]])))
+        return "{} is invalid: {}".format(self[0], '["{}"]'.format('", "'.join([str(item) for item in self[1]])))
 
 
 class ValidationException(Exception):
@@ -92,6 +92,9 @@ class ValidationException(Exception):
         """ adds a list of messages regarding this current |type| (not one of its |attributes|\ ) """
         for item in iterable:
             self.add_validation_message(item)
+
+    def __str__(self):
+        return "[ ({}) ]".format("), (".join([str(summary) for summary in self]))
 
     @property
     def messages(self):
