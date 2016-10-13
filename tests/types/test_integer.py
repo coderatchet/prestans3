@@ -29,6 +29,11 @@ def test_from_value_with_integer_instance_succeeds():
     value = Integer.from_value(integer)
     assert value == integer
 
+def test_from_value_with_native_int_succeeds():
+    integer = 1
+    value = Integer.from_value(integer)
+    assert value == Integer(1)
+
 #
 # # noinspection PyTypeChecker
 # def test_can_use_prestans3_integer_with_native_int_magic_methods_int():

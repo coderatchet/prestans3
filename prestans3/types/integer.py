@@ -19,6 +19,8 @@ class Integer(int, Number):
     def from_value(cls, integer):
         if isinstance(integer, Integer):
             return integer
+        else:
+            return Integer(integer)
 
     # @property_rule
     @classmethod
