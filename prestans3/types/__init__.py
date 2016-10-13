@@ -229,7 +229,7 @@ class _Property(object):
         return [lambda x, this=self: rule(x, this.get_rule_config(key)) for (key, rule) in
                 list(self._of_type.property_rules.items())]
 
-    def __init__(self, of_type, required=True, **kwargs):
+    def __init__(self, of_type, required=True, default=None, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
@@ -238,6 +238,7 @@ class _Property(object):
         self._rules_config = _MergingDictionaryWithMutableOwnValues(of_type.default_rules_config())
         self._check_rules_config(kwargs)
         self.required = required
+        self.default = default
 
     def __set__(self, instance, value):
         """
@@ -268,6 +269,8 @@ class _Property(object):
         # my_locals = locals()
         # print("got value: {}".format(instance._value))
         # return instance._value
+        if instance is None and self.default:
+            return self.default
         return instance
 
     @property

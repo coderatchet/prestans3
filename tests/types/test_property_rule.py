@@ -246,3 +246,19 @@ def test_required_attributes_raises_error_if_not_present():
 
     with pytest.raises(ValidationException):
         my_model.validate()
+
+
+def test_property_may_have_default_value():
+    class __MyModel(Model):
+        my_string_with_default = String.property(default="my string")
+
+    assert __MyModel.my_string_with_default == 'my string'
+
+
+def test_property_default_gets_overriden_when_set():
+    class __MyModel(Model):
+        my_string_with_default = String.property(default="default")
+
+    model = __MyModel.mutable()
+    model.my_string_with_default = 'not default'
+    assert model.my_string_with_default == 'not default'
