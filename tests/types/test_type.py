@@ -46,6 +46,19 @@ def test_update_on_merging_dict_with_mutable_own_values_can_accept_dict_lick_wit
     assert 'foo' in dictionary
     assert dictionary['foo'] == 'bar'
 
+
+# noinspection PyArgumentList
+def test_update_behaves_like_normal_dict_update():
+    values = [{'foo': 'bar'}, {'foo': 'spam', 'bar': 'ham'}]
+    dictionary = {}
+    dictionary.update(values[0], **values[1])
+    merging_dictionary = _MergingDictionaryWithMutableOwnValues()
+    merging_dictionary.update(values[0], **values[1])
+    assert dictionary['foo'] == 'spam'
+    assert dictionary['bar'] == 'ham'
+    assert dictionary['foo'] == merging_dictionary['foo']
+    assert dictionary['bar'] == merging_dictionary['bar']
+
 #
 # def test_required_returns_true_if_provided_instance_is_none_and_config_is_False():
 #     assert _required(None, False)

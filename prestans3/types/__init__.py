@@ -41,8 +41,8 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
                 [self._own_values.__setitem__(k, v) for k, v in list(E.items())]
         if E:
             _update(E)
-        for f in F:
-            _update(f)
+        for k, v in list(F.items()):
+            self[k] = v
 
     def is_own_key(self, key):
         return key in self._own_values
