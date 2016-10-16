@@ -14,6 +14,7 @@ from copy import copy
 import pytest
 from prestans3.errors import AccessError
 from prestans3.utils import is_str, inject_class, MergingProxyDictionary
+import prestans3.utils as utils
 
 
 def test_is_str():
@@ -33,6 +34,7 @@ def test_inject_class():
     assert new_type.__bases__ == (InjectableClass, object)
 
 
+# noinspection PyClassHasNoInit
 def test_can_inject_class_with_more_than_one_subclass():
     class __A(object):
         pass
@@ -53,6 +55,7 @@ def test_can_inject_class_with_more_than_one_subclass():
     assert second_base.__bases__ == (InjectableClass, object)
 
 
+# noinspection PyClassHasNoInit
 def test_can_inject_before_custom_class():
     class __A(object):
         pass
@@ -73,6 +76,7 @@ def test_can_inject_before_custom_class():
     assert new_type.mro() == [new_type, __A, InjectableClass, __B, object]
 
 
+# noinspection PyClassHasNoInit
 def test_can_inject_class_in_complex_hierarchy():
     class __A(object):
         pass
@@ -96,6 +100,7 @@ def test_can_inject_class_in_complex_hierarchy():
     assert len(__new_X.__bases__) == 3
 
 
+# noinspection PyClassHasNoInit
 def test_inject_class_returns_original_class_if_target_base_class_is_not_in_mro():
     class __A(object):
         pass
@@ -110,6 +115,49 @@ def test_inject_class_returns_original_class_if_target_base_class_is_not_in_mro(
     assert __C is inject_class(__C, InjectableClass, __A)
 
 
+def test_injected_class_initializes_with_proper_variables():
+    class __A(object):
+        def __init__(self):
+            self.foo = 'bar'
+
+    class _B(object):
+        def __init__(self):
+            super(_B, self).__init__()
+            self.foo = 'baz'
+
+    new_type = inject_class(_B, __A)
+    thing = new_type()
+    assert thing.foo == 'bar'
+
+    new_type = inject_class(__A, _B)
+    thing = new_type()
+    assert thing.foo == 'baz'
+
+
+# noinspection PyUnusedLocal
+def test_cached_object_returned_when_called_twice_with_same_args(mocker):
+    """
+
+    :param pytest_mock.MockFixture mocker:
+    :return:
+    """
+
+    class __A(object):
+        pass
+
+    class __B(object):
+        pass
+
+    class Proof(object):
+        pass
+
+    mocker.patch.dict(utils.injected_class_cache, {(__B, __A, object, None): Proof})
+    new_type = inject_class(__B, __A)
+    test_type = inject_class(__B, __A)
+    assert test_type == Proof
+
+
+# noinspection PyClassHasNoInit
 def test_can_customize_new_class_name():
     class __A(object):
         pass
@@ -117,11 +165,41 @@ def test_can_customize_new_class_name():
     class __B(__A):
         pass
 
+    # noinspection PyUnusedLocal
     def custom_name(x, _y, _z):
         return "Custom{}".format(x.__name__)
 
     new_type = inject_class(__B, InjectableClass, new_type_name_func=custom_name)
     assert new_type.__name__ == 'Custom{}'.format(__B.__name__)
+
+
+def test_new_type_is_sub_type_of_old_type_for_inject_class():
+    class __A(object):
+        pass
+
+    class __B(object):
+        pass
+
+    new_type = inject_class(__B, __A, target_base_class=object)
+    assert issubclass(new_type, __A)
+    for thing in new_type.__bases__:
+        if thing.__name__ == utils.prefix_with_injected(__A, None, None):
+            assert issubclass(thing, __A)
+            assert __A.mro()
+
+
+def test_with_meta_class():
+    class Meta(type):
+        # noinspection PyMethodParameters,PyUnusedLocal
+        def __init__(cls, name, bases, attrs, **kwargs):
+            cls.attr = 'foo'
+            super(Meta, cls).__init__(name, bases, attrs)
+
+    class WithMeta(utils.with_metaclass(Meta, object)):
+        pass
+
+    # noinspection PyUnresolvedReferences
+    assert WithMeta.attr == 'foo'
 
 
 def test_merging_dictionary_can_exist():
@@ -157,7 +235,7 @@ def test_merging_dictionary_reports_correct_length():
     assert len(dictionary) == 1
 
 
-def test_merging_dictionary_overrides_later_dictionariys_values():
+def test_merging_dictionary_overrides_later_dictionaries_values():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'foo': 'ham'})
     assert dictionary['foo'] == 'spam'
     assert len(dictionary) == 1
@@ -187,20 +265,20 @@ def test_mutating_dictionaries_outside_affects_item_retrieval():
 def test_updating_merging_dictionary_raises_exception():
     dictionary = MergingProxyDictionary()
     with pytest.raises(AccessError):
-        dictionary.update({"shouldnt": "work"})
+        dictionary.update({"shouldn't": "work"})
 
 
 def test_merging_dictionary_can_return_values():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     values = dictionary.values()
     assert len(values) == 2
     assert 'spam' in values
     assert 'ham' in values
-    assert 'thankyouman' not in values
+    assert 'thank you mam' not in values
 
 
 def test_merging_dictionary_can_return_keys():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     keys = dictionary.keys()
     assert len(keys) == 2
     assert 'foo' in keys
@@ -211,35 +289,51 @@ def test_key_not_found_raises_key_error():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
     with pytest.raises(KeyError):
         # noinspection PyStatementEffect
-        dictionary['notthere']
+        dictionary['not there']
 
 
 def test_merging_dictionary_can_see_items():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     items = dictionary.items()
     assert len(items) == 2
 
 
 def test_pop_item_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     with pytest.raises(AccessError):
         dictionary.popitem()
 
 
 def test_set_default_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     with pytest.raises(AccessError):
         dictionary.setdefault('doesnt', 'matter')
 
 
 def test_pop_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     with pytest.raises(AccessError):
         dictionary.pop('doesnt', 'matter')
 
 
 def test_clear_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thankyoumam'})
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     with pytest.raises(AccessError):
         dictionary.clear()
 
+
+def test_get_returns_default_on_no_key():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
+    assert dictionary.get('foo', 'bam') == 'spam'
+    assert dictionary.get('bar', 'bam') == 'ham'
+    assert dictionary.get('baz', 'bam') == 'bam'
+
+
+def test_str_method_functioning():
+    assert "'foo': 'bar'" in str(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))
+    assert "'baz': 'spam'" in str(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))
+
+
+def test_repr_method_functioning():
+    assert "'foo': 'bar'" in repr(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))
+    assert "'baz': 'spam'" in repr(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))

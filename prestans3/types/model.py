@@ -12,8 +12,9 @@
 import re
 
 from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
-from prestans3.types import Container, _Property
-from prestans3.utils import is_str, inject_class, MergingProxyDictionary
+from prestans3.types import Container, _Property, _PrestansTypeMeta, _LazyOneWayGraph, \
+    _MergingDictionaryWithMutableOwnValues
+from prestans3.utils import is_str, inject_class, MergingProxyDictionary, with_metaclass
 
 
 class AttributeValidationExceptionSummary(ValidationExceptionSummary):
@@ -95,14 +96,34 @@ class ModelValidationException(ValidationException):
         self.validation_exceptions.update({key: validation_exception})
 
 
+class _PrestansAttributesProperties(object):
+    def __init__(self, of_type):
+        self._of_type = of_type
+
+    def __get__(self, instance, owner):
+        return _prestans_attribute_properties[self._of_type]
+
+    def __setitem__(self, key, value):
+        return _prestans_attribute_properties[self._of_type].__setitem__(key, value)
+
+
+class _PrestansModelTypeMeta(_PrestansTypeMeta):
+    def __init__(cls, what, bases, attrs, **kwargs):
+        cls.prestans_attribute_properties = _PrestansAttributesProperties(cls)
+        for attr_name, attr in list(attrs.items()):
+            if isinstance(attr, _Property):
+                cls.prestans_attribute_properties[attr_name] = attr
+        super().__init__(what, bases, attrs)
+
+
 # noinspection PyAbstractClass
-class Model(Container):
+class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
     """
     Base class of complex |types|. may contain other |Models| and/or |Scalars|.
     """
 
     def __init__(self, initial_values=None, **kwargs):
-        self._prestans_attributes = {}
+        self._prestans_attributes = _MergingDictionaryWithMutableOwnValues()
         if initial_values is not None:
             for key, value in list(initial_values.items()):
                 if self.is_prestans_attribute(key):
@@ -112,9 +133,9 @@ class Model(Container):
                     )
                 else:
                     raise ValueError("Model.__init__ called with an invalid initial_values parameter: "
-                                     "{} is not a configured prestans attribute of {}".format(key, self.__class__.__name__))
+                                     "{} is not a configured prestans attribute of {}".format(key,
+                                                                                              self.__class__.__name__))
         super(Model, self).__init__(**kwargs)
-
     def __setattr__(self, key, value):
 
         """
@@ -127,7 +148,7 @@ class Model(Container):
         """
         if self.is_prestans_attribute(key):
             raise AccessError(self.__class__, "attempted to set value of prestans3 attribute on an immutable Model, "
-                              "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+                                              "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
             super(Model, self).__setattr__(key, value)
@@ -135,14 +156,14 @@ class Model(Container):
     def __delattr__(self, item):
         if self.is_prestans_attribute(item):
             raise AccessError(self.__class__, "attempted to delete value of prestans3 attribute on an immutable Model, "
-                              "For a mutable {class_name}, call {class_name}.mutable(...)".format(
+                                              "For a mutable {class_name}, call {class_name}.mutable(...)".format(
                 class_name=self.__class__.__name__))
         else:
             super(Model, self).__delattr__(item)
 
     def validate(self, **kwargs):
         validation_exception = None
-        for p_attr_name, p_attr in list(self.prestans_attribute_properties().items()):
+        for p_attr_name, p_attr in self.prestans_attribute_properties:
             try:
                 attr = self.__getattribute__(p_attr_name)  # T <= ImmutableType
                 attr.validate(p_attr.rules_config)
@@ -169,7 +190,7 @@ class Model(Container):
         :param str key: name of the attribute
         :return bool: ``True`` if this is a |attribute| or False if otherwise.
         """
-        if key in cls.__dict__ and isinstance(cls.__dict__[key], _Property):
+        if key in cls.prestans_attribute_properties:
             return True
         else:
             return False
@@ -183,6 +204,8 @@ class Model(Container):
             return object.__getattribute__(self, '__class__').__dict__[item].__get__(
                 object.__getattribute__(self, '_prestans_attributes')[item],
                 object.__getattribute__(self, '_prestans_attributes')[item].__class__)
+        elif item in type(object.__getattribute__(self, '__class__')).__dict__:
+            return type(object.__getattribute__(self, '__class__')).__dict__[item].__get__
         else:
             return object.__getattribute__(self, item)
 
@@ -203,15 +226,10 @@ class Model(Container):
             new_mutable_model_subclass = inject_class(cls, _MutableModel, Model,
                                                       new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
                                                           x.__name__))
-            return new_mutable_model_subclass(validate_immediately=False, **kwargs)
+            return new_mutable_model_subclass(**kwargs)
 
     def mutable_copy(self):
         raise NotImplementedError
-
-    @classmethod
-    def prestans_attribute_properties(cls):
-        return {name: p_property for name, p_property in list(cls.__dict__.items()) if
-                isinstance(p_property, _Property)}
 
     @classmethod
     def get_prestans_attribute_property(cls, attr_name):
@@ -223,10 +241,13 @@ class Model(Container):
             return p_attrs[attr_name]
 
 
+_prestans_attribute_properties = _LazyOneWayGraph(Model)
+
+
 def check_required_attributes(instance, config=True):
     """ iterates through all prestans attributes and checks if required attributes are not None """
     if config:
-        p_attrs = instance.__class__.prestans_attribute_properties()
+        p_attrs = instance.__class__.prestans_attribute_properties
         validation_exception = None
         for p_attr_name, p_attr in list(p_attrs.items()):
             if p_attr.required:
@@ -259,6 +280,10 @@ class _MutableModel(Model):
     |type| that may be mutated. Validation will now not happen on __init__
     """
 
+    def __init__(self, initial_values=None, **kwargs):
+        kwargs.update(validate_immediately=False)
+        super(_MutableModel, self).__init__(initial_values, **kwargs)
+
     def __setattr__(self, key, value):
         """
         |types| maintain an internal dictionary of attribute names to their values for easy demarcation between prestans
@@ -281,3 +306,7 @@ class _MutableModel(Model):
         # else default super behaviour
         else:
             super(_MutableModel, self).__setattr__(key, value)
+
+    @property
+    def prestans_attributes(self):
+        return self._prestans_attributes

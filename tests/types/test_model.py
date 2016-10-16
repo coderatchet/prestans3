@@ -191,18 +191,42 @@ def test_cannot_mutate_prestans_attributes_for_immutable_model():
         my_string = String.property()
 
         def __init__(self):
-            super(_Model, self).__init__({'my_string': 'default'})
+            super(self.__class__, self).__init__({'my_string': 'default'})
 
     model = _Model()
     attributes = model.prestans_attributes
     with pytest.raises(AccessError):
         attributes['my_string'] = 'should not work'
 
-# def test_can_mutate_prestans_attributes_for_mutable_model():
-#     class _Model(Model):
-#         my_string = String.property()
-#         def __init__(self):
-#             super(_Model, self).__init__({'my_string': 'default'})
-#
-#     model = _Model.mutable()
-#     attributes = model.prestans_attributes
+
+def test_subclasses_of_model_inherit_attributes():
+    class _Model(Model):
+        my_string = String.property()
+
+        def __init__(self):
+            super(_Model, self).__init__({'my_string': 'string1'})
+
+    class _SubModel(Model):
+        my_sub_string = String.property()
+
+        def __init__(self):
+            super(_SubModel, self).__init__({'my_sub_string': 'string2'})
+
+    sub_model = _SubModel()
+    attributes = sub_model.prestans_attributes
+    assert 'my_string' in attributes
+    assert 'my_sub_string' in attributes
+    assert attributes['my_string'] == 'string1'
+    assert attributes['my_sub_string'] == 'string2'
+
+
+def test_can_mutate_prestans_attributes_for_mutable_model():
+    class _Model(Model):
+        my_string = String.property()
+
+        def __init__(self):
+            super(self.__class__, self).__init__({'my_string': 'default'})
+
+    model = _Model.mutable()
+    attributes = model.prestans_attributes
+    attributes['my_string'] = 'should work'

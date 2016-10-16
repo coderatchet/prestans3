@@ -49,8 +49,14 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
         return key in self._own_values
 
 
-class _LazyGraph(dict):
-    def __missing__(self, prestans_type):
+class _LazyOneWayGraph(dict):
+    def __init__(self, terminating_type=None, **kwargs):
+        if terminating_type is None:
+            terminating_type = object
+        self._terminating_type = terminating_type
+        super().__init__(**kwargs)
+
+    def __missing__(self, of_type):
         """
         lazily sets and returns the initialized dictionary values for each |type|\ . Each type will have it's own
         mutable values whilst maintaining a proxied read-only reference to it's base class's values using the
@@ -60,14 +66,11 @@ class _LazyGraph(dict):
         :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
                  class value on this graph.
         """
-        merging_proxy_dictionary = MergingProxyDictionary(*[_property_rule_graph[base]
-                                                            for base in prestans_type.__bases__ if
-                                                            issubclass(base, ImmutableType)])
-        self[prestans_type] = _MergingDictionaryWithMutableOwnValues(merging_proxy_dictionary)
-        return self[prestans_type]
-
-
-_property_rule_graph = _LazyGraph()
+        merging_proxy_dictionary = MergingProxyDictionary(*[self[base]
+                                                            for base in of_type.__bases__ if
+                                                            issubclass(base, self._terminating_type)])
+        self[of_type] = _MergingDictionaryWithMutableOwnValues(merging_proxy_dictionary)
+        return self[of_type]
 
 
 class _PropertyRules(object):
@@ -217,6 +220,9 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         """
         return {rule_name: rule.default_config for rule_name, rule in list(cls.property_rules.items())
                 if rule.default_config}
+
+
+_property_rule_graph = _LazyOneWayGraph(ImmutableType)
 
 
 class _Property(object):
