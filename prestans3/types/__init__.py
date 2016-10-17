@@ -10,31 +10,8 @@
 """
 import functools
 
-from prestans3.errors import AccessError, PropertyConfigError
-from prestans3.utils import with_metaclass, MergingProxyDictionary
-
-
-class _LazyOneWayGraph(dict):
-    def __init__(self, terminating_type=None, **kwargs):
-        if terminating_type is None:
-            terminating_type = object
-        self._terminating_type = terminating_type
-        super(_LazyOneWayGraph, self).__init__(**kwargs)
-
-    def __missing__(self, of_type):
-        """
-        lazily sets and returns the initialized dictionary values for each |type|\ . Each type will have it's own
-        mutable values whilst maintaining a proxied read-only reference to it's base class's values using the
-        |MergingProxyDictionary| \.
-        :param of_type: the |type| to find the value for
-        :type of_type: T <= |ImmutableType|
-        :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
-                 class value on this graph.
-        """
-        mro_ = [self[base] for base in of_type.__bases__ if
-                self._terminating_type in base.mro() and base is not of_type]
-        self[of_type] = MergingProxyDictionary({}, *mro_)
-        return self[of_type]
+from prestans3.errors import PropertyConfigError
+from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph
 
 
 class _PropertyRules(object):
@@ -187,7 +164,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
                 if rule.default_config}
 
 
-_property_rule_graph = _LazyOneWayGraph(ImmutableType)
+_property_rule_graph = LazyOneWayGraph(ImmutableType)
 
 
 class _Property(object):

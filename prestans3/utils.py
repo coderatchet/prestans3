@@ -236,3 +236,35 @@ class ImmutableMergingDictionary(MergingProxyDictionary):
     def clear(self):
         """ :raises AccessError: when attempting to call this function. """
         raise AccessError(self.__class__)
+
+
+class LazyOneWayGraph(dict):
+    """
+    A lazily initialized one way graph. node's dependants are resolved if the terminating_type exists in the mro of the
+    base classes.
+    """
+
+    def __init__(self, terminating_type=None):
+        """
+        :param type terminating_type: class of which must exist in a node's bases for it to be included as dependant for
+          each queried class. otherwise each node without the terminating class will exist as a non-depending node
+        """
+        if terminating_type is None:
+            terminating_type = object
+        self._terminating_type = terminating_type
+        super(LazyOneWayGraph, self).__init__()
+
+    def __missing__(self, of_type):
+        """
+        lazily sets and returns the initialized dictionary values for each |type|\ . Each type will have it's own
+        mutable values whilst maintaining a proxied read-only reference to it's base class's values using the
+        |MergingProxyDictionary| \.
+        :param of_type: the |type| to find the value for
+        :type of_type: T <= |ImmutableType|
+        :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
+                 class value on this graph.
+        """
+        mro_ = [self[base] for base in of_type.__bases__ if
+                self._terminating_type in base.mro() and base is not of_type]
+        self[of_type] = MergingProxyDictionary({}, *mro_)
+        return self[of_type]

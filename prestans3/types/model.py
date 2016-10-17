@@ -10,8 +10,8 @@
 """
 
 from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary
-from prestans3.types import Container, _Property, _PrestansTypeMeta, _LazyOneWayGraph
-from prestans3.utils import is_str, inject_class, MergingProxyDictionary, with_metaclass, ImmutableMergingDictionary
+from prestans3.types import Container, _Property, _PrestansTypeMeta
+from prestans3.utils import is_str, inject_class, with_metaclass, ImmutableMergingDictionary, LazyOneWayGraph
 
 
 class ModelValidationException(ValidationException):
@@ -214,7 +214,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
             return p_attrs[attr_name]
 
 
-_prestans_attribute_properties = _LazyOneWayGraph(Model)
+_prestans_attribute_properties = LazyOneWayGraph(Model)
 
 
 def check_required_attributes(instance, config=True):
