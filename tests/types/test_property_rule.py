@@ -97,11 +97,12 @@ def test_can_find_config_by_rule_name(mocker):
     class __CustomClass(ImmutableType):
         pass
 
-    __CustomClass.register_property_rule(lambda _x, _y: None, name="one_rule")
+    __CustomClass.register_property_rule(lambda _x, _y: None, name="one_rule", default="config here")
 
     mocker.patch('prestans3.types._Property')
-    _property = _Property(__CustomClass, one_rule='confighere')
-    assert 'confighere' == _property.get_rule_config('one_rule')
+    _property = _Property(__CustomClass)
+    # noinspection PyProtectedMember
+    assert 'config here' == _property.get_rule_config('one_rule')
 
 
 # noinspection PyAbstractClass
@@ -134,12 +135,13 @@ def test_check_rule_config_for_non_existing_rule_raises_value_error():
 
     __CustomClass.register_property_rule(lambda _x, _y: None, name="exists")
     _prop = __CustomClass.property()
-    _prop._check_rule_config("exists", "should work")
+    _prop._get_and_check_rule_config("exists", "should work")
     with pytest.raises(ValueError) as error:
-        _prop._check_rule_config("doesnt exist", "should throw error")
+        _prop._get_and_check_rule_config("doesnt exist", "should throw error")
     assert "{} is not a registered rule of type {}".format("doesnt exist", __CustomClass.__name__) in str(error.value)
 
 
+# noinspection PyAbstractClass
 def test_check_rules_config_for_non_configurable_property_raises_value_error():
     class __CustomClassWithNonConfigurable(ImmutableType):
         pass
@@ -149,7 +151,7 @@ def test_check_rules_config_for_non_configurable_property_raises_value_error():
 
     non_configurable_property = __CustomClassWithNonConfigurable.property()
     with pytest.raises(ValueError) as error:
-        non_configurable_property._check_rules_config(
+        non_configurable_property._get_and_check_rules_config(
             {"non_configurable_rule": "doesn't matter, should throw an error"})
     assert "non_configurable_rule is a non-configurable rule in class {}, (see {}.{}())" \
                .format(__CustomClassWithNonConfigurable.__name__,

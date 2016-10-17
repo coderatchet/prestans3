@@ -69,6 +69,7 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
                 new_bases += [class_to_inject, target_base_class]
             else:
                 new_bases.append(inject_class(base, class_to_inject, target_base_class))
+        new_bases.insert(0, template_class)
         new_type = type(new_type_name, tuple(new_bases), dict(template_class.__dict__))
         new_type.__init__ = _injected_class_init__
         injected_class_cache.update({args_key: new_type})

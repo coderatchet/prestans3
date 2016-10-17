@@ -31,7 +31,7 @@ def test_inject_class():
         pass
 
     new_type = inject_class(MyClass, InjectableClass)
-    assert new_type.__bases__ == (InjectableClass, object)
+    assert new_type.__bases__ == (MyClass, InjectableClass, object)
 
 
 # noinspection PyClassHasNoInit
@@ -47,12 +47,18 @@ def test_can_inject_class_with_more_than_one_subclass():
 
     new_type = inject_class(__C, InjectableClass)
     assert new_type.__name__ == 'Injected{}'.format(__C.__name__)
-    first_base = new_type.__bases__[0]
-    assert first_base.__name__ == 'Injected{}'.format(__A.__name__)
-    assert first_base.__bases__ == (InjectableClass, object)
-    second_base = new_type.__bases__[1]
-    assert second_base.__name__ == 'Injected{}'.format(__B.__name__)
-    assert second_base.__bases__ == (InjectableClass, object)
+    assert new_type.__bases__[0] == __C
+    assert new_type.__bases__[1].__name__ == utils.prefix_with_injected(__A, None, None)
+    assert new_type.__bases__[2].__name__ == utils.prefix_with_injected(__B, None, None)
+    injected_a = new_type.__bases__[1]
+    injected_b = new_type.__bases__[2]
+
+    assert injected_a.__bases__[0] == __A
+    assert injected_a.__bases__[1] == InjectableClass
+    assert injected_a.__bases__[2] == object
+    assert injected_b.__bases__[0] == __B
+    assert injected_b.__bases__[1] == InjectableClass
+    assert injected_b.__bases__[2] == object
 
 
 # noinspection PyClassHasNoInit
@@ -68,12 +74,11 @@ def test_can_inject_before_custom_class():
 
     new_type = inject_class(__C, InjectableClass, __B)
     assert new_type.__name__ == 'Injected{}'.format(__C.__name__)
-    assert len(new_type.__bases__) == 3
-    assert new_type.__bases__[0] is __A
-    new_base = new_type.__bases__[1]
-    assert new_base is InjectableClass
-    assert new_type.__bases__[2] is __B
-    assert new_type.mro() == [new_type, __A, InjectableClass, __B, object]
+    assert len(new_type.__bases__) == 4
+    assert new_type.__bases__[0] is __C
+    assert new_type.__bases__[1] is __A
+    assert new_type.__bases__[2] is InjectableClass
+    assert new_type.__bases__[3] is __B
 
 
 # noinspection PyClassHasNoInit
@@ -94,10 +99,12 @@ def test_can_inject_class_in_complex_hierarchy():
         pass
 
     new_type = inject_class(__Z, InjectableClass, __B)
-    assert len(new_type.__bases__) == 4
-    __new_X = new_type.__bases__[0]
-    assert __new_X.__name__ == 'Injected{}'.format(__X.__name__)
-    assert len(__new_X.__bases__) == 3
+    assert len(new_type.__bases__) == 5
+    assert new_type.__bases__[0] is __Z
+    assert new_type.__bases__[1].__name__ == utils.prefix_with_injected(__X, None, None)
+    assert new_type.__bases__[2] is __Y
+    assert new_type.__bases__[3] is InjectableClass
+    assert new_type.__bases__[4] is __B
 
 
 # noinspection PyClassHasNoInit
@@ -116,8 +123,9 @@ def test_inject_class_returns_original_class_if_target_base_class_is_not_in_mro(
 
 
 def test_injected_class_initializes_with_proper_variables():
-    class __A(object):
+    class _A(object):
         def __init__(self):
+            super(_A, self).__init__()
             self.foo = 'bar'
 
     class _B(object):
@@ -125,13 +133,13 @@ def test_injected_class_initializes_with_proper_variables():
             super(_B, self).__init__()
             self.foo = 'baz'
 
-    new_type = inject_class(_B, __A)
-    thing = new_type()
-    assert thing.foo == 'bar'
-
-    new_type = inject_class(__A, _B)
+    new_type = inject_class(_B, _A)
     thing = new_type()
     assert thing.foo == 'baz'
+
+    new_type = inject_class(_A, _B)
+    thing = new_type()
+    assert thing.foo == 'bar'
 
 
 # noinspection PyUnusedLocal

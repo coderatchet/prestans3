@@ -26,7 +26,8 @@ class AttributeValidationExceptionSummary(ValidationExceptionSummary):
 
         >>> from prestans3.errors import ValidationExceptionSummary
         >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
-        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperModel.my_sub_class', summary1)
+        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperModel.my_sub_class' \
+        ...     , summary1)
         >>> assert super_summary[0] == "MySuperModel == ['String was invalid']"
 
         :param str class_name: the |type|\ 's class that owns the sub |attribute|
@@ -113,7 +114,7 @@ class _PrestansModelTypeMeta(_PrestansTypeMeta):
         for attr_name, attr in list(attrs.items()):
             if isinstance(attr, _Property):
                 cls.prestans_attribute_properties[attr_name] = attr
-        super().__init__(what, bases, attrs)
+        super(_PrestansModelTypeMeta, cls).__init__(what, bases, attrs)
 
 
 # noinspection PyAbstractClass
@@ -123,11 +124,11 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
     """
 
     def __init__(self, initial_values=None, **kwargs):
-        self._prestans_attributes = _MergingDictionaryWithMutableOwnValues()
+        self._prestans_attributes = {}
         if initial_values is not None:
             for key, value in list(initial_values.items()):
                 if self.is_prestans_attribute(key):
-                    self.__class__.__dict__[key].__set__(
+                    self.get_prestans_attribute_property(key).__set__(
                         self._prestans_attributes,
                         (key, value)
                     )
@@ -136,6 +137,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
                                      "{} is not a configured prestans attribute of {}".format(key,
                                                                                               self.__class__.__name__))
         super(Model, self).__init__(**kwargs)
+
     def __setattr__(self, key, value):
 
         """
@@ -163,9 +165,9 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     def validate(self, **kwargs):
         validation_exception = None
-        for p_attr_name, p_attr in self.prestans_attribute_properties:
+        for p_attr_name, p_attr in list(self.prestans_attribute_properties.items()):
             try:
-                attr = self.__getattribute__(p_attr_name)  # T <= ImmutableType
+                attr = self.prestans_attributes[p_attr_name]  # T <= ImmutableType
                 attr.validate(p_attr.rules_config)
             except KeyError:
                 pass
@@ -233,7 +235,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     @classmethod
     def get_prestans_attribute_property(cls, attr_name):
-        p_attrs = cls.prestans_attribute_properties()
+        p_attrs = cls.prestans_attribute_properties
         if attr_name in cls.__dict__ and attr_name not in p_attrs:
             raise AttributeError(
                 "{} is a normal python attribute, not a {} instance".format(attr_name, _Property.__name__))
@@ -252,7 +254,7 @@ def check_required_attributes(instance, config=True):
         for p_attr_name, p_attr in list(p_attrs.items()):
             if p_attr.required:
                 try:
-                    getattribute__ = instance.__getattribute__(p_attr_name)
+                    getattribute__ = instance.prestans_attributes[p_attr_name]
                     if getattribute__ is None:
                         if validation_exception is None:
                             validation_exception = ValidationException(instance.__class__)
@@ -274,7 +276,7 @@ Model.register_property_rule(check_required_attributes, name="check_required_att
 
 
 # noinspection PyAbstractClass
-class _MutableModel(Model):
+class _MutableModel(with_metaclass(_PrestansModelTypeMeta, Model)):
     """
     Not instantiated directly, instead call the :func:`.Container.mutable()` method to retrieve an instance of this
     |type| that may be mutated. Validation will now not happen on __init__
@@ -299,10 +301,7 @@ class _MutableModel(Model):
         """
         # if the key being set is a |attribute| then store the value in the self._prestans_attributes dictionary
         if self.is_prestans_attribute(key):
-            object.__getattribute__(self, '__class__').__dict__[key].__set__(
-                object.__getattribute__(self, '_prestans_attributes'),
-                (key, value)
-            )
+            self.__class__.__dict__[key].__set__(self._prestans_attributes, (key, value))
         # else default super behaviour
         else:
             super(_MutableModel, self).__setattr__(key, value)

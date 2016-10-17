@@ -203,16 +203,19 @@ def test_subclasses_of_model_inherit_attributes():
     class _Model(Model):
         my_string = String.property()
 
-        def __init__(self):
-            super(_Model, self).__init__({'my_string': 'string1'})
+        def __init__(self, initial_values=None):
+            if initial_values is None:
+                initial_values = {}
+            initial_values.update({'my_string': 'string1'})
+            super(_Model, self).__init__(initial_values)
 
-    class _SubModel(Model):
+    class _SubModelShouldInherit(_Model):
         my_sub_string = String.property()
 
         def __init__(self):
-            super(_SubModel, self).__init__({'my_sub_string': 'string2'})
+            super(_SubModelShouldInherit, self).__init__({'my_sub_string': 'string2'})
 
-    sub_model = _SubModel()
+    sub_model = _SubModelShouldInherit()
     attributes = sub_model.prestans_attributes
     assert 'my_string' in attributes
     assert 'my_sub_string' in attributes
@@ -225,7 +228,7 @@ def test_can_mutate_prestans_attributes_for_mutable_model():
         my_string = String.property()
 
         def __init__(self):
-            super(self.__class__, self).__init__({'my_string': 'default'})
+            super(_Model, self).__init__({'my_string': 'default'})
 
     model = _Model.mutable()
     attributes = model.prestans_attributes

@@ -24,26 +24,26 @@ class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
         :param MergingProxyDictionary dictionary: the read-only inherited values
         """
         self._own_values = {}
-        if dictionary is None:
-            dictionary = {}
-        self._inherited_values = dictionary
-        super(_MergingDictionaryWithMutableOwnValues, self).__init__(self._own_values, self._inherited_values)
+        args = [self._own_values]
+        if dictionary is not None:
+            args.append(dictionary)
+        super(_MergingDictionaryWithMutableOwnValues, self).__init__(*args)
 
     def __setitem__(self, key, value):
         """ allows for setting own values (not inherited values)"""
         self._own_values[key] = value
 
     def update(self, other=None, **kwargs):
-        def _update(other):
-            if 'keys' in other.__class__.__dict__:
-                [self._own_values.__setitem__(k, other[k]) for k in other]
+        def _update(dictionary):
+            if 'keys' in dictionary.__class__.__dict__:
+                [self._own_values.__setitem__(k, dictionary[k]) for k in dictionary]
             else:
-                [self._own_values.__setitem__(k, v) for k, v in list(other.items())]
+                [self._own_values.__setitem__(k, v) for k, v in list(dictionary.items())]
 
         if other:
             _update(other)
-        for k, v in list(kwargs.items()):
-            self[k] = v
+        for key, value in list(kwargs.items()):
+            self[key] = value
 
     def is_own_key(self, key):
         return key in self._own_values
@@ -54,22 +54,21 @@ class _LazyOneWayGraph(dict):
         if terminating_type is None:
             terminating_type = object
         self._terminating_type = terminating_type
-        super().__init__(**kwargs)
+        super(_LazyOneWayGraph, self).__init__(**kwargs)
 
     def __missing__(self, of_type):
         """
         lazily sets and returns the initialized dictionary values for each |type|\ . Each type will have it's own
         mutable values whilst maintaining a proxied read-only reference to it's base class's values using the
         |MergingProxyDictionary| \.
-        :param prestans_type: the |type| to find the value for
-        :type prestans_type: T <= |ImmutableType|
+        :param of_type: the |type| to find the value for
+        :type of_type: T <= |ImmutableType|
         :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
                  class value on this graph.
         """
-        merging_proxy_dictionary = MergingProxyDictionary(*[self[base]
-                                                            for base in of_type.__bases__ if
-                                                            issubclass(base, self._terminating_type)])
-        self[of_type] = _MergingDictionaryWithMutableOwnValues(merging_proxy_dictionary)
+        bases = MergingProxyDictionary(*[self[base] for base in of_type.__bases__
+                                         if self._terminating_type in base.mro()])
+        self[of_type] = _MergingDictionaryWithMutableOwnValues(bases)
         return self[of_type]
 
 
@@ -163,6 +162,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         """
         raise NotImplementedError
 
+    # noinspection PyUnusedLocal,PyAbstractClass
     @classmethod
     def register_property_rule(cls, property_rule, name=None, default=None, configurable=True):
         """
@@ -190,8 +190,8 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
             func_name = property_rule.__name__
             func_args = property_rule.__code__.co_varnames
             raise ValueError(
-                "expected property_rule function with 2 arguments, received function with {} argument(s): {}({})".format(
-                    arg_count, func_name, ", ".join(func_args)))
+                "expected property_rule function with 2 arguments, "
+                "received function with {} argument(s): {}({})".format(arg_count, func_name, ", ".join(func_args)))
 
         @functools.wraps(property_rule)
         def wrapped_pr(*args):
@@ -228,14 +228,9 @@ _property_rule_graph = _LazyOneWayGraph(ImmutableType)
 class _Property(object):
     """
     Base class for all |_Property| configurations. not instantiated directly but called from the owning |type|\ 's
-    :func:`property()<prestans3.types.ImmutableType.property>` method. A |_Property| is a type descriptor that allows the
-    setting of prestans attributes on it's containing class
+    :func:`property()<prestans3.types.ImmutableType.property>` method. A |_Property| is a type descriptor that allows
+    the setting of prestans attributes on it's containing class
     """
-
-    @property
-    def property_rules(self):
-        return [lambda x, this=self: rule(x, this.get_rule_config(key)) for (key, rule) in
-                list(self._of_type.property_rules.items())]
 
     def __init__(self, of_type, required=True, default=None, **kwargs):
         """
@@ -243,8 +238,8 @@ class _Property(object):
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
         """
         self._of_type = of_type
-        self._rules_config = _MergingDictionaryWithMutableOwnValues(of_type.default_rules_config())
-        self._check_rules_config(kwargs)
+        self._rules_config = MergingProxyDictionary(self._get_and_check_rules_config(kwargs),
+                                                    of_type.default_rules_config())
         self.required = required
         self.default = default
 
@@ -264,6 +259,7 @@ class _Property(object):
         else:
             instance[value[0]] = self._of_type.from_value(value[1])
 
+    # noinspection PyUnusedLocal
     def __get__(self, instance, owner):
         """
         :param instance: The instance of this |type|
@@ -291,29 +287,34 @@ class _Property(object):
         """
         return self._of_type
 
-    def _check_rule_config(self, key, config):
+    def _get_and_check_rule_config(self, key, config):
         """ adds a configuration of a |rule| to this instance """
         try:
             _rule = self.property_type.get_property_rule(key)
         except KeyError:
             raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         if not _rule.configurable:
-            raise ValueError("{} is a non-configurable rule in class {}, (see {}.{}()))" \
+            raise ValueError("{} is a non-configurable rule in class {}, (see {}.{}()))"
                              .format(key, self.property_type.__name__, ImmutableType.__name__,
                                      ImmutableType.register_property_rule.__name__))
-        self._rules_config.update({key: config})
+        return key, config
 
     def get_rule_config(self, key):
         """ find a |rule|\ 's configuration by its name """
         return self._rules_config[key]
 
-    def _check_rules_config(self, kwargs):
+    def _get_and_check_rules_config(self, kwargs):
         """
         merge default rule configs with explicit rule configs in kwargs
 
         :param dict kwargs:
         """
-        [self._check_rule_config(key, config) for key, config in list(kwargs.items())]
+
+        def _gen():
+            for key, config in list(kwargs.items()):
+                yield self._get_and_check_rule_config(key, config)
+
+        return {checked_key: checked_config for checked_key, checked_config in list(_gen())}
 
 
 # noinspection PyAbstractClass

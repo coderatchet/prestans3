@@ -16,23 +16,23 @@ from prestans3.types import Integer, Model
 
 
 def test_can_create_integer():
-    myInt = Integer(1)
+    Integer(1)
 
 
 def test_integer_behaves_like_native_integer():
-    myInt = Integer(3)
-    assert myInt + 3 == 6
-    assert myInt - 1 == 2
-    assert myInt / 3 == 1
-    assert myInt * 3 == 9
-    myInt -= 2
-    assert myInt == 1
-    myInt += 2
-    assert myInt == 3
-    myInt /= 3
-    assert myInt == 1
-    myInt *= 3
-    assert myInt == 3
+    my_int = Integer(3)
+    assert my_int + 3 == 6
+    assert my_int - 1 == 2
+    assert my_int / 3 == 1
+    assert my_int * 3 == 9
+    my_int -= 2
+    assert my_int == 1
+    my_int += 2
+    assert my_int == 3
+    my_int /= 3
+    assert my_int == 1
+    my_int *= 3
+    assert my_int == 3
 
 
 def test_from_value_with_integer_instance_succeeds():
@@ -54,6 +54,8 @@ def test_from_value_raises_value_error_on_non_int_subclass():
         Integer.from_value({})
     with pytest.raises(ValueError):
         Integer.from_value(0.3)
+
+
 
 
 def test_min_property_rule_works():
