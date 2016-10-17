@@ -249,31 +249,15 @@ def test_merging_dictionary_overrides_later_dictionaries_values():
     assert len(dictionary) == 1
 
 
-def test_merging_dictionary_raises_exception_when_setting_item():
-    dictionary = MergingProxyDictionary()
-    with pytest.raises(Exception):
-        dictionary['foo'] = 'bar'
-
-
-def test_merging_dictionary_raises_exception_when_deleting_items():
-    dictionary = MergingProxyDictionary({'foo': 'bar'})
-    with pytest.raises(Exception):
-        del dictionary['foo']
-
-
 def test_mutating_dictionaries_outside_affects_item_retrieval():
-    my_dict = {}
-    dictionary = MergingProxyDictionary(my_dict)
+    other_dictionary = MergingProxyDictionary({})
+    dictionary = MergingProxyDictionary({}, other_dictionary)
     assert len(dictionary) == 0
-    my_dict['foo'] = 'bar'
-    assert len(dictionary) == 1
+    other_dictionary['foo'] = 'bar'
+    dictionary['ham'] = 'spam'
+    assert len(dictionary) == 2
     assert 'foo' in dictionary
-
-
-def test_updating_merging_dictionary_raises_exception():
-    dictionary = MergingProxyDictionary()
-    with pytest.raises(AccessError):
-        dictionary.update({"shouldn't": "work"})
+    assert 'ham' in dictionary
 
 
 def test_merging_dictionary_can_return_values():
@@ -304,30 +288,6 @@ def test_merging_dictionary_can_see_items():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     items = dictionary.items()
     assert len(items) == 2
-
-
-def test_pop_item_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
-    with pytest.raises(AccessError):
-        dictionary.popitem()
-
-
-def test_set_default_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
-    with pytest.raises(AccessError):
-        dictionary.setdefault('doesnt', 'matter')
-
-
-def test_pop_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
-    with pytest.raises(AccessError):
-        dictionary.pop('doesnt', 'matter')
-
-
-def test_clear_raises_exception():
-    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
-    with pytest.raises(AccessError):
-        dictionary.clear()
 
 
 def test_get_returns_default_on_no_key():
