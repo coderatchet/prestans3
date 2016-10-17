@@ -206,3 +206,31 @@ def test_can_create_mutable_subclass_of_array():
         pass
 
     _SubArray.mutable(Integer, [1, 2, 3])
+
+
+def test_array_does_not_accept_iterable_array_of_different_type():
+    with pytest.raises(TypeError) as error:
+        Array(Integer, Array(String))
+    assert "element type '{}' of iterable is not a subclass of element type '{}' of self".format(String.__name__,
+                                                                                                 Integer.__name__) \
+           in str(error.value)
+
+
+# def test_array_element_rule_configuration_checks_elements():
+#     class _Model(Model):
+#         array = Array.property(Integer, min=1)
+#
+#     model = _Model.mutable()
+#     model.array = [3, 4, 0, 2, -4]
+#     with pytest.raises(ValidationException):
+#         model.validate()
+#
+#
+# def test_array_validation_stops_at_first_error_by_default():
+#     class _Model(Model):
+#         array = Array.property(Integer, min=1)
+#
+#     model = _Model.mutable()
+#     model.array = Array(Integer, [3, 4, 0, 2, -4])
+#     with pytest.raises(ValidationException):
+#         model.validate()

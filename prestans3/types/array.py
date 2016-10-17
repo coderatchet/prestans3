@@ -48,6 +48,10 @@ class Array(Container):
             raise TypeError(
                 "iterable argument of type {} is not an iterable object".format(iterable.__class__.__name__))
         self._of_type = of_type
+        if isinstance(iterable, self.__class__):
+            if not issubclass(iterable._of_type, self._of_type):
+                raise TypeError("element type '{}' of iterable is not a subclass of element type '{}' of self".format(
+                    iterable._of_type.__name__, self._of_type.__name__))
         coerced_iterable = []
 
         def _check_and_store(item):

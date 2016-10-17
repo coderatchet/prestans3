@@ -176,6 +176,9 @@ rst_epilog = """
 .. |MergingProxyDictionary|  replace:: :class:`MergingProxyDictionary<.MergingProxyDictionary>`
 .. |MergingProxyDictionaries|  replace:: :class:`MergingProxyDictionaries<.MergingProxyDictionary>`
 
+.. |ImmutableMergingDictionary|  replace:: :class:`ImmutableMergingDictionary<.ImmutableMergingDictionary>`
+.. |ImmutableMergingDictionaries|  replace:: :class:`ImmutableMergingDictionaries<.ImmutableMergingDictionary>`
+
 """
 
 

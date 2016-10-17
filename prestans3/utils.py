@@ -209,6 +209,7 @@ class MergingProxyDictionary(dict):
 
 
 class ImmutableMergingDictionary(MergingProxyDictionary):
+    """ raises AccessError on an attempt to mutate, otherwise the same as |MergingProxyDictionary| """
     def __delitem__(self, key):
         """ :raises AccessError: when attempting to call this function. """
         raise AccessError(self.__class__, key)
