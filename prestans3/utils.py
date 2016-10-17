@@ -106,8 +106,6 @@ class MergingProxyDictionary(dict):
     mutation of the contained dictionaries is not allowed directly through this class's interface. changing the
     referenced dictionaries outside this class will be reflected when accessing the keys through this interface. The
     dictionary will resolve keys with left to right priority on dictionaries provided in the __init__ function.
-
-    :raises |AccessError|: If an attempt to mutate the dictionary is made.
     """
 
     def __init__(self, initial_values=None, *args):

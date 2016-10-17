@@ -26,21 +26,45 @@ ValidationExceptionSummary
 
 .. py:currentmodule:: prestans3.types.model
 
-ModelValidationException
-------------------------
 
-.. autoclass:: ModelValidationException
+ContainerValidationException
+----------------------------
+
+.. autoclass:: ContainerValidationException
     :show-inheritance:
     :members:
     :special-members:
-    :exclude-members: __init__
 
 
 ContainerValidationExceptionSummary
 -----------------------------------
 
 .. autoclass:: ContainerValidationExceptionSummary
-    :show-inheritance:
-    :members:
-    :special-members: __new__
-    :exclude-members: __init__
+        :show-inheritance:
+        :members:
+        :special-members: __new__
+        :exclude-members: __init__
+
+
+ModelValidationException
+------------------------
+
+.. py:currentmodule:: prestans3.types.model
+
+.. autoclass:: ModelValidationException
+        :show-inheritance:
+        :members:
+        :special-members:
+        :exclude-members: __init__
+
+
+ArrayValidationException
+------------------------
+
+.. py:currentmodule:: prestans3.types.array
+
+.. autoclass:: ArrayValidationException
+        :show-inheritance:
+        :members:
+        :special-members:
+        :exclude-members: __init__

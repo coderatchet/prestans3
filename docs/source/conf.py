@@ -160,13 +160,21 @@ rst_epilog = """
 .. |AccessError|  replace:: :class:`AccessError`<.AccessError>`
 .. |AccessErrors|  replace:: :class:`AccessErrors`<.AccessError>`
 
+.. |ContainerValidationException|  replace:: :class:`ContainerValidationException<.ContainerValidationException>`
+.. |ContainerValidationExceptions|  replace:: :class:`ContainerValidationExceptions<.ContainerValidationException>`
+
+.. |ContainerValidationExceptionSummary|  replace:: :class:`ContainerValidationExceptionSummary<.ContainerValidationExceptionSummary>`
+.. |ContainerValidationExceptionSummaries|  replace:: :class:`ContainerValidationExceptionSummaries<.ContainerValidationExceptionSummary>`
+
 .. py:currentmodule:: prestans.types.model
 
 .. |ModelValidationException|  replace:: :class:`ModelValidationException<.ModelValidationException>`
 .. |ModelValidationExceptions|  replace:: :class:`ModelValidationExceptions<.ModelValidationException>`
 
-.. |ContainerValidationExceptionSummary|  replace:: :class:`ContainerValidationExceptionSummary<.ContainerValidationExceptionSummary>`
-.. |ContainerValidationExceptionSummaries|  replace:: :class:`ContainerValidationExceptionSummaries<.ContainerValidationExceptionSummary>`
+.. py:currentmodule:: prestans.types.array
+
+.. |ArrayValidationException|  replace:: :class:`ArrayValidationException<.ArrayValidationException>`
+.. |ArrayValidationExceptions|  replace:: :class:`ArrayValidationExceptions<.ArrayValidationException>`
 
 .. utils
 .. -----

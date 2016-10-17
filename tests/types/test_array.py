@@ -216,21 +216,23 @@ def test_array_does_not_accept_iterable_array_of_different_type():
            in str(error.value)
 
 
-# def test_array_element_rule_configuration_checks_elements():
-#     class _Model(Model):
-#         array = Array.property(Integer, min=1)
-#
-#     model = _Model.mutable()
-#     model.array = [3, 4, 0, 2, -4]
-#     with pytest.raises(ValidationException):
-#         model.validate()
-#
-#
-# def test_array_validation_stops_at_first_error_by_default():
-#     class _Model(Model):
-#         array = Array.property(Integer, min=1)
-#
-#     model = _Model.mutable()
-#     model.array = Array(Integer, [3, 4, 0, 2, -4])
-#     with pytest.raises(ValidationException):
-#         model.validate()
+def test_array_element_rule_configuration_checks_elements():
+    class _Model(Model):
+        array = Array.property(Integer, min=1)
+
+    model = _Model.mutable()
+    model.array = [3, 4, 0, 2, -4]
+    with pytest.raises(ValidationException):
+        model.validate()
+
+
+def test_array_validation_stops_at_first_error_by_default():
+    class _Model(Model):
+        array = Array.property(Integer, min=1)
+
+    model = _Model.mutable()
+    model.array = Array(Integer, [3, 4, 0, 2, -4])
+    with pytest.raises(ValidationException) as exception:
+        model.validate()
+    assert '0' in str(exception)
+    assert '-4' not in str(exception)

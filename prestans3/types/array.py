@@ -13,9 +13,10 @@ from copy import copy
 
 import collections
 
-from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError, PropertyConfigError
+from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError, PropertyConfigError, \
+    ContainerValidationExceptionSummary, ContainerValidationException
 from prestans3.types import Container, ImmutableType, _Property
-from prestans3.utils import inject_class, MergingProxyDictionary
+from prestans3.utils import inject_class, MergingProxyDictionary, is_str, ImmutableMergingDictionary
 
 
 def find_first(array, func):
@@ -85,6 +86,45 @@ class Array(Container):
         :rtype: |_Property|
         """
         return _ArrayProperty(of_type=cls, element_type=element_type, **kwargs)
+
+    def validate(self, config=None):
+        """
+        this validate will check all of it's elements, then check the global element rule config set on the array, then
+        check any validation on the array itself. by default, the first element in this array to have a validation error
+        will stop the validation checks on elements and return with a message.
+
+        :param config: the rule configuration for this array and its elements
+        :raises ValidationException: if there are invalid contents or the array itself is invalid according to the given
+                                     config
+        """
+        validation_exception = None
+        _index = 0
+        array_config, element_config = self._split_config(config)
+        try:
+            for index, element in enumerate(self._values):  # type: ImmutableType
+                _index = index
+                element.validate(ImmutableMergingDictionary(element_config, element.default_rules_config()))
+        except ValidationException as exception:
+            if not validation_exception:
+                validation_exception = ArrayValidationException(self.__class__)
+            validation_exception.add_validation_exception('{}[{}]'.format(self.__class__.__name__, _index), exception)
+        try:
+            super(Array, self).validate(array_config)
+        except ValidationException as exception:
+            if not validation_exception:
+                validation_exception = ArrayValidationException(self.__class__)
+            validation_exception.add_validation_messages(exception.messages)
+        if validation_exception:
+            raise validation_exception
+
+    def _split_config(self, config):
+        if config is None:
+            return {}, {}
+        element_config = {key: config for key, config in list(config.items()) if
+                          key in self._of_type.property_rules}
+        array_config = {key: config for key, config in list(config.items()) if key not in element_config}
+        return array_config, element_config
+
 
     #### list like magic methods
 
@@ -232,3 +272,8 @@ class _MutableArray(Array):
                     "value is not an instance of {}, one of its subclasses or a coercable type: received value type: {}"
                         .format(self._of_type.__name__, value.__class__.__name__))
         self._values.append(value)
+
+
+class ArrayValidationException(ContainerValidationException):
+    def check_validation_exception(self, key, validation_exception):
+        super(ArrayValidationException, self).check_validation_exception(key, validation_exception)

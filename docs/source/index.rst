@@ -17,10 +17,7 @@ API Reference
 .. toctree::
    :maxdepth: 1
 
-   api/single_html
-   api/types
-   api/errors
-   api/utils
+   API Reference <api/single_html>
 
 Peps
 ----

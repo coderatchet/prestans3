@@ -9,54 +9,21 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary
+from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary, \
+    ContainerValidationException
 from prestans3.types import Container, _Property, _PrestansTypeMeta
 from prestans3.utils import is_str, inject_class, with_metaclass, ImmutableMergingDictionary, LazyOneWayGraph
 
 
-class ModelValidationException(ValidationException):
-    def __init__(self, of_type, message_or_key_exception_tuple=None):
-        """
-        :param of_type: |type| in error.
-        :type of_type: T <= |Model|
-        :param message_or_key_exception_tuple:
-        :type message_or_key_exception_tuple: str or (str, ValidationException)
-        """
-        self.validation_exceptions = {}
-        if isinstance(message_or_key_exception_tuple, tuple):
-            super(ModelValidationException, self).__init__(of_type)
-            self.add_validation_exception(message_or_key_exception_tuple[0],
-                                          message_or_key_exception_tuple[1])  # when message_or... is tuple
-        elif is_str(message_or_key_exception_tuple):
-            super(ModelValidationException, self).__init__(of_type, message_or_key_exception_tuple)
-        else:
-            super(ModelValidationException, self).__init__(of_type)
-
-    def __iter__(self):
-        """ iterate through the summaries for this exception """
-        for summary in list(super(ModelValidationException, self).__iter__()):
-            yield summary
-        for key, validation_exception in list(self.validation_exceptions.items()):  # type: (str, ValidationException)
-            for summary in list(validation_exception):
-                yield ContainerValidationExceptionSummary(self.property_type.__name__, key, summary)
-
-    def add_validation_exception(self, key, validation_exception):
-        """
-        :param str key: the attribute name whose validation failed. This name must be a configured attribute property of
-                    this tree's ``self._of_type``
-        :param |ValidationException| validation_exception: the validation_exception to add to this |ValidationException|\ 's list of exceptions
-        """
-        if not isinstance(validation_exception, ValidationException):
-            raise TypeError("Expected validation_exception to be subclass of {} but received instance of {}" \
-                            .format(ValidationException.__name__, validation_exception.__class__.__name__))
-        if not issubclass(self._of_type, Model):
-            raise TypeError("only subclasses of {} may have child attributes".format(Model.__name__))
+class ModelValidationException(ContainerValidationException):
+    def check_validation_exception(self, key, validation_exception):
+        super(ModelValidationException, self).check_validation_exception(key, validation_exception)
         if not self._of_type.is_prestans_attribute(key):
             # see if the type of this validation error contains this configured key as a prestans attribute
             raise AttributeError(
                 '{} is not a configured prestans attribute of {} class, when trying to set validation exception'.format(
                     key, self._of_type.__name__))
-        elif self._of_type.__dict__[key].property_type is not validation_exception._of_type:
+        elif self._of_type.get_prestans_attribute_property(key).property_type is not validation_exception._of_type:
             # determine if the property_type of the class's configured prestans attribute equals the type of the
             # exception provided
             raise TypeError(('validation exception for {qProp} was of type {actual_type}, ' +
@@ -65,7 +32,6 @@ class ModelValidationException(ValidationException):
                 expected_type=self._of_type.__dict__[key].property_type.__name__,
                 actual_type=validation_exception._of_type.__name__
             ))
-        self.validation_exceptions.update({key: validation_exception})
 
 
 class _PrestansAttributesProperties(object):
