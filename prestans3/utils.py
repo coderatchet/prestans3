@@ -180,7 +180,13 @@ class MergingProxyDictionary(dict):
         return self.copy().values()
 
     def keys(self):
-        return self.copy().keys()
+        s = set()
+        if self._me:
+            s.update(self._me.keys())
+        if self._other:
+            s.update(self._other.keys())
+        return s
+        # return self.copy().keys()
 
     def items(self):
         return self.copy().items()
