@@ -157,7 +157,7 @@ class MergingProxyDictionary(dict):
         return _copy
 
     def __len__(self):
-        return len(self.copy())
+        return sum(1 for _ in self.keys())
 
     def __str__(self):
         return str(self.copy())
