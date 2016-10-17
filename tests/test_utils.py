@@ -211,7 +211,7 @@ def test_with_meta_class():
 
 
 def test_merging_dictionary_can_exist():
-    dictionary = MergingProxyDictionary()
+    dictionary = MergingProxyDictionary({})
     assert len(dictionary) == 0
 
 
@@ -284,6 +284,12 @@ def test_key_not_found_raises_key_error():
         dictionary['not there']
 
 
+def test_can_determine_whether_key_is_own():
+    dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'})
+    assert dictionary.is_own_key('foo')
+    assert not dictionary.is_own_key('bar')
+
+
 def test_merging_dictionary_can_see_items():
     dictionary = MergingProxyDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     items = dictionary.items()
@@ -305,3 +311,39 @@ def test_str_method_functioning():
 def test_repr_method_functioning():
     assert "'foo': 'bar'" in repr(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))
     assert "'baz': 'spam'" in repr(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))
+
+
+def test_merging_dictionary_raises_exception_when_setting_item():
+    dictionary = utils.ImmutableMergingDictionary()
+    with pytest.raises(Exception):
+        dictionary['foo'] = 'bar'
+
+
+def test_merging_dictionary_raises_exception_when_deleting_items():
+    dictionary = utils.ImmutableMergingDictionary({'foo': 'bar'})
+    with pytest.raises(Exception):
+        del dictionary['foo']
+
+
+def test_pop_item_raises_exception():
+    dictionary = utils.ImmutableMergingDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
+    with pytest.raises(AccessError):
+        dictionary.popitem()
+
+
+def test_set_default_raises_exception():
+    dictionary = utils.ImmutableMergingDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
+    with pytest.raises(AccessError):
+        dictionary.setdefault('doesnt', 'matter')
+
+
+def test_pop_raises_exception():
+    dictionary = utils.ImmutableMergingDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
+    with pytest.raises(AccessError):
+        dictionary.pop('doesnt', 'matter')
+
+
+def test_clear_raises_exception():
+    dictionary = utils.ImmutableMergingDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
+    with pytest.raises(AccessError):
+        dictionary.clear()

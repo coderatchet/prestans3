@@ -110,41 +110,62 @@ class MergingProxyDictionary(dict):
     :raises |AccessError|: If an attempt to mutate the dictionary is made.
     """
 
-    def __init__(self, *args):
+    def __init__(self, initial_values=None, *args):
         """
         :param list[dict] args: the dictionaries to proxy against. key and value resolution is done in the order
         provided to this init function (left to right).
         """
-        self._other = None
+        self._others = None
         if len(args) > 0:
-            super(MergingProxyDictionary, self).__init__(args[0])
-            if len(args) > 1:
-                if isinstance(args[1], MergingProxyDictionary):
-                    self._other = args[1]
+            for arg in args:
+                if isinstance(arg, MergingProxyDictionary):
+                    self._append_others(arg)
                 else:
-                    self._other = MergingProxyDictionary(*args[1:])
-        else:
+                    self._append_others(MergingProxyDictionary(initial_values=arg))
+        if initial_values is None:
             super(MergingProxyDictionary, self).__init__()
+        else:
+            super(MergingProxyDictionary, self).__init__(initial_values)
+
+    def _append_others(self, item):
+        if self._others:
+            return self._others.append(item)
+        else:
+            self._others = [item]
+            return self._others
 
     def __getitem__(self, item):
         try:
             return super(MergingProxyDictionary, self).__getitem__(item)
         except KeyError as error:
-            if not self._other:
-                raise error
-            return self._other[item]
+            if self._others:
+                for other in self._others:
+                    try:
+                        return other[item]
+                    except KeyError:
+                        pass
+            raise error
+
+    def _find_first(self, dictionary, condition):
+        for key, value in list(dictionary.items()):
+            if condition(key, value):
+                return key, value
+        return None
 
     def __contains__(self, item):
         in_me = super(MergingProxyDictionary, self).__contains__(item)
-        if not in_me and self._other:
-            in_me = item in self._other
+        if not in_me and self._others:
+            return any(self._find_first(other, lambda key, _: item == key) for other in self._others)
         return in_me
 
     def __copy__(self):
         return super(MergingProxyDictionary, self).copy()
 
     def copy(self):
-        _copy = {} if not self._other else self._other.copy()
+        _copy = {}
+        if self._others:
+            for other in reversed(self._others):
+                _copy.update(other)
         _copy.update(copy(self))
         return _copy
 
@@ -157,17 +178,17 @@ class MergingProxyDictionary(dict):
     def __repr__(self):
         return repr(self.copy())
 
-    def update(self, other=None, **kwargs):
-        """ :raises AccessError: when attempting to call this function. """
-        raise AccessError(self.__class__)
-
     def get(self, key, default=None):
         try:
             return super(MergingProxyDictionary, self).__getitem__(key)
         except KeyError:
-            if self._other:
-                return self._other.get(key, default)
-            return default
+            if self._others:
+                for other in self._others:
+                    try:
+                        return other[key]
+                    except KeyError:
+                        pass
+        return default
 
     # noinspection PyMethodOverriding
     def values(self):
@@ -175,10 +196,43 @@ class MergingProxyDictionary(dict):
 
     def keys(self):
         s = set(super(MergingProxyDictionary, self).keys())
-        if self._other:
-            s.update(self._other.keys())
+        if self._others:
+            [s.update(other.keys()) for other in self._others]
         return s
         # return self.copy().keys()
 
     def items(self):
         return self.copy().items()
+
+    def is_own_key(self, key):
+        return key in super(MergingProxyDictionary, self).keys()
+
+
+class ImmutableMergingDictionary(MergingProxyDictionary):
+    def __delitem__(self, key):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__, key)
+
+    def __setitem__(self, key, value):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__, key)
+
+    def update(self, other=None, **kwargs):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__)
+
+    def popitem(self):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__)
+
+    def setdefault(self, key, default=None):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__)
+
+    def pop(self, key, default=None):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__)
+
+    def clear(self):
+        """ :raises AccessError: when attempting to call this function. """
+        raise AccessError(self.__class__)

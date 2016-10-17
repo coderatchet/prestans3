@@ -11,7 +11,7 @@
 
 from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary
 from prestans3.types import Container, _Property, _PrestansTypeMeta, _LazyOneWayGraph
-from prestans3.utils import is_str, inject_class, MergingProxyDictionary, with_metaclass
+from prestans3.utils import is_str, inject_class, MergingProxyDictionary, with_metaclass, ImmutableMergingDictionary
 
 
 class ModelValidationException(ValidationException):
@@ -189,7 +189,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
         :rtype: dict[str -> |ImmutableType|\ ]
         """
-        return MergingProxyDictionary(self._prestans_attributes)
+        return ImmutableMergingDictionary(self._prestans_attributes)
 
     @classmethod
     def mutable(cls, **kwargs):

@@ -14,42 +14,6 @@ from prestans3.errors import AccessError, PropertyConfigError
 from prestans3.utils import with_metaclass, MergingProxyDictionary
 
 
-class _MergingDictionaryWithMutableOwnValues(MergingProxyDictionary):
-    """
-        |MergingProxyDictionary| that has reference to read-only dictionary values whilst still being able to mutate
-        own values.
-    """
-
-    def __init__(self, dictionary=None):
-        """
-        :param MergingProxyDictionary dictionary: the read-only inherited values
-        """
-        self._own_values = {}
-        args = [self._own_values]
-        if dictionary is not None:
-            args.append(dictionary)
-        super(_MergingDictionaryWithMutableOwnValues, self).__init__(*args)
-
-    def __setitem__(self, key, value):
-        """ allows for setting own values (not inherited values)"""
-        self._own_values[key] = value
-
-    def update(self, other=None, **kwargs):
-        def _update(dictionary):
-            if 'keys' in dictionary.__class__.__dict__:
-                [self._own_values.__setitem__(k, dictionary[k]) for k in dictionary]
-            else:
-                [self._own_values.__setitem__(k, v) for k, v in list(dictionary.items())]
-
-        if other:
-            _update(other)
-        for key, value in list(kwargs.items()):
-            self[key] = value
-
-    def is_own_key(self, key):
-        return key in self._own_values
-
-
 class _LazyOneWayGraph(dict):
     def __init__(self, terminating_type=None, **kwargs):
         if terminating_type is None:
@@ -67,9 +31,9 @@ class _LazyOneWayGraph(dict):
         :return: the newly instantiated dictionary of property_rules with read-only references to the |type|\ 's base
                  class value on this graph.
         """
-        bases = MergingProxyDictionary(*[self[base] for base in of_type.__bases__
-                                         if self._terminating_type in base.mro()])
-        self[of_type] = _MergingDictionaryWithMutableOwnValues(bases)
+        mro_ = [self[base] for base in of_type.__bases__ if
+                self._terminating_type in base.mro() and base is not of_type]
+        self[of_type] = MergingProxyDictionary({}, *mro_)
         return self[of_type]
 
 
@@ -300,7 +264,8 @@ class _Property(object):
         except KeyError:
             raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         if not _rule.configurable:
-            raise PropertyConfigError(self.property_type, key, "{} is a non-configurable rule in class {}, (see {}.{}()))"
+            raise PropertyConfigError(self.property_type, key,
+                                      "{} is a non-configurable rule in class {}, (see {}.{}()))"
                                       .format(key, self.property_type.__name__, ImmutableType.__name__,
                                               ImmutableType.register_property_rule.__name__))
         return key, config
