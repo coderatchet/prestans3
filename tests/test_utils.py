@@ -342,6 +342,16 @@ def test_merging_dictionary_can_update():
     assert dictionary['ham'] == 'spam'
 
 
+def test_merging_dictionary_can_set_default():
+    dictionary = MergingProxyDictionary({'foo': 'bar'})
+    value = dictionary.setdefault('foo', 'baz')
+    assert len(dictionary) == 1
+    assert value == 'bar'
+    value = dictionary.setdefault('ham', 'spam')
+    assert len(dictionary) == 2
+    assert value == 'spam'
+
+
 def test_merging_dictionary_raises_exception_when_setting_item():
     dictionary = utils.ImmutableMergingDictionary()
     with pytest.raises(Exception):
