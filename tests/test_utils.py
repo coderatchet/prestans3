@@ -335,6 +335,13 @@ def test_can_pop():
     assert len(dictionary) == 0
 
 
+def test_merging_dictionary_can_update():
+    dictionary = MergingProxyDictionary({'foo': 'bar'})
+    dictionary.update({'foo': 'baz', 'ham': 'spam'})
+    assert dictionary['foo'] == 'baz'
+    assert dictionary['ham'] == 'spam'
+
+
 def test_merging_dictionary_raises_exception_when_setting_item():
     dictionary = utils.ImmutableMergingDictionary()
     with pytest.raises(Exception):
