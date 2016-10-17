@@ -155,7 +155,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         >>> class MyClass(types.Model):
         ...     name = String.property()
         ...
-        >>> my_class = MyClass()
+        >>> my_class = MyClass.mutable()
         >>> my_class.name = "jum"
 
         :param value: an acceptable value according to the |type|\ 's subclass
