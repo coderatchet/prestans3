@@ -46,7 +46,7 @@ class Array(Container):
                                                                                                of_type.__name__))
         if not isinstance(iterable, Iterable):
             raise TypeError(
-                "iterable argument of type {} is not an Iterable object".format(iterable.__class__.__name__))
+                "iterable argument of type {} is not an iterable object".format(iterable.__class__.__name__))
         self._of_type = of_type
         coerced_iterable = []
 

@@ -195,6 +195,12 @@ def test_unknown_property_rule_name_config_raises_value_error():
                element_type_name=Integer.__name__) in str(error.value)
 
 
+def test_array_with_non_iterable_raises_type_error():
+    with pytest.raises(TypeError) as error:
+        Array(Integer, 6)
+    assert 'iterable argument of type {} is not an iterable object'.format(int.__name__) in str(error.value)
+
+
 def test_can_create_mutable_subclass_of_array():
     class _SubArray(Array):
         pass
