@@ -11,6 +11,8 @@
 from collections import Iterable
 from copy import copy
 
+import collections
+
 from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError, PropertyConfigError
 from prestans3.types import Container, ImmutableType, _Property
 from prestans3.utils import inject_class, MergingProxyDictionary
@@ -24,7 +26,7 @@ def find_first(array, func):
     :param func: a function that accepts an element of the array and returns a true when condition is met
     :type func: (any) -> bool
     """
-    array = list(array)
+    array = array if hasattr(array, '__getitem__') and hasattr(array, '__len__') else list(array)
     for i in range(len(array)):
         if not func(array[i]):
             return i
@@ -71,6 +73,14 @@ class Array(Container):
                                                   new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
                                                       x.__name__))
         return new_mutable_model_subclass(**kwargs)
+
+    @classmethod
+    def property(cls, element_type, **kwargs):
+        """
+        :return: configured |_Property| Class
+        :rtype: |_Property|
+        """
+        return _ArrayProperty(of_type=cls, element_type=element_type, **kwargs)
 
     #### list like magic methods
 
@@ -150,15 +160,41 @@ class Array(Container):
         return Array(self._of_type, copy(self._values), validate_immediately=False)
 
 
+def _min_length(instance, config):
+    length = len(instance)
+    if length < config:
+        raise ValidationException(instance.__class__,
+                                  "{} instance length is {}, the minimum configured length is {}".format(
+                                      instance.__class__, length, config))
+
+
+Array.register_property_rule(_min_length, name="min_length")
+
+
 class _ArrayProperty(_Property):
     """
     allows for property rule configuration that checks all elements
     """
+
     def __init__(self, of_type, element_type, **kwargs):
-        super().__init__(of_type)
+        super(_ArrayProperty, self).__init__(of_type)
         self._element_type = element_type
-        rules_config = self._get_and_check_rules_config(kwargs)
-        self._array_rules_config = MergingProxyDictionary(rules_config, of_type.default_rules_config())
+        self._array_rules_config = {}
+        self._rules_config = MergingProxyDictionary(self._get_and_check_rules_config(kwargs),
+                                                    of_type.default_rules_config())
+
+    def __set__(self, instance, value):
+        """
+
+        :param instance:
+        :param value:
+        :type value: tuple
+        :return:
+        """
+        if isinstance(value[1], self._of_type):
+            super(_ArrayProperty, self).__set__(instance, value)
+        elif isinstance(value, collections.Iterable):
+            super(_ArrayProperty, self).__set__(instance, (value[0], Array(self._element_type, value[1])))
 
     def _get_and_check_rule_config(self, key, config):
         try:

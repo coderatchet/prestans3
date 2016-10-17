@@ -10,8 +10,8 @@
 """
 
 import pytest
-from prestans3.errors import AccessError
-from prestans3.types import Array, _Property
+from prestans3.errors import AccessError, ValidationException
+from prestans3.types import Array
 from prestans3.types import Integer
 from prestans3.types import Model
 from prestans3.types import String
@@ -154,9 +154,22 @@ def test_array_can_configure_property_rules_for_all_elements():
     _property = _ArrayProperty(of_type=Array, element_type=Integer, min=1)
 
 
-# def test_array_can_check_min_length():
-#     _property = _ArrayProperty(of_type=Array, element_type=Integer, min_length=2)
-#
+def test_validate_elements_of_array_stops_at_first_error():
+    class _Model(Model):
+        int_array = Array.property(Integer, min=1)
+
+
+def test_array_can_check_min_length():
+    class _Model(Model):
+        min_2_int_array = Array.property(Integer, min_length=2)
+
+        def __init__(self):
+            super(_Model, self).__init__({'min_2_int_array': [1]})
+
+    with pytest.raises(ValidationException) as error:
+        _Model()
+    assert "{} instance length is {}, the minimum configured length is {}".format(Array.__class__, 1, 2)
+
 # def test_array_can_configure_own_rules():
 #     _property = _ArrayProperty(of_type=Array, element_type=Integer, min_length)
 
