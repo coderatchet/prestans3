@@ -72,7 +72,7 @@ class Array(Container):
         new_mutable_model_subclass = inject_class(cls, _MutableArray, Array,
                                                   new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
                                                       x.__name__))
-        return new_mutable_model_subclass(**kwargs)
+        return new_mutable_model_subclass(cls, **kwargs)
 
     @classmethod
     def property(cls, element_type, **kwargs):
@@ -88,17 +88,16 @@ class Array(Container):
         if isinstance(other, Array):
             return self._values == other._values
         else:
+            if len(self) != len(other):
+                return False
             zipped = zip(self, other)
             for one, two in zipped:
-                if (one is None) != (two is None):
-                    return False
-                else:
-                    try:
-                        _coerced = self._of_type.from_value(two)
-                        if one != _coerced:
-                            return False
-                    except TypeError:
+                try:
+                    _coerced = self._of_type.from_value(two)
+                    if one != _coerced:
                         return False
+                except TypeError:
+                    return False
         return True
 
     def __ne__(self, other):
@@ -204,10 +203,10 @@ class _ArrayProperty(_Property):
         except ValueError:
             if key not in self._element_type.property_rules:
                 raise ValueError(
-                    "'{key}={config}' config in {array_class_name}.__init__ was neither a property rule of "
+                    "'{key}={config}' config in {array_class_name}.__init__ was neither a property rule of " +
                     "'{array_class_name}' or a property rule of the element type '{element_type_name}'".format(
-                        key=key, config=config, array_class_name=self.__class__.__name__,
-                        element_type_name=self._of_type.__name__))
+                        key=key, config=config, array_class_name=self._of_type.__name__,
+                        element_type_name=self._element_type.__name__))
             else:
                 return key, config
 

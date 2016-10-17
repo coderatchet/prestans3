@@ -20,7 +20,7 @@ class String(Scalar, str):
         str.__init__(value)
 
     @classmethod
-    def from_value(cls, value, *args, **kwargs):
+    def from_value(cls, value):
         if not is_str(value):
             raise TypeError
         return String(value)

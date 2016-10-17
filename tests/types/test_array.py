@@ -35,8 +35,9 @@ array = Array(String, ['spam', 'ham'], validate_immediately=False)
 def test_array_can_equate_array_like_object():
     assert array == ['spam', 'ham']
     assert array == Array(String, ('spam', 'ham'), validate_immediately=False)
-    assert not (array == ['no'])
+    assert not (array == ['spam'])
     assert not (array == Array(String, ['no'], validate_immediately=False))
+    assert not (array == [1, 3])
 
 
 def test_array_can_perform_ne_with_array_like_object():
@@ -44,6 +45,7 @@ def test_array_can_perform_ne_with_array_like_object():
     assert not array != ['spam', 'ham']
     assert array != Array(String, ['no'], validate_immediately=False)
     assert not array != Array(String, ['spam', 'ham'], validate_immediately=False)
+    assert (array != [1])
 
 
 def test_array_has_len():
@@ -170,8 +172,31 @@ def test_array_can_check_min_length():
         _Model()
     assert "{} instance length is {}, the minimum configured length is {}".format(Array.__class__, 1, 2)
 
-# def test_array_can_configure_own_rules():
-#     _property = _ArrayProperty(of_type=Array, element_type=Integer, min_length)
 
-# def test_mutable_append_works():
-# my_array = Array.mutable(In)
+def test_cannot_create_array_of_non_immutable_type():
+    with pytest.raises(TypeError):
+        Array(int)
+
+
+def test_can_set_array_instance_to_model_property():
+    class _Model(Model):
+        my_array = Array.property(String)
+
+    mutable = _Model.mutable()
+    mutable.my_array = Array(String, ['foo'])
+
+
+def test_unknown_property_rule_name_config_raises_value_error():
+    with pytest.raises(ValueError) as error:
+        _ArrayProperty(Array, Integer, unknown_rule=True)
+    assert "'{key}={config}' config in {array_class_name}.__init__ was neither a property rule of " + \
+           "'{array_class_name}' or a property rule of the element type '{element_type_name}'".format(
+               key='unknown_rule', config=True, array_class_name=Array.__name__,
+               element_type_name=Integer.__name__) in str(error.value)
+
+
+def test_can_create_mutable_subclass_of_array():
+    class _SubArray(Array):
+        pass
+
+    _SubArray.mutable(Integer, [1, 2, 3])
