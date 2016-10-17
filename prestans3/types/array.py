@@ -11,9 +11,9 @@
 from collections import Iterable
 from copy import copy
 
-from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
-from prestans3.types import Container, ImmutableType
-from prestans3.utils import inject_class
+from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError, PropertyConfigError
+from prestans3.types import Container, ImmutableType, _Property
+from prestans3.utils import inject_class, MergingProxyDictionary
 
 
 def find_first(array, func):
@@ -91,10 +91,6 @@ class Array(Container):
                         return False
         return True
 
-
-
-
-
     def __ne__(self, other):
         return not self.__eq__(other)
 
@@ -152,6 +148,32 @@ class Array(Container):
 
     def copy(self):
         return Array(self._of_type, copy(self._values), validate_immediately=False)
+
+
+class _ArrayProperty(_Property):
+    """
+    allows for property rule configuration that checks all elements
+    """
+    def __init__(self, of_type, element_type, **kwargs):
+        super().__init__(of_type)
+        self._element_type = element_type
+        rules_config = self._get_and_check_rules_config(kwargs)
+        self._array_rules_config = MergingProxyDictionary(rules_config, of_type.default_rules_config())
+
+    def _get_and_check_rule_config(self, key, config):
+        try:
+            key, config = super(_ArrayProperty, self)._get_and_check_rule_config(key, config)
+            self._array_rules_config.update({key: config})
+            return key, config
+        except ValueError:
+            if key not in self._element_type.property_rules:
+                raise ValueError(
+                    "'{key}={config}' config in {array_class_name}.__init__ was neither a property rule of "
+                    "'{array_class_name}' or a property rule of the element type '{element_type_name}'".format(
+                        key=key, config=config, array_class_name=self.__class__.__name__,
+                        element_type_name=self._of_type.__name__))
+            else:
+                return key, config
 
 
 # noinspection PyAbstractClass

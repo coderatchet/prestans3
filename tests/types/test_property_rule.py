@@ -10,7 +10,7 @@
 """
 import pytest
 import pytest_mock
-from prestans3.errors import InvalidMethodUseError, ValidationException
+from prestans3.errors import InvalidMethodUseError, ValidationException, PropertyConfigError
 from prestans3.types import ImmutableType, Container, _Property
 from prestans3.types import Model
 from prestans3.types import String
@@ -142,7 +142,7 @@ def test_check_rule_config_for_non_existing_rule_raises_value_error():
 
 
 # noinspection PyAbstractClass
-def test_check_rules_config_for_non_configurable_property_raises_value_error():
+def test_check_rules_config_for_non_configurable_property_raises_property_config_error():
     class __CustomClassWithNonConfigurable(ImmutableType):
         pass
 
@@ -150,7 +150,7 @@ def test_check_rules_config_for_non_configurable_property_raises_value_error():
                                                             configurable=False)
 
     non_configurable_property = __CustomClassWithNonConfigurable.property()
-    with pytest.raises(ValueError) as error:
+    with pytest.raises(PropertyConfigError) as error:
         non_configurable_property._get_and_check_rules_config(
             {"non_configurable_rule": "doesn't matter, should throw an error"})
     assert "non_configurable_rule is a non-configurable rule in class {}, (see {}.{}())" \

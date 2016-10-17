@@ -11,9 +11,11 @@
 
 import pytest
 from prestans3.errors import AccessError
-from prestans3.types import Array
+from prestans3.types import Array, _Property
 from prestans3.types import Integer
+from prestans3.types import Model
 from prestans3.types import String
+from prestans3.types.array import _ArrayProperty
 
 
 def test_array_can_be_set_with_initial_iterable():
@@ -146,6 +148,17 @@ def test_mutable_can_del_item():
     my_array = Array.mutable(Integer, [3])
     del my_array[0]
     assert len(my_array) == 0
+
+
+def test_array_can_configure_property_rules_for_all_elements():
+    _property = _ArrayProperty(of_type=Array, element_type=Integer, min=1)
+
+
+# def test_array_can_check_min_length():
+#     _property = _ArrayProperty(of_type=Array, element_type=Integer, min_length=2)
+#
+# def test_array_can_configure_own_rules():
+#     _property = _ArrayProperty(of_type=Array, element_type=Integer, min_length)
 
 # def test_mutable_append_works():
 # my_array = Array.mutable(In)

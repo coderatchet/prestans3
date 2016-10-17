@@ -10,6 +10,7 @@
 """
 import functools
 
+from prestans3.errors import AccessError, PropertyConfigError
 from prestans3.utils import with_metaclass, MergingProxyDictionary
 
 
@@ -288,15 +289,20 @@ class _Property(object):
         return self._of_type
 
     def _get_and_check_rule_config(self, key, config):
-        """ adds a configuration of a |rule| to this instance """
+        """
+        adds a configuration of a |rule| to this instance
+
+        :raises ValueError: if the key is not registered property rule name on this property_type
+        :raises PropertyConfigError: if the property rule is a non-configurable property
+        """
         try:
             _rule = self.property_type.get_property_rule(key)
         except KeyError:
             raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         if not _rule.configurable:
-            raise ValueError("{} is a non-configurable rule in class {}, (see {}.{}()))"
-                             .format(key, self.property_type.__name__, ImmutableType.__name__,
-                                     ImmutableType.register_property_rule.__name__))
+            raise PropertyConfigError(self.property_type, key, "{} is a non-configurable rule in class {}, (see {}.{}()))"
+                                      .format(key, self.property_type.__name__, ImmutableType.__name__,
+                                              ImmutableType.register_property_rule.__name__))
         return key, config
 
     def get_rule_config(self, key):

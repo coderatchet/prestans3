@@ -118,3 +118,11 @@ class AccessError(Exception):
         if message is None:
             message = "invalid access on class: {}".format(cls.__name__)
         super(AccessError, self).__init__(message)
+
+
+class PropertyConfigError(Exception):
+    def __init__(self, cls, property_rule_name, message=None):
+        if message is None:
+            message = "error whilst configuring the property rule name {} on class {}".format(
+                property_rule_name, cls.__name__)
+        super(PropertyConfigError, self).__init__(message)
