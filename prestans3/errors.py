@@ -134,18 +134,17 @@ class ContainerValidationExceptionSummary(ValidationExceptionSummary):
     def __new__(cls, class_name, attribute_name, summary):
         """
         adjusts the key of the provided summary and returns a newly created exception with the properly referenced
-        |attribute|\ :
+        |attribute|\ or array element:
 
-        >>> from prestans3.errors import ValidationExceptionSummary
+        >>> from prestans3.errors import ValidationExceptionSummary, ContainerValidationExceptionSummary
         >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
-        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperModel.my_sub_class' \
-        ...     , summary1)
-        >>> assert super_summary[0] == "MySuperModel == ['String was invalid']"
+        >>> super_summary = ContainerValidationExceptionSummary('MySuperModel', 'my_sub_attr', summary1)
+        >>> assert "MySuperModel.my_sub_attr.some_string" in str(super_summary)
+        >>> assert "String was invalid" in str(super_summary)
 
         :param str class_name: the |type|\ 's class that owns the sub |attribute|
         :param str attribute_name: the name of the configured |attribute| on the owning |type|
-        :param |ContainerValidationExceptionSummary| summary: a modified validation summary to qualified with the name
-               of the attribute with the parent class
+        :param |ValidationExceptionSummary| summary: the summary of one of this containers validation exceptions
         """
         _replace_regex = r'^[^.]*'
         return super(ContainerValidationExceptionSummary, cls).__new__(cls,
