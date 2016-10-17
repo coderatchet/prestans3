@@ -12,6 +12,7 @@
 import pytest
 from prestans3.errors import AccessError
 from prestans3.types import Array
+from prestans3.types import Integer
 from prestans3.types import String
 
 
@@ -22,7 +23,7 @@ def test_array_can_be_set_with_initial_iterable():
 
 def test_array_must_have_type_arg():
     with pytest.raises(TypeError):
-        Array(['spam'], ['ham'], validate_immediately=False)
+        Array(['spam', 'ham'], validate_immediately=False)
     array = Array(String, [], validate_immediately=False)
 
 
@@ -72,10 +73,11 @@ def test_array_can_copy_itself():
     assert __copy is not array
 
 
-def test_array_can_append():
-    __my_array = array.copy()
-    __my_array.append('jam')
-    assert __my_array == ['spam', 'ham', 'jam']
+def test_array_append_raises_access_error():
+    with pytest.raises(AccessError) as error:
+        array.append('jam')
+    assert "append called on an immutable {class_name}".format(
+        class_name=Array.__name__) in str(error.value)
 
 
 def test_array_can_retrieve_tail():
@@ -95,11 +97,11 @@ def test_array_can_retrieve_last():
 
 
 def test_can_drop_n_elements():
-    Array(String, [1, 2, 3, 4, 5, 6, 7, 8, 9], validate_immediately=False).drop(3) == [4, 5, 6, 7, 8, 9]
+    Array(Integer, [1, 2, 3, 4, 5, 6, 7, 8, 9], validate_immediately=False).drop(3) == [4, 5, 6, 7, 8, 9]
 
 
 def test_can_take_n_elements():
-    Array(String, [1, 2, 3, 4, 5], validate_immediately=False).take(3) == [1, 2, 3]
+    Array(Integer, [1, 2, 3, 4, 5], validate_immediately=False).take(3) == [1, 2, 3]
 
 
 # noinspection PyStatementEffect
@@ -117,10 +119,27 @@ def test_adding_non_of_type_subclass_to_array_raises_value_error():
     class MySuperString(String):
         pass
 
-    __array = Array(String, validate_immediately=False)
+    with pytest.raises(ValueError) as error:
+        Array(String, [1])
+    assert 'in Array.__init__, iterable[{}] is {} but the declared type of this array is {}'.format(0, 1, String.__name__) \
+           in str(error)
+
+    __array = Array.mutable(String, validate_immediately=False)
     __array.append('this is a string')
     __array.append(String('this is a string'))
     __array.append(MySuperString('this is also a string'))
     with pytest.raises(ValueError):
         __array.append(1)
 
+
+def test_can_make_mutable_array():
+    Array.mutable(String)
+
+
+def test_mutable_set_item_works():
+    my_array = Array.mutable(Integer, [2])
+    my_array[0] = 1
+
+
+# def test_mutable_append_works():
+    # my_array = Array.mutable(In)
