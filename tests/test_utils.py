@@ -313,6 +313,11 @@ def test_repr_method_functioning():
     assert "'baz': 'spam'" in repr(MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'}))
 
 
+def test_can_set_item():
+    dictionary = MergingProxyDictionary()
+    dictionary['foo'] = 'bar'
+
+
 def test_merging_dictionary_raises_exception_when_setting_item():
     dictionary = utils.ImmutableMergingDictionary()
     with pytest.raises(Exception):
