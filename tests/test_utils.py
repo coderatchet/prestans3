@@ -342,6 +342,17 @@ def test_merging_dictionary_can_update():
     assert dictionary['ham'] == 'spam'
 
 
+# noinspection PyStatementEffect
+def test_merging_dictionary_can_clear_own_values_only():
+    dictionary = MergingProxyDictionary({'baz': 'bar'}, {'spam': 'ham'})
+    assert len(dictionary) == 2
+    dictionary.clear()
+    assert len(dictionary) == 1
+    with pytest.raises(KeyError):
+        dictionary['baz']
+    assert dictionary['spam'] == 'ham'
+
+
 def test_merging_dictionary_can_set_default():
     dictionary = MergingProxyDictionary({'foo': 'bar'})
     value = dictionary.setdefault('foo', 'baz')
