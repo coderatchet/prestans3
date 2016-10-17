@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import re
 
 
 class ValidationExceptionSummary(tuple):
@@ -126,3 +127,29 @@ class PropertyConfigError(Exception):
             message = "error whilst configuring the property rule name {} on class {}".format(
                 property_rule_name, cls.__name__)
         super(PropertyConfigError, self).__init__(message)
+
+
+class ContainerValidationExceptionSummary(ValidationExceptionSummary):
+    # noinspection PyInitNewSignature
+    def __new__(cls, class_name, attribute_name, summary):
+        """
+        adjusts the key of the provided summary and returns a newly created exception with the properly referenced
+        |attribute|\ :
+
+        >>> from prestans3.errors import ValidationExceptionSummary
+        >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
+        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperModel.my_sub_class' \
+        ...     , summary1)
+        >>> assert super_summary[0] == "MySuperModel == ['String was invalid']"
+
+        :param str class_name: the |type|\ 's class that owns the sub |attribute|
+        :param str attribute_name: the name of the configured |attribute| on the owning |type|
+        :param |ContainerValidationExceptionSummary| summary: a modified validation summary to qualified with the name
+               of the attribute with the parent class
+        """
+        _replace_regex = r'^[^.]*'
+        return super(ContainerValidationExceptionSummary, cls).__new__(cls,
+                                                                       re.sub(_replace_regex, "{}.{}".format(class_name,
+                                                                                                             attribute_name),
+                                                                              summary[0]),
+                                                                       summary[1])

@@ -193,11 +193,3 @@ class _MutableArray(Array):
                     "value is not an instance of {}, one of its subclasses or a coercable type: received value type: {}"
                         .format(self._of_type.__name__, value.__class__.__name__))
         self._values.append(value)
-
-
-class ArrayValidationException(ValidationException):
-    pass
-
-
-class ElementValidationExceptionSummary(ValidationExceptionSummary):
-    pass

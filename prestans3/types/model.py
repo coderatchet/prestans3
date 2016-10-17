@@ -9,38 +9,9 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-import re
-
-from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError
-from prestans3.types import Container, _Property, _PrestansTypeMeta, _LazyOneWayGraph, \
-    _MergingDictionaryWithMutableOwnValues
+from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary
+from prestans3.types import Container, _Property, _PrestansTypeMeta, _LazyOneWayGraph
 from prestans3.utils import is_str, inject_class, MergingProxyDictionary, with_metaclass
-
-
-class AttributeValidationExceptionSummary(ValidationExceptionSummary):
-    # noinspection PyInitNewSignature
-    def __new__(cls, class_name, attribute_name, summary):
-        """
-        adjusts the key of the provided summary and returns a newly created exception with the properly referenced
-        |attribute|\ :
-
-        >>> from prestans3.errors import ValidationExceptionSummary
-        >>> summary1 = ValidationExceptionSummary('MyClass.some_string', ['String was invalid'])
-        >>> super_summary = ValidationExceptionSummary.get_summary_with_new_qualified_name('MySuperModel.my_sub_class' \
-        ...     , summary1)
-        >>> assert super_summary[0] == "MySuperModel == ['String was invalid']"
-
-        :param str class_name: the |type|\ 's class that owns the sub |attribute|
-        :param str attribute_name: the name of the configured |attribute| on the owning |type|
-        :param |AttributeValidationExceptionSummary| summary: a modified validation summary to qualified with the name
-               of the attribute with the parent class
-        """
-        _replace_regex = r'^[^.]*'
-        return super(AttributeValidationExceptionSummary, cls).__new__(cls,
-                                                                       re.sub(_replace_regex, "{}.{}".format(class_name,
-                                                                                                             attribute_name),
-                                                                              summary[0]),
-                                                                       summary[1])
 
 
 class ModelValidationException(ValidationException):
@@ -67,7 +38,7 @@ class ModelValidationException(ValidationException):
             yield summary
         for key, validation_exception in list(self.validation_exceptions.items()):  # type: (str, ValidationException)
             for summary in list(validation_exception):
-                yield AttributeValidationExceptionSummary(self.property_type.__name__, key, summary)
+                yield ContainerValidationExceptionSummary(self.property_type.__name__, key, summary)
 
     def add_validation_exception(self, key, validation_exception):
         """

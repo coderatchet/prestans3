@@ -36,10 +36,10 @@ ModelValidationException
     :exclude-members: __init__
 
 
-AttributeValidationExceptionSummary
+ContainerValidationExceptionSummary
 -----------------------------------
 
-.. autoclass:: AttributeValidationExceptionSummary
+.. autoclass:: ContainerValidationExceptionSummary
     :show-inheritance:
     :members:
     :special-members: __new__
