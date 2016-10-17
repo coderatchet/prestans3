@@ -159,6 +159,9 @@ class _MutableArray(Array):
     def __setitem__(self, key, value):
         self._values[key] = self._of_type.from_value(value)
 
+    def __delitem__(self, key):
+        del self._values[key]
+
     def append(self, value):
         if not isinstance(value, self._of_type):
             try:

@@ -121,7 +121,8 @@ def test_adding_non_of_type_subclass_to_array_raises_value_error():
 
     with pytest.raises(ValueError) as error:
         Array(String, [1])
-    assert 'in Array.__init__, iterable[{}] is {} but the declared type of this array is {}'.format(0, 1, String.__name__) \
+    assert 'in Array.__init__, iterable[{}] is {} but the declared type of this array is {}'.format(0, 1,
+                                                                                                    String.__name__) \
            in str(error)
 
     __array = Array.mutable(String, validate_immediately=False)
@@ -136,10 +137,15 @@ def test_can_make_mutable_array():
     Array.mutable(String)
 
 
-def test_mutable_set_item_works():
+def test_mutable_can_set_item():
     my_array = Array.mutable(Integer, [2])
     my_array[0] = 1
 
 
+def test_mutable_can_del_item():
+    my_array = Array.mutable(Integer, [3])
+    del my_array[0]
+    assert len(my_array) == 0
+
 # def test_mutable_append_works():
-    # my_array = Array.mutable(In)
+# my_array = Array.mutable(In)
