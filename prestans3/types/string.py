@@ -8,6 +8,8 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import re
+
 from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.utils import is_str
 
@@ -48,6 +50,12 @@ def _str_max_length(instance, config):
                                       length))
 
 
+def _format_regex(instance, config):
+    if not re.match(config, instance):
+        raise ValidationException(instance.__class__, '{} does not match the format_regex {}'.format(instance.__class__,
+                                                                                                     config))
+
+
 def _min_max_string_check_config(type, config):
     if config is not None and 'str_min_length' in config and 'str_max_length' in config \
             and config['str_min_length'] > config['str_max_length']:
@@ -58,4 +66,5 @@ def _min_max_string_check_config(type, config):
 
 String.register_property_rule(_str_min_length, name="str_min_length")
 String.register_property_rule(_str_max_length, name="str_max_length")
+String.register_property_rule(_format_regex, name="format_regex")
 String.register_config_check(_min_max_string_check_config, name="min_max_string_check_config")

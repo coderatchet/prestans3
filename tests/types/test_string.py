@@ -87,3 +87,18 @@ def test_str_max_and_min_are_compatible_values():
             string = String.property(str_min_length=3, str_max_length=2)
     assert 'invalid {} property configuration: ' + \
            'str_min_length config of {} is greater than str_max_length config of {}'.format(String.__name__, 3, 2)
+
+
+def test_str_regex_property_rule_works():
+    class _Model(Model):
+        string = String.property(format_regex=r'[abc][123]')
+
+    model = _Model.mutable()
+    model.string = 'a1'
+    model.validate()
+    model.string = 'c2'
+    model.validate()
+    model.string = 's1'
+    with pytest.raises(ValidationException) as exception:
+        model.validate()
+    assert '{} does not match the format_regex {}'.format('s1', r'[abc][123]')
