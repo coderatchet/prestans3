@@ -16,7 +16,9 @@ from . import Scalar
 
 
 class String(Scalar, str):
-    def __init__(self, value):
+    def __init__(self, value=None):
+        if value is None:
+            value = ""
         str.__init__(value)
 
     @classmethod
@@ -24,4 +26,3 @@ class String(Scalar, str):
         if not is_str(value):
             raise TypeError
         return String(value)
-    pass
