@@ -27,3 +27,8 @@ def test_string_can_eq_native():
 def test_string_can_ne_native():
     assert String("no") != "yes"
     assert not String("yes") != "yes"
+
+
+def test_string_can_call_startswith():
+    assert String("yes").startswith("ye")
+    assert not String("no").startswith("o")
