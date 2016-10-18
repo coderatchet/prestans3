@@ -17,3 +17,14 @@ def test_can_create_boolean():
 
 def test_boolean_can_accept_default_value():
     Boolean(True)
+
+
+def test_boolean_can_eq_native_boolean():
+    assert Boolean(True) == True
+    assert not Boolean(False) == True
+
+
+def test_boolean_can_eq_other_boolean():
+    assert Boolean(True) == Boolean(True)
+    assert not Boolean(False) == Boolean(True)
+
