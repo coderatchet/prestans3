@@ -13,4 +13,13 @@ from . import Number
 
 
 class Float(Number, float):
-    pass
+    @classmethod
+    def from_value(cls, value):
+        if isinstance(value, cls):
+            return value
+        elif not isinstance(value, float):
+            raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
+        return Float(value)
+
+    def __eq__(self, other):
+        return super(Float, self).__eq__(float(other))
