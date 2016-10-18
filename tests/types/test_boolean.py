@@ -13,3 +13,7 @@ from prestans3.types import Boolean
 
 def test_can_create_boolean():
     Boolean()
+
+
+def test_boolean_can_accept_default_value():
+    Boolean(True)
