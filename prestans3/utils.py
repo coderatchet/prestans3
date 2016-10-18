@@ -157,15 +157,15 @@ class MergingProxyDictionary(dict):
         return in_me
 
     def __copy__(self):
-        return super(MergingProxyDictionary, self).copy()
-
-    def copy(self):
         _copy = {}
         if self._others:
             for other in reversed(self._others):
-                _copy.update(other)
-        _copy.update(copy(self))
+                _copy.update(copy(other))
+        _copy.update(super(MergingProxyDictionary, self).copy())
         return _copy
+
+    def copy(self):
+        return copy(self)
 
     def __len__(self):
         return sum(1 for _ in self.keys())
@@ -208,6 +208,7 @@ class MergingProxyDictionary(dict):
 
 class ImmutableMergingDictionary(MergingProxyDictionary):
     """ raises AccessError on an attempt to mutate, otherwise the same as |MergingProxyDictionary| """
+
     def __delitem__(self, key):
         """ :raises AccessError: when attempting to call this function. """
         raise AccessError(self.__class__, key)

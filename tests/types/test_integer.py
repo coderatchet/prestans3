@@ -56,8 +56,6 @@ def test_from_value_raises_value_error_on_non_int_subclass():
         Integer.from_value(0.3)
 
 
-
-
 def test_min_property_rule_works():
     class __Model(Model):
         my_int = Integer.property(min=1)
@@ -86,16 +84,3 @@ def test_max_property_rule_works():
         Integer, 2, 1) in str(ex)
 
 
-def test_choices_property_rule_works():
-    class __Model(Model):
-        my_int = Integer.property(choices=[1, 5])
-
-    model = __Model.mutable()
-    model.my_int = 1
-    model.validate()
-    model.my_int = 5
-    model.validate()
-    model.my_int = 3
-    with pytest.raises(ValidationException) as ex:
-        model.validate()
-    assert "{} property is {}, valid choices are {}".format(Integer, 3, '[1, 5]') in str(ex)

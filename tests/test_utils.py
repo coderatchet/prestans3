@@ -222,9 +222,11 @@ def test_merging_dictionary_can_access_all_keys():
 
 
 def test_can_copy_merging_dictionary():
-    dictionary = MergingProxyDictionary({'foo': 'bar'})
+    dictionary = MergingProxyDictionary({'foo': 'bar'}, {'baz': 'ham'}, MergingProxyDictionary({'spam': 'glam'}))
     copy1 = copy(dictionary)
     assert 'foo' in copy1
+    assert 'baz' in copy1
+    assert 'spam' in copy1
     assert copy1 is not dictionary
 
 
@@ -397,3 +399,11 @@ def test_clear_raises_exception():
     dictionary = utils.ImmutableMergingDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
     with pytest.raises(AccessError):
         dictionary.clear()
+
+
+def test_merging_dictionary_does_not_skip_items():
+    dictionary = MergingProxyDictionary({'foo': 'bar'}, MergingProxyDictionary({'baz': 'spam'}),
+                                        MergingProxyDictionary({'bar': 'ham'}))
+    assert ('foo', 'bar') in dictionary.items()
+    assert ('baz', 'spam') in dictionary.items()
+    assert ('bar', 'ham') in dictionary.items()

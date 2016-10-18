@@ -10,7 +10,7 @@
 """
 import functools
 
-from prestans3.errors import PropertyConfigError
+from prestans3.errors import PropertyConfigError, ValidationException
 from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph
 
 
@@ -89,7 +89,6 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         exception_messages = []
         if config is None:
             config = {}
-        from prestans3.errors import ValidationException
         for rule_name, rule in list(self.__class__.property_rules.items()):
             try:
                 if rule_name in config:
@@ -199,6 +198,17 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
 _config_check_graph = LazyOneWayGraph(ImmutableType)
+
+
+def _choices(instance, config):
+    if instance not in config:
+        raise ValidationException(instance.__class__,
+                                  "{} property is {}, valid choices are [{}]"
+                                  .format(instance.__class__.__name__, instance,
+                                          ", ".join([str(item) for item in config])))
+
+
+ImmutableType.register_property_rule(_choices, name="choices")
 
 
 class _Property(object):
