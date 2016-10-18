@@ -8,7 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-
+from prestans3.errors import ValidationException
 from prestans3.utils import is_str
 
 from . import ImmutableType
@@ -26,3 +26,16 @@ class String(ImmutableType, str):
             raise TypeError(
                 "{} of type {} is not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
         return String(value)
+
+
+def _str_min_length(instance, config):
+    length = len(instance)
+    if length < config:
+        raise ValidationException(instance.__class__,
+                                  '{} str_min_length config is {} however len("{}") == {}'.format(
+                                      instance.__class__.__name__,
+                                      config, instance,
+                                      length))
+
+
+String.register_property_rule(_str_min_length, name="str_min_length")

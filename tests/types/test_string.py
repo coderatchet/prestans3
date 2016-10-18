@@ -9,6 +9,8 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
+from prestans3.errors import ValidationException
+from prestans3.types import Model
 from prestans3.types import String
 
 
@@ -45,3 +47,17 @@ def test_from_value_does_not_accept_non_string():
     with pytest.raises(TypeError) as error:
         String.from_value(1)
     assert '{} of type {} is not coercible to {}'.format(1, int.__name__, String.__name__) in str(error.value)
+
+
+def test_str_min_length_works():
+    class _Model(Model):
+        string = String.property(str_min_length=3)
+
+    model = _Model.mutable()
+    model.string = 'str'
+    model.validate()
+    model.string = 'no'
+    with pytest.raises(ValidationException) as exception:
+        model.validate()
+    assert '{} str_min_length config is {} however len("{}") == {}'.format(String.__name__, 3, 'no', 2) \
+           in str(exception)
