@@ -28,12 +28,6 @@ class Boolean(Scalar):
     def __ne__(self, other):
         return not self == other
 
-    def __or__(self, other):
-        return self._value or other
-
-    def __and__(self, other):
-        return self._value and other
-
     def __nonzero__(self):
         return self._value
 
