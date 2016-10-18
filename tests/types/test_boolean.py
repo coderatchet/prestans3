@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import pytest
 from prestans3.types import Boolean
 
 
@@ -63,3 +64,15 @@ def test_boolean_can_and_properly():
     assert Boolean(True) and Boolean(True)
     assert not (Boolean(False) and Boolean(True))
     assert not (Boolean(False) and Boolean(False))
+
+
+def test_can_create_boolean_from_value():
+    boolean = Boolean(True)
+    assert Boolean.from_value(True) == boolean
+    assert Boolean.from_value(boolean) is boolean
+
+
+def test_non_bool_value_raises_type_error():
+    with pytest.raises(ValueError) as error:
+        Boolean.from_value('cheese')
+    assert "{} of type {} is not a subclass of {} or a bool".format('cheese', str.__name__, Boolean)

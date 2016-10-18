@@ -15,6 +15,15 @@ from . import Scalar
 # http://stackoverflow.com/questions/2172189/why-i-cant-extend-bool-in-python
 # noinspection PyAbstractClass
 class Boolean(Scalar):
+
+    @classmethod
+    def from_value(cls, value):
+        if isinstance(value, cls):
+            return value
+        elif value.__class__ is not bool:
+            raise ValueError("{} of type {} is not a subclass of {} or a bool".format(value, value.__class__.__name__, cls))
+        return Boolean(bool(value))
+
     def __init__(self, value=False):
         self._value = value
         super(Boolean, self).__init__()
