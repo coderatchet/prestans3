@@ -9,7 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
-from prestans3.errors import ValidationException
+from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.types import Model
 from prestans3.types import String
 
@@ -75,3 +75,15 @@ def test_str_max_length_works():
         model.validate()
     assert '{} str_max_length config is {} however len("{}") == {}'.format(String.__name__, 2, 'str', 3) \
            in str(exception)
+
+
+# noinspection PyUnusedLocal
+def test_str_max_and_min_are_compatible_values():
+    class _Model(Model):
+        string = String.property(str_min_length=3, str_max_length=3)
+
+    with pytest.raises(PropertyConfigError) as error:
+        class __Model(Model):
+            string = String.property(str_min_length=3, str_max_length=2)
+    assert 'invalid {} property configuration: ' + \
+           'str_min_length config of {} is greater than str_max_length config of {}'.format(String.__name__, 3, 2)
