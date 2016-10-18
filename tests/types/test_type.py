@@ -10,11 +10,8 @@
 """
 
 import pytest
-
-from prestans3.types import String, _Property, ImmutableType, Scalar
-
 from prestans3.types import Model
-from prestans3.utils import MergingProxyDictionary
+from prestans3.types import String, _Property, ImmutableType
 
 
 class MyClass(Model):

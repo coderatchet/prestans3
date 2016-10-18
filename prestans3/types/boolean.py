@@ -9,12 +9,12 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Scalar
+from . import ImmutableType
 
 
 # http://stackoverflow.com/questions/2172189/why-i-cant-extend-bool-in-python
 # noinspection PyAbstractClass
-class Boolean(Scalar):
+class Boolean(ImmutableType):
 
     @classmethod
     def from_value(cls, value):

@@ -10,10 +10,10 @@
 """
 from datetime import date
 
-from . import Model
+from . import ImmutableType
 
 
-class Date(Model):
+class Date(ImmutableType):
     """
     Prestans3 Date Type.
     """

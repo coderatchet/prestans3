@@ -57,7 +57,7 @@ class _PrestansModelTypeMeta(_PrestansTypeMeta):
 # noinspection PyAbstractClass
 class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
     """
-    Base class of complex |types|. may contain other |Models| and/or |Scalars|.
+    Base class of complex |types|. may contain other |Models| and/or |ImmutableTypes|.
     """
 
     def __init__(self, initial_values=None, **kwargs):

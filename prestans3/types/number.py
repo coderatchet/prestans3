@@ -9,8 +9,8 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Scalar
+from . import ImmutableType
 
 
-class Number(Scalar):
+class Number(ImmutableType):
     pass

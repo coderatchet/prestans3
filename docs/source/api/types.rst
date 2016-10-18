@@ -18,13 +18,6 @@ _Property
     :special-members:
     :exclude-members: __weakref__
 
-Scalar
-------
-
-.. autoclass:: Scalar
-    :members:
-    :show-inheritance:
-
 Number
 ------
 

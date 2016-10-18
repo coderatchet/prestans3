@@ -8,14 +8,13 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-import pprint
 
 from prestans3.utils import is_str
 
-from . import Scalar
+from . import ImmutableType
 
 
-class String(Scalar, str):
+class String(ImmutableType, str):
     def __init__(self, value=None):
         if value is None:
             value = ""

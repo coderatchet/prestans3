@@ -116,9 +116,6 @@ rst_epilog = """
 .. |String|  replace:: :class:`~.String`
 .. |Strings|  replace:: :class:`Strings<.string.String>`
 
-.. |Scalar|  replace:: :class:`Scalar<.Scalar>`
-.. |Scalars|  replace:: :class:`Scalars<.Scalar>`
-
 .. |Integer|  replace:: :class:`Integer<.integer.Integer>`
 .. |Integers|  replace:: :class:`Integers<.integer..Integer>`
 

@@ -10,8 +10,8 @@
 """
 from datetime import time
 
-from . import Model
+from . import ImmutableType
 
 
-class Time(time, Model):
+class Time(time, ImmutableType):
     pass

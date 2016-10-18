@@ -38,7 +38,21 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
     Attributes:
         property_rules  registered property rules for this |type|
+        is_scalar       informs whether the class is a scalar type object or otherwise
+
+                        known Scalars
+                        -------------
+                        - |Boolean|
+                        - |Number|
+                            - |Integer|
+                            - |Float|
+                        - |String|
+                        - |Date|
+                        - |DateTime|
+                        - |Time|
     """
+
+    is_scalar = True
 
     def __init__(self, validate_immediately=True):
         """
@@ -89,7 +103,6 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
             this_type_exception.add_validation_messages(exception_messages)
             raise this_type_exception
 
-    #
     @classmethod
     def from_value(cls, value):
         """
@@ -183,8 +196,10 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         return {rule_name: rule.default_config if not callable(rule.default_config) else rule.default_config()
                 for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
+
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
 _config_check_graph = LazyOneWayGraph(ImmutableType)
+
 
 class _Property(object):
     """
@@ -292,26 +307,10 @@ class _Property(object):
 
 
 # noinspection PyAbstractClass
-class Scalar(ImmutableType):
-    """
-    Base type of all |Scalar| |attributes|\ .
-
-    known Subclasses:
-        - |Boolean|
-        - |Number|
-            - |Integer|
-            - |Float|
-        - |String|
-        - |Date|
-        - |DateTime|
-        - |Time|
-    """
-    pass
-
-
-# noinspection PyAbstractClass
 class Container(ImmutableType):
     """ subclass of all |types| with containable |attributes| """
+
+    is_scalar = False
 
     # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]
     # func raises |ValidationException| on invalidation

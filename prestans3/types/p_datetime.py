@@ -10,10 +10,10 @@
 """
 from datetime import datetime
 
-from . import Model
+from . import ImmutableType
 
 
-class DateTime(datetime, Model):
+class DateTime(datetime, ImmutableType):
     def __init__(self):
         super(DateTime, self).__init__()
     pass
