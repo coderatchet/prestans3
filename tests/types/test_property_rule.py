@@ -285,3 +285,27 @@ def test_property_rule_with_no_config_is_not_run():
 
     _HasRule.register_property_rule(__must_have_config, name="must")
     _HasRule()
+
+
+def test_property_rule_registry_resolves_function_arguments_for_default():
+    class _HasFunctionDefaultRule(ImmutableType):
+        pass
+
+    def _foo(instance, config):
+        pass
+
+    def _gen():
+        return True
+
+    _HasFunctionDefaultRule.register_property_rule(_foo, name="foo", default=_gen)
+    config = _HasFunctionDefaultRule.default_rules_config()
+    assert 'foo' in config
+    assert config['foo'] is True
+
+
+def test_can_register_property_rule_config_check():
+    class _HasConfigCheck(ImmutableType):
+        pass
+
+    _HasConfigCheck.register_config_check(lambda _x, _y: None, name="dummy_config_check")
+    assert 'dummy_config_check' in _HasConfigCheck.config_checks

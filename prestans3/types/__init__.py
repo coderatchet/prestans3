@@ -14,14 +14,21 @@ from prestans3.errors import PropertyConfigError
 from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph
 
 
-class _PropertyRules(object):
+class _PropertyRulesProperty(object):
     # noinspection PyUnusedLocal
     def __get__(self, cls, _mcs):
         return _property_rule_graph[cls]
 
 
+class _ConfigChecksProperty(object):
+    # noinspection PyUnusedLocal
+    def __get__(self, cls, _mcs):
+        return _config_check_graph[cls]
+
+
 class _PrestansTypeMeta(type):
-    property_rules = _PropertyRules()
+    property_rules = _PropertyRulesProperty()  # type: dict[str, (T <= ImmutableType, any) -> None]
+    config_checks = _ConfigChecksProperty()  # type: dict[str, (type, any) -> None]
 
 
 class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
@@ -148,6 +155,19 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         cls.property_rules[name] = wrapped_pr
 
     @classmethod
+    def register_config_check(cls, config_check, name=None):
+        arg_count = config_check.__code__.co_argcount
+        if arg_count != 2:
+            func_name = config_check.__name__
+            func_args = config_check.__code__.co_varnames
+            raise ValueError(
+                "expected property_rule function with 2 arguments, "
+                "received function with {} argument(s): {}({})".format(arg_count, func_name, ", ".join(func_args)))
+        if name is None:
+            name = config_check.__name__
+        cls.config_checks[name] = config_check
+
+    @classmethod
     def get_property_rule(cls, name):
         """ retrieve the |rule| by name (``str``) """
         return cls.property_rules[name]
@@ -160,12 +180,11 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
         :return: dict (str -> any)
         """
-        return {rule_name: rule.default_config for rule_name, rule in list(cls.property_rules.items())
-                if rule.default_config}
-
+        return {rule_name: rule.default_config if not callable(rule.default_config) else rule.default_config()
+                for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
-
+_config_check_graph = LazyOneWayGraph(ImmutableType)
 
 class _Property(object):
     """
@@ -251,6 +270,10 @@ class _Property(object):
         """ find a |rule|\ 's configuration by its name """
         return self._rules_config[key]
 
+    @property
+    def config_checks(self):
+        return self._of_type.config_checks
+
     def _get_and_check_rules_config(self, kwargs):
         """
         merge default rule configs with explicit rule configs in kwargs
@@ -262,7 +285,10 @@ class _Property(object):
             for key, config in list(kwargs.items()):
                 yield self._get_and_check_rule_config(key, config)
 
-        return {checked_key: checked_config for checked_key, checked_config in list(_gen())}
+        all_config = {checked_key: checked_config for checked_key, checked_config in list(_gen())}
+        for key, config_check in list(self.config_checks.items()):
+            config_check(self._of_type, all_config)
+        return all_config
 
 
 # noinspection PyAbstractClass
