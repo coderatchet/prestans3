@@ -18,3 +18,10 @@ class Time(Temporal, time):
         time.__init__(hour, minute, second, microsecond, tzinfo)
         super(Time, self).__init__()
 
+    @classmethod
+    def from_value(cls, value):
+        if isinstance(value, Time):
+            return value
+        elif not isinstance(value, time):
+            raise TypeError(
+                "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
