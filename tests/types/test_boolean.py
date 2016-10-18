@@ -32,3 +32,8 @@ def test_boolean_can_eq_other_boolean():
 def test_boolean_can_ne_native_boolean():
     assert Boolean(True) != False
     assert not Boolean(False) != False
+
+
+def test_boolean_can_ne_other_boolean():
+    assert Boolean(True) != Boolean(False)
+    assert not Boolean(False) != Boolean(False)

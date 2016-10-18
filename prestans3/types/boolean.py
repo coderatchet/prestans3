@@ -25,6 +25,9 @@ class Boolean(Scalar):
         else:
             return self._value is other
 
+    def __ne__(self, other):
+        return not self == other
+
     def _eq_other_instance(self, other_instance):
         """
         :param Boolean other_instance:
