@@ -17,7 +17,7 @@ from . import Scalar
 class Boolean(Scalar):
     def __init__(self, value=False):
         self._value = value
-        super().__init__()
+        super(Boolean, self).__init__()
 
     def __eq__(self, other):
         if isinstance(other, self.__class__):
@@ -28,9 +28,21 @@ class Boolean(Scalar):
     def __ne__(self, other):
         return not self == other
 
+    def __or__(self, other):
+        return self._value or other
+
+    def __and__(self, other):
+        return self._value and other
+
+    def __nonzero__(self):
+        return self._value
+
+    def __bool__(self):
+        return self.__nonzero__()
+
     def _eq_other_instance(self, other_instance):
         """
         :param Boolean other_instance:
-        :return: True or False
+        :return: bool
         """
         return self._value == other_instance._value
