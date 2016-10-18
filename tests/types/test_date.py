@@ -11,6 +11,7 @@
 from datetime import date, time
 
 import pytest
+from prestans3.errors import AccessError
 from prestans3.types import Date
 
 
@@ -35,4 +36,15 @@ def test_can_compare_dates():
 
 
 def test_can_fromtimestamp():
-    assert Date.fromtimestamp(1476767396) == Date(2016, 10, 18)
+    fromtimestamp = Date.fromtimestamp(1476767396)
+    assert fromtimestamp == Date(2016, 10, 18)
+    assert issubclass(fromtimestamp.__class__, Date)
+
+
+def test_replace_raises_access_error():
+    my_date = Date(2000, 1, 1)
+    with pytest.raises(AccessError) as error:
+        my_date.replace(year=1)
+    assert "attempted to call replace on an immutable {class_name}, " + \
+           "For a mutable {class_name}, call {class_name}.mutable(...)".format(class_name=Date.__name__) \
+           in str(error.value)
