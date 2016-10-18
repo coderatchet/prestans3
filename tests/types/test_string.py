@@ -32,3 +32,9 @@ def test_string_can_ne_native():
 def test_string_can_call_startswith():
     assert String("yes").startswith("ye")
     assert not String("no").startswith("o")
+
+
+def test_from_value_works():
+    String.from_value('string') == 'string'
+    string = String('string')
+    String.from_value(string) == string
