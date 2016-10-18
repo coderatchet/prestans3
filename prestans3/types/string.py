@@ -23,5 +23,6 @@ class String(ImmutableType, str):
     @classmethod
     def from_value(cls, value):
         if not is_str(value):
-            raise TypeError
+            raise TypeError(
+                "{} of type {} is not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
         return String(value)

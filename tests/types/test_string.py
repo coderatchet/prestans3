@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import pytest
 from prestans3.types import String
 
 
@@ -38,3 +39,9 @@ def test_from_value_works():
     String.from_value('string') == 'string'
     string = String('string')
     String.from_value(string) == string
+
+
+def test_from_value_does_not_accept_non_string():
+    with pytest.raises(TypeError) as error:
+        String.from_value(1)
+    assert '{} of type {} is not coercible to {}'.format(1, int.__name__, String.__name__) in str(error.value)
