@@ -73,6 +73,6 @@ def test_can_create_boolean_from_value():
 
 
 def test_non_bool_value_raises_type_error():
-    with pytest.raises(ValueError) as error:
+    with pytest.raises(TypeError) as error:
         Boolean.from_value('cheese')
     assert "{} of type {} is not a subclass of {} or a bool".format('cheese', str.__name__, Boolean)

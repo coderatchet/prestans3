@@ -21,7 +21,7 @@ class Boolean(ImmutableType):
         if isinstance(value, cls):
             return value
         elif value.__class__ is not bool:
-            raise ValueError("{} of type {} is not a subclass of {} or a bool".format(value, value.__class__.__name__, cls))
+            raise TypeError("{} of type {} is not a subclass of {} or a bool".format(value, value.__class__.__name__, cls))
         return Boolean(bool(value))
 
     def __init__(self, value=False):
