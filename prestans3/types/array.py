@@ -228,15 +228,15 @@ class _ArrayProperty(_Property):
 
     def __set__(self, instance, value):
         """
-
         :param instance:
+        :type instance: any coercible type of self._of_type provided by __init__ function
         :param value:
         :type value: tuple
         :return:
         """
         if isinstance(value[1], self._of_type):
             super(_ArrayProperty, self).__set__(instance, value)
-        elif isinstance(value, collections.Iterable):
+        elif hasattr(value, '__getitem__'):
             super(_ArrayProperty, self).__set__(instance, (value[0], Array(self._element_type, value[1])))
 
     def _get_and_check_rule_config(self, key, config):
