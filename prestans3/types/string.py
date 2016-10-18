@@ -38,4 +38,15 @@ def _str_min_length(instance, config):
                                       length))
 
 
+def _str_max_length(instance, config):
+    length = len(instance)
+    if length > config:
+        raise ValidationException(instance.__class__,
+                                  '{} str_max_length config is {} however len("{}") == {}'.format(
+                                      instance.__class__.__name__,
+                                      config, instance,
+                                      length))
+
+
 String.register_property_rule(_str_min_length, name="str_min_length")
+String.register_property_rule(_str_max_length, name="str_max_length")

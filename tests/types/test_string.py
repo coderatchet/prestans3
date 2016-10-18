@@ -61,3 +61,17 @@ def test_str_min_length_works():
         model.validate()
     assert '{} str_min_length config is {} however len("{}") == {}'.format(String.__name__, 3, 'no', 2) \
            in str(exception)
+
+
+def test_str_max_length_works():
+    class _Model(Model):
+        string = String.property(str_max_length=2)
+
+    model = _Model.mutable()
+    model.string = 'no'
+    model.validate()
+    model.string = 'str'
+    with pytest.raises(ValidationException) as exception:
+        model.validate()
+    assert '{} str_max_length config is {} however len("{}") == {}'.format(String.__name__, 2, 'str', 3) \
+           in str(exception)
