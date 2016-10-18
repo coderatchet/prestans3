@@ -20,9 +20,3 @@ class Float(Number, float):
         elif not isinstance(value, float):
             raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
         return Float(value)
-
-    def __eq__(self, other):
-        return super(Float, self).__eq__(other)
-
-    def __ne__(self, other):
-        return super(Float, self).__ne__(other)
