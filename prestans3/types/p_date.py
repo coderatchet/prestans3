@@ -11,11 +11,11 @@
 from datetime import date
 
 from prestans3.errors import AccessError
+from prestans3.types.temporal import Temporal
 
-from . import ImmutableType
 
-
-class Date(date, ImmutableType):
+# noinspection PyAbstractClass
+class Date(date, Temporal):
     """
     Prestans3 Date Type.
     """

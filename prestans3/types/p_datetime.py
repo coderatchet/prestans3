@@ -10,10 +10,11 @@
 """
 from datetime import datetime
 
-from . import ImmutableType
+from prestans3.types.temporal import Temporal
 
 
-class DateTime(datetime, ImmutableType):
+# noinspection PyAbstractClass
+class DateTime(datetime, Temporal):
     def __init__(self):
         super(DateTime, self).__init__()
     pass

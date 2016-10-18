@@ -8,7 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from datetime import date, time
+from datetime import date
 
 import pytest
 from prestans3.errors import AccessError
