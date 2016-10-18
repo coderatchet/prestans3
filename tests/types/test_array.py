@@ -236,3 +236,15 @@ def test_array_validation_stops_at_first_error_by_default():
         model.validate()
     assert '0' in str(exception)
     assert '-4' not in str(exception)
+
+
+def test_array_from_value_raises_error_when_native_array_received():
+    with pytest.raises(NotImplementedError) as error:
+        Array.from_value([1, 2, 3, 4])
+    assert '{class_name} must declare an explicit element type, create an array from an existing native array using ' + \
+           'the constructor: {class_name}(<type>, native_array)'.format(class_name=Array.__name__) in str(error.value)
+
+
+def test_array_from_value_with_array_type_returns_self():
+    array = Array(String, ['spam', 'ham', 'bam'])
+    assert Array.from_value(array) is array

@@ -71,6 +71,18 @@ class Array(Container):
         super(Array, self).__init__(**kwargs)
 
     @classmethod
+    def from_value(cls, value):
+        if isinstance(value, cls):
+            return value
+        else:
+            try:
+                return super(Array, cls).from_value(value)
+            except NotImplementedError:
+                raise NotImplementedError(
+                    '{class_name} must declare an explicit element type, create an array from an existing native ' +
+                    'array using the constructor: {class_name}(<type>, native_array)'.format(class_name=cls.__name__))
+
+    @classmethod
     def mutable(cls, of_type, iterable=None, **kwargs):
         if cls is Array:
             return _MutableArray(of_type, iterable, **kwargs)
@@ -124,7 +136,6 @@ class Array(Container):
                           key in self._of_type.property_rules}
         array_config = {key: config for key, config in list(config.items()) if key not in element_config}
         return array_config, element_config
-
 
     #### list like magic methods
 
