@@ -22,4 +22,7 @@ class Float(Number, float):
         return Float(value)
 
     def __eq__(self, other):
-        return super(Float, self).__eq__(float(other))
+        return super(Float, self).__eq__(other)
+
+    def __ne__(self, other):
+        return super(Float, self).__ne__(other)
