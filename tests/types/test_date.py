@@ -10,6 +10,7 @@
 """
 from datetime import date
 
+import pytest
 from prestans3.types import Date
 
 
@@ -19,3 +20,19 @@ def test_can_create_date():
 
 def test_can_init_date():
     Date(date(2000, 1, 1))
+
+
+def test_invalid_init_raises_error():
+    with pytest.raises(TypeError):
+        Date()
+    with pytest.raises(TypeError):
+        Date(2000, 1)
+    with pytest.raises(TypeError):
+        Date(2000, day=1)
+
+
+def test_can_compare_dates():
+    assert Date(2000, 1, 1) == date(2000, 1, 1)
+    assert not Date(2000, 1, 2) == date(2000, 1, 1)
+    assert not Date(2000, 2, 1) == date(2000, 1, 1)
+    assert not Date(2001, 1, 1) == date(2000, 1, 1)

@@ -22,8 +22,14 @@ class Date(ImmutableType):
         if month is None and day is None and isinstance(date_or_year, date):
             self._value = date_or_year
         elif bool(month is None) != bool(day is None):
-            raise ValueError(
+            raise TypeError(
                 "both month and day must be specified if calling {}(year, month, day)".format(self.__class__.__name__))
         else:
             self._value = date(date_or_year, month, day)
         super().__init__()
+
+    def __eq__(self, other):
+        if isinstance(other, self.__class__):
+            return self._value == other._value
+        else:
+            return self._value == other
