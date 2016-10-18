@@ -10,8 +10,11 @@
 """
 from datetime import time
 
-from . import ImmutableType
+from prestans3.types.temporal import Temporal
 
 
-class Time(time, ImmutableType):
-    pass
+class Time(Temporal, time):
+    def __init__(self, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
+        time.__new__(self, hour, minute, second, microsecond, tzinfo)
+        super(Time, self).__init__()
+

@@ -10,11 +10,9 @@
 """
 from datetime import date
 
-from prestans3.errors import AccessError
 from prestans3.types.temporal import Temporal
 
 
-# noinspection PyAbstractClass
 class Date(date, Temporal):
     """
     Prestans3 Date Type.
@@ -24,7 +22,21 @@ class Date(date, Temporal):
         date.__init__(year, month, day)
         super(Date, self).__init__()
 
+    @classmethod
+    def from_value(cls, value):
+        if isinstance(value, cls):
+            return value
+        elif not isinstance(value, date):
+            raise TypeError(
+                "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
+        return Date(value.year, value.month, value.day)
+
     def replace(self, year=None, month=None, day=None):
-        raise AccessError(self.__class__, "attempted to call replace on an immutable {class_name}, " +
-                          "For a mutable {class_name}, call {class_name}.mutable(...)".format(
-                              class_name=self.__class__.__name__))
+        """Return a new datetime with new values for the specified fields."""
+        if year is None:
+            year = self.year
+        if month is None:
+            month = self.month
+        if day is None:
+            day = self.day
+        return Date(year, month, day)

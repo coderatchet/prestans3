@@ -41,10 +41,10 @@ def test_can_fromtimestamp():
     assert issubclass(fromtimestamp.__class__, Date)
 
 
-def test_replace_raises_access_error():
+def test_from_value_works():
     my_date = Date(2000, 1, 1)
-    with pytest.raises(AccessError) as error:
-        my_date.replace(year=1)
-    assert "attempted to call replace on an immutable {class_name}, " + \
-           "For a mutable {class_name}, call {class_name}.mutable(...)".format(class_name=Date.__name__) \
-           in str(error.value)
+    Date.from_value(my_date) is my_date
+    Date.from_value(date(2000, 1, 1)) == my_date
+    with pytest.raises(TypeError) as error:
+        Date.from_value('mango')
+    assert "{} of type {} is not coercible to type {}".format('mango', str.__name__, Date.__name__) in str(error.value)

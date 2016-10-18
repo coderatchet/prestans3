@@ -14,7 +14,7 @@ from prestans3.types.temporal import Temporal
 
 
 # noinspection PyAbstractClass
-class DateTime(datetime, Temporal):
+class DateTime(Temporal, datetime):
     def __init__(self):
         super(DateTime, self).__init__()
     pass
