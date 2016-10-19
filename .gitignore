@@ -94,3 +94,5 @@ ENV/
 
 /.idea/inspectionProfiles/
 /.idea/codeStyleSettings.xml
+
+/.docs-build
