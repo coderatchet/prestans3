@@ -10,6 +10,7 @@
 """
 from datetime import datetime, tzinfo
 
+import pytest
 from prestans3.types import DateTime
 
 
@@ -48,3 +49,6 @@ def test_can_from_value():
     my_datetime = DateTime(2000, 1, 2, 3, 4, 5, 6, utc)
     assert DateTime.from_value(my_datetime) is my_datetime
     assert DateTime.from_value(datetime(2000, 12, 1, 1, 1, 1, 1, utc)) == datetime(2000, 12, 1, 1, 1, 1, 1, utc)
+    with pytest.raises(TypeError) as error:
+        DateTime.from_value("no")
+    assert "{} of type {} not coercible to type {}".format("no", str.__name__, DateTime.__name__)

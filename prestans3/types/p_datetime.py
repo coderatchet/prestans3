@@ -31,5 +31,5 @@ class DateTime(Temporal, datetime):
             if not isinstance(value, datetime):
                 raise TypeError(
                     "{} of type {} not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
-            return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond,
-                            value.tzinfo)
+        return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond,
+                        value.tzinfo)
