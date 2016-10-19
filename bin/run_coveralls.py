@@ -23,9 +23,12 @@ if __name__ == '__main__':
             if not line:
                 break
             print(line)
-        exit(rc.wait(timeout=5))
+        if sys.version_info.major == 2:
+            exit(rc.wait())
+        else:
+            exit(rc.wait(timeout=5))
     else:
         print("skipping coverage for python version: {}".format(
-              os.environ.get('TRAVIS_PYTHON_VERSION',
-                             ".".join([str(v) for v in sys.version_info]))))
+            os.environ.get('TRAVIS_PYTHON_VERSION',
+                           ".".join([str(v) for v in sys.version_info]))))
         raise SystemExit(0)

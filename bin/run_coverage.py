@@ -13,7 +13,6 @@ import os
 import sys
 from subprocess import Popen, PIPE, STDOUT
 
-
 if __name__ == '__main__':
     if 'TRAVIS' in os.environ:
         current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -26,7 +25,10 @@ if __name__ == '__main__':
             if not line:
                 break
             print(line)
-        exit(rc.wait(timeout=5))
+        if sys.version_info.major == 2:
+            exit(rc.wait())
+        else:
+            exit(rc.wait(timeout=5))
     else:
         print("skipping coverage for python version: {}".format(
             os.environ.get('TRAVIS_PYTHON_VERSION',
