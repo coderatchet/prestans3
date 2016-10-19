@@ -43,7 +43,7 @@ class _PrestansAttributesProperties(object):
         return _prestans_attribute_properties[self._of_type]
 
     def __setitem__(self, key, value):
-        return _prestans_attribute_properties[self._of_type].__setitem__(key, value)
+        _prestans_attribute_properties[self._of_type].__setitem__(key, value)
 
 
 class _PrestansModelTypeMeta(_PrestansTypeMeta):
