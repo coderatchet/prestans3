@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import pytest
 from prestans3.types import Float
 
 
@@ -35,3 +36,6 @@ def test_can_ne_float():
 
 def test_can_from_value_float():
     assert Float.from_value(1.2) == 1.2
+    with pytest.raises(TypeError) as error:
+        Float.from_value('no')
+    assert "{} of type {} not coercible to {}".format("no", "no".__class__.__name__, Float.__name__) in str(error.value)
