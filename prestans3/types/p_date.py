@@ -19,7 +19,11 @@ class Date(date, Temporal):
     """
 
     def __init__(self, year, month, day):
-        date.__init__(year, month, day)
+        import platform
+        if platform.python_implementation() == 'PyPy':
+            date.__init__(date(year, month, day))
+        else:
+            date.__init__(year, month, day)
         super(Date, self).__init__()
 
     @classmethod

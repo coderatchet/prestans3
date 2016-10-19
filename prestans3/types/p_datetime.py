@@ -16,7 +16,11 @@ from prestans3.types.temporal import Temporal
 # noinspection PyAbstractClass
 class DateTime(Temporal, datetime):
     def __init__(self, year, month=None, day=None, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
-        datetime.__init__(year, month, day, hour, minute, second, microsecond, tzinfo)
+        import platform
+        if platform.python_implementation() == 'PyPy':
+            datetime.__init__(datetime(year, month, day, hour, minute, second, microsecond, tzinfo))
+        else:
+            datetime.__init__(year, month, day, hour, minute, second, microsecond, tzinfo)
         super(DateTime, self).__init__()
 
     @classmethod

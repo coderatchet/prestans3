@@ -14,7 +14,11 @@ from prestans3.types.temporal import Temporal
 
 class Time(Temporal, time):
     def __init__(self, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
-        time.__init__(hour, minute, second, microsecond, tzinfo)
+        import platform
+        if platform.python_implementation() == 'PyPy':
+            time.__init__(time(hour, minute, second, microsecond, tzinfo))
+        else:
+            time.__init__(hour, minute, second, microsecond, tzinfo)
         super(Time, self).__init__()
 
     @classmethod
