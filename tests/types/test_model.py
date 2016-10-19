@@ -303,3 +303,14 @@ def test_complex_model():
     order.purchase_date = datetime(2000, 12, 26, 9, 0, 4, 0)
 
     order.validate()
+
+
+def test_can_delete_transient_value_on_model():
+    class _Model(Model):
+        string = String.property(default="foo")
+
+    model = _Model()
+    model.baz = 'spam'
+    assert model.baz == 'spam'
+    del model.baz
+    assert 'baz' not in model.__dict__
