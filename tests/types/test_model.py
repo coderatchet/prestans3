@@ -13,7 +13,7 @@ from datetime import datetime
 
 import pytest
 from prestans3.errors import ValidationException, AccessError
-from prestans3.types import Array
+from prestans3.types import Array, _Property
 from prestans3.types import DateTime
 from prestans3.types import Float
 from prestans3.types import Integer, String, Model
@@ -303,3 +303,53 @@ def test_complex_model():
     order.purchase_date = datetime(2000, 12, 26, 9, 0, 4, 0)
 
     order.validate()
+
+
+def test_can_delete_transient_value_on_model():
+    class _Model(Model):
+        string = String.property(default="foo")
+
+    model = _Model()
+    model.baz = 'spam'
+    assert model.baz == 'spam'
+    del model.baz
+    assert 'baz' not in model.__dict__
+
+
+def test_can_pass_init_values_to_mutable_method():
+    class _Model(Model):
+        def __init__(self, foo="bar"):
+            self.foo = foo
+
+    assert _Model.mutable(foo='baz').foo == 'baz'
+
+
+def test_can_create_mutable_copy():
+    class _Model(Model):
+        string = String.property(default="foo")
+
+    model = _Model()
+    with pytest.raises(AccessError):
+        model.string = 'bar'
+    mutable_model = model.mutable_copy()
+    mutable_model.string = 'bar'
+
+
+def test_mutable_copy_has_same_rules_config():
+    class _Model(Model):
+        string = String.property(default="foo")
+
+    model = _Model()
+    mutable_copy = model.mutable_copy()
+    mutable_copy.__class__.default_rules_config() == model.__class__.default_rules_config()
+
+
+def test_get_prestans_attribute_property_raises_key_error_on_normal_attribute_key():
+    class _Model(Model):
+        spam = 'ham'
+        foo = String.property(default='bar')
+
+    with pytest.raises(AttributeError) as error:
+        _Model.get_prestans_attribute_property('spam')
+    assert "'{}' is a normal python class attribute, not a {} instance".format('spam', _Property.__name__) in str(
+        error.value)

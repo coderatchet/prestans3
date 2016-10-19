@@ -54,7 +54,8 @@ class ValidationException(Exception):
         """
         from prestans3.types import ImmutableType
         if not issubclass(of_type, ImmutableType):
-            raise TypeError('validation exceptions are only valid for subclasses of {}'.format(ImmutableType.__name__))
+            raise TypeError('validation exceptions are only valid for subclasses of {}, received type {}'.format(
+                ImmutableType.__name__, of_type.__name__))
         self._of_type = of_type
         super(ValidationException, self).__init__([])
         if message is not None:
@@ -83,7 +84,7 @@ class ValidationException(Exception):
             return
 
     def _default_message(self):
-        return "validation error for type {}".format(self.property_type.__name__)
+        return "validation exception for type {}".format(self.property_type.__name__)
 
     def add_validation_message(self, message):
         """ adds a validation message regarding this current |type| (not one of its |attributes|\ ) """
@@ -95,7 +96,7 @@ class ValidationException(Exception):
             self.add_validation_message(item)
 
     def __str__(self):
-        return "[ ({}) ]".format("), (".join([str(summary) for summary in self]))
+        return "{}: [ ({}) ]".format(self._default_message(), "), (".join([str(summary) for summary in self]))
 
     @property
     def messages(self):

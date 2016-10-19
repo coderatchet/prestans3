@@ -8,9 +8,10 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-
-from prestans3.errors import ValidationException, InvalidMethodUseError
-from prestans3.types import String
+import pytest
+from prestans3.errors import ValidationException, InvalidMethodUseError, PropertyConfigError
+from prestans3.types import Model
+from prestans3.types import String, ImmutableType
 
 exception_1 = ValidationException(String)
 exception_2 = ValidationException(String)
@@ -64,3 +65,26 @@ def test_str_method_on_exception_produces_valid_string():
     exception.add_validation_messages(["some error", 'other error'])
     string = str(exception)
     assert '{} is invalid: ["some error", "other error"]'.format(String.__name__) in string
+
+
+def test_validation_exception_can_only_be_for_prestans_types():
+    with pytest.raises(TypeError) as error:
+        ValidationException(int)
+    assert 'validation exceptions are only valid for subclasses of {}, ' \
+           'received type {}'.format(ImmutableType.__name__, int.__name__) in str(error.value)
+
+
+def test_default_validation_exception_message():
+    exception = ValidationException(String)
+    expected_message = 'validation exception for type {}'.format(String.__name__)
+    assert expected_message in exception._default_message()
+    assert expected_message in str(exception)
+
+
+def test_property_config_error_has_default_message():
+    class _Model(Model):
+        foo = String.property()
+
+    value = String('foo')
+    assert 'error whilst configuring the property rule name {} on class {}'.format('foo', _Model.__name__) \
+           in str(PropertyConfigError(_Model, value))

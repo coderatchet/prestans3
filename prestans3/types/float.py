@@ -21,5 +21,5 @@ class Float(Number, float):
             return super(Float, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, float):
-                raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
+                raise TypeError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
             return Float(value)

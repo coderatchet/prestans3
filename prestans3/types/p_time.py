@@ -29,3 +29,4 @@ class Time(Temporal, time):
             if not isinstance(value, time):
                 raise TypeError(
                     "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
+        return Time(value.hour, value.minute, value.second, value.microsecond, value.tzinfo)
