@@ -42,9 +42,6 @@ class _PrestansAttributesProperties(object):
     def __get__(self, instance, owner):
         return _prestans_attribute_properties[self._of_type]
 
-    def __setitem__(self, key, value):
-        _prestans_attribute_properties[self._of_type].__setitem__(key, value)
-
 
 class _PrestansModelTypeMeta(_PrestansTypeMeta):
     def __init__(cls, what, bases, attrs, **kwargs):
