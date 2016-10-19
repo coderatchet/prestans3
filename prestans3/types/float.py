@@ -9,7 +9,17 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from . import Scalar
+from . import Number
 
-class Float(Scalar):
-    pass
+
+class Float(Number, float):
+
+
+    @classmethod
+    def from_value(cls, value):
+        try:
+            return super(Float, cls).from_value(value)
+        except NotImplementedError:
+            if not isinstance(value, float):
+                raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
+            return Float(value)

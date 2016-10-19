@@ -223,3 +223,8 @@ dummy:
 	$(SPHINXBUILD) -b dummy $(ALLSPHINXOPTS) $(BUILDDIR)/dummy
 	@echo
 	@echo "Build finished. Dummy builder generates no files."
+
+.PHONY: livehtml
+livehtml:
+	BUILDDIR='../docs/build'
+	sphinx-autobuild -B -p 12345 -z ../prestans3 ../docs/source ../docs/build

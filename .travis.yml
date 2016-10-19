@@ -7,10 +7,13 @@ python:
   - "nightly"
   - "pypy"
 install:
-  - pip install -U coveralls
+  - pip install tox-travis
+  - pip install -U pytest-runner
+  - pip install -U pytest
+  - if [[ $TRAVIS_PYTHON_VERSION != 'nightly' ]]; then pip install -U pytest-mock; fi
+  - if [[ $TRAVIS_PYTHON_VERSION == 'nightly' ]]; then pip install git+https://github.com/pytest-dev/pytest-mock@931785ca86113c62baaad1e677f5dc61d69ec39a; fi
+  - pip list
 script:
-  - coverage run --source=prestans3 setup.py test
-after_success:
-  - coveralls
+  - tox
 notifications:
   email: false

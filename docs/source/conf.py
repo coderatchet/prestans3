@@ -17,9 +17,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-# import os
-# import sys
-# sys.path.insert(0, os.path.abspath('.'))
+import os
+import sys
+
+sys.path.insert(0, os.path.abspath('../../'))
 
 # -- General configuration ------------------------------------------------
 
@@ -38,6 +39,7 @@ extensions = [
     'sphinx.ext.coverage',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'sphinx.ext.autosummary'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -69,6 +71,131 @@ author = 'Anomaly Software'
 version = '3.0'
 # The full version, including alpha/beta/rc tags.
 release = '3.0'
+
+# A string of reStructuredText that will be included at the end of every source
+# file that is read. This is the right place to add substitutions that should
+# be available in every file.
+rst_epilog = """
+
+.. terms
+.. -----
+
+.. |type|  replace:: :term:`prestans3 type`
+.. |types|  replace:: :term:`prestans3 types<prestans3 type>`
+
+.. |attribute|  replace:: :term:`prestans3 attribute`
+.. |attributes|  replace:: :term:`prestans3 attributes<prestans3 attribute>`
+
+.. |rule|  replace:: :term:`property rule`
+.. |rules|  replace:: :term:`property rules<property rule>`
+
+.. |emdash|  unicode:: U+2014  .. em dash
+.. |hellip|  unicode:: U+2026 .. ellipsis
+    :ltrim:
+
+.. types
+.. -----
+
+.. py:currentmodule:: prestans3.types
+
+.. |MutableType|  replace:: :class:`MutableType<.MutableType>`
+.. |MutableTypes|  replace:: :class:`MutableTypes<.MutableType>`
+
+.. |ImmutableType|  replace:: :class:`ImmutableType<.ImmutableType>`
+.. |ImmutableTypes|  replace:: :class:`ImmutableTypes<.ImmutableType>`
+
+.. |Container|  replace:: :class:`.Container`
+.. |Containers|  replace:: :class:`.Containers<.Container>`
+
+.. |MutableContainer|  replace:: :class:`._MutableContainer`
+.. |MutableContainers|  replace:: :class:`._MutableContainers<_MutableContainer>`
+
+.. |Model|  replace:: :class:`Model<.Model>`
+.. |Models|  replace:: :class:`Models<.Model>`
+
+.. |String|  replace:: :class:`~.String`
+.. |Strings|  replace:: :class:`Strings<.string.String>`
+
+.. |Integer|  replace:: :class:`Integer<.integer.Integer>`
+.. |Integers|  replace:: :class:`Integers<.integer..Integer>`
+
+.. |Number|  replace:: :class:`Number<.number.Number>`
+.. |Numbers|  replace:: :class:`Numbers<.number.Number>`
+
+.. |Boolean|  replace:: :class:`Boolean<.boolean.Boolean>`
+.. |Booleans|  replace:: :class:`Booleans<.boolean.Boolean>`
+
+.. |Float|  replace:: :class:`Float<.float.Float>`
+.. |Floats|  replace:: :class:`Floats<.float.Float>`
+
+.. |Array|  replace:: :class:`Array<.array.Array>`
+.. |Arrays|  replace:: :class:`Arrays<.array.Array>`
+
+.. |Date|  replace:: :class:`Date<.p_date.Date>`
+.. |Dates|  replace:: :class:`Dates<.p_date.Date>`
+
+.. |DateTime|  replace:: :class:`DateTime<.p_datetime.DateTime>`
+.. |DateTimes|  replace:: :class:`DateTimes<.p_datetime.DateTime>`
+
+.. |Time|  replace:: :class:`Time<.time.Time>`
+.. |Times|  replace:: :class:`Times<.time.Time>`
+
+.. |_Property|  replace:: :class:`_Property<._Property>`
+.. |_Properties|  replace:: :class:`_Properties<._Property>`
+
+.. validation
+.. ----------
+
+.. py:currentmodule:: prestans3.errors
+
+.. |ValidationExceptionSummary|  replace:: :class:`ValidationExceptionSummary<.ValidationExceptionSummary>`
+.. |ValidationExceptionSummaries|  replace:: :class:`ValidationExceptionSummaries<.ValidationExceptionSummary>`
+
+.. |ValidationException| replace:: :class:`ValidationException<.ValidationException>`
+.. |ValidationExceptions| replace:: :class:`ValidationExceptions<.ValidationException>`
+
+.. |AccessError|  replace:: :class:`AccessError`<.AccessError>`
+.. |AccessErrors|  replace:: :class:`AccessErrors`<.AccessError>`
+
+.. |ContainerValidationException|  replace:: :class:`ContainerValidationException<.ContainerValidationException>`
+.. |ContainerValidationExceptions|  replace:: :class:`ContainerValidationExceptions<.ContainerValidationException>`
+
+.. |ContainerValidationExceptionSummary|  replace:: :class:`ContainerValidationExceptionSummary<.ContainerValidationExceptionSummary>`
+.. |ContainerValidationExceptionSummaries|  replace:: :class:`ContainerValidationExceptionSummaries<.ContainerValidationExceptionSummary>`
+
+.. py:currentmodule:: prestans.types.model
+
+.. |ModelValidationException|  replace:: :class:`ModelValidationException<.ModelValidationException>`
+.. |ModelValidationExceptions|  replace:: :class:`ModelValidationExceptions<.ModelValidationException>`
+
+.. py:currentmodule:: prestans.types.array
+
+.. |ArrayValidationException|  replace:: :class:`ArrayValidationException<.ArrayValidationException>`
+.. |ArrayValidationExceptions|  replace:: :class:`ArrayValidationExceptions<.ArrayValidationException>`
+
+.. utils
+.. -----
+
+.. py:currentmodule:: prestans3.utils
+
+.. |MergingProxyDictionary|  replace:: :class:`MergingProxyDictionary<.MergingProxyDictionary>`
+.. |MergingProxyDictionaries|  replace:: :class:`MergingProxyDictionaries<.MergingProxyDictionary>`
+
+.. |ImmutableMergingDictionary|  replace:: :class:`ImmutableMergingDictionary<.ImmutableMergingDictionary>`
+.. |ImmutableMergingDictionaries|  replace:: :class:`ImmutableMergingDictionaries<.ImmutableMergingDictionary>`
+
+"""
+
+
+def skip(app, what, name, obj, skip, options):
+    if name == "__init__":
+        return False
+    return skip
+
+
+def setup(app):
+    app.connect("autodoc-skip-member", skip)
+
 
 # The language for content autogenerated by Sphinx. Refer to documentation
 # for a list of supported languages.
@@ -122,7 +249,6 @@ pygments_style = 'sphinx'
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = True
 
-
 # -- Options for HTML output ----------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
@@ -157,7 +283,7 @@ html_theme = 'alabaster'
 # the docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 #
-# html_favicon = None
+html_favicon = os.pardir.join([".", "_static", "favicon.ico"])
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -247,21 +373,21 @@ htmlhelp_basename = 'Prestans3doc'
 # -- Options for LaTeX output ---------------------------------------------
 
 latex_elements = {
-     # The paper size ('letterpaper' or 'a4paper').
-     #
-     # 'papersize': 'letterpaper',
+    # The paper size ('letterpaper' or 'a4paper').
+    #
+    # 'papersize': 'letterpaper',
 
-     # The font size ('10pt', '11pt' or '12pt').
-     #
-     # 'pointsize': '10pt',
+    # The font size ('10pt', '11pt' or '12pt').
+    #
+    # 'pointsize': '10pt',
 
-     # Additional stuff for the LaTeX preamble.
-     #
-     # 'preamble': '',
+    # Additional stuff for the LaTeX preamble.
+    #
+    # 'preamble': '',
 
-     # Latex figure (float) alignment
-     #
-     # 'figure_align': 'htbp',
+    # Latex figure (float) alignment
+    #
+    # 'figure_align': 'htbp',
 }
 
 # Grouping the document tree into LaTeX files. List of tuples
