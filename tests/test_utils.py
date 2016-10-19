@@ -401,9 +401,20 @@ def test_clear_raises_exception():
         dictionary.clear()
 
 
+def test_update_raises_exception():
+    dictionary = utils.ImmutableMergingDictionary({'foo': 'spam'}, {'bar': 'ham'}, {'foo': 'thank you mam'})
+    with pytest.raises(AccessError):
+        dictionary.update({'foo': 'no'})
+
+
 def test_merging_dictionary_does_not_skip_items():
     dictionary = MergingProxyDictionary({'foo': 'bar'}, MergingProxyDictionary({'baz': 'spam'}),
                                         MergingProxyDictionary({'bar': 'ham'}))
     assert ('foo', 'bar') in dictionary.items()
     assert ('baz', 'spam') in dictionary.items()
     assert ('bar', 'ham') in dictionary.items()
+
+
+def test_terminating_type_is_object_when_not_specified_for_lazy_one_way_graph():
+    # noinspection PyProtectedMember
+    assert utils.LazyOneWayGraph()._terminating_type is object
