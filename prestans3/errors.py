@@ -54,7 +54,8 @@ class ValidationException(Exception):
         """
         from prestans3.types import ImmutableType
         if not issubclass(of_type, ImmutableType):
-            raise TypeError('validation exceptions are only valid for subclasses of {}'.format(ImmutableType.__name__))
+            raise TypeError('validation exceptions are only valid for subclasses of {}, received type {}'.format(
+                ImmutableType.__name__, of_type.__name__))
         self._of_type = of_type
         super(ValidationException, self).__init__([])
         if message is not None:
