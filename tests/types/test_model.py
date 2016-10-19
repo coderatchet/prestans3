@@ -13,7 +13,7 @@ from datetime import datetime
 
 import pytest
 from prestans3.errors import ValidationException, AccessError
-from prestans3.types import Array
+from prestans3.types import Array, _Property
 from prestans3.types import DateTime
 from prestans3.types import Float
 from prestans3.types import Integer, String, Model
@@ -342,3 +342,14 @@ def test_mutable_copy_has_same_rules_config():
     model = _Model()
     mutable_copy = model.mutable_copy()
     mutable_copy.__class__.default_rules_config() == model.__class__.default_rules_config()
+
+
+def test_get_prestans_attribute_property_raises_key_error_on_normal_attribute_key():
+    class _Model(Model):
+        spam = 'ham'
+        foo = String.property(default='bar')
+
+    with pytest.raises(AttributeError) as error:
+        _Model.get_prestans_attribute_property('spam')
+    assert "'{}' is a normal python class attribute, not a {} instance".format('spam', _Property.__name__) in str(
+        error.value)

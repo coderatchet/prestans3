@@ -197,7 +197,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         p_attrs = cls.prestans_attribute_properties
         if attr_name in cls.__dict__ and attr_name not in p_attrs:
             raise AttributeError(
-                "{} is a normal python attribute, not a {} instance".format(attr_name, _Property.__name__))
+                "'{}' is a normal python class attribute, not a {} instance".format(attr_name, _Property.__name__))
         else:
             return p_attrs[attr_name]
 
