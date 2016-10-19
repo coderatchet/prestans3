@@ -159,8 +159,6 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
             return object.__getattribute__(self, '__class__').__dict__[item].__get__(
                 object.__getattribute__(self, '_prestans_attributes')[item],
                 object.__getattribute__(self, '_prestans_attributes')[item].__class__)
-        elif item in type(object.__getattribute__(self, '__class__')).__dict__:
-            return type(object.__getattribute__(self, '__class__')).__dict__[item].__get__
         else:
             return object.__getattribute__(self, item)
 
