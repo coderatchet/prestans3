@@ -3,6 +3,9 @@ Prestans 3
 
 A `WSGI <https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_ compliant `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_ micro framework.
 
+.. image:: http://img.shields.io/pypi/v/prestans3.svg
+   :target: https://pypi.python.org/pypi/prestans3
+   
 .. image:: https://travis-ci.org/anomaly/prestans3.svg?branch=master&maxAge=2592000
 :target: https://travis-ci.org/anomaly/prestans3/
    :alt: build status
@@ -12,6 +15,10 @@ A `WSGI <https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_ compliant
    :alt: code coverage
 
 **Note:** Please do not attempt to use Prestans 3 at the moment, your REST API won't work :-)
+
+.. image:: https://readthedocs.org/projects/prestans3/badge/?version=latest
+:target: http://prestans3.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
 
   Prestans 3 is a ground up reboot of our originally published `REST framework <https://github.com/anomaly/prestans.git>`_ with efforts concentrated towards:
 
