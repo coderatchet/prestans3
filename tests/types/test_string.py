@@ -49,9 +49,9 @@ def test_from_value_does_not_accept_non_string():
     assert '{} of type {} is not coercible to {}'.format(1, int.__name__, String.__name__) in str(error.value)
 
 
-def test_str_min_length_works():
+def test_min_length_works():
     class _Model(Model):
-        string = String.property(str_min_length=3)
+        string = String.property(min_length=3)
 
     model = _Model.mutable()
     model.string = 'str'
@@ -59,13 +59,13 @@ def test_str_min_length_works():
     model.string = 'no'
     with pytest.raises(ValidationException) as exception:
         model.validate()
-    assert '{} str_min_length config is {} however len("{}") == {}'.format(String.__name__, 3, 'no', 2) \
+    assert '{} min_length config is {} however len("{}") == {}'.format(String.__name__, 3, 'no', 2) \
            in str(exception)
 
 
-def test_str_max_length_works():
+def test_max_length_works():
     class _Model(Model):
-        string = String.property(str_max_length=2)
+        string = String.property(max_length=2)
 
     model = _Model.mutable()
     model.string = 'no'
@@ -73,20 +73,20 @@ def test_str_max_length_works():
     model.string = 'str'
     with pytest.raises(ValidationException) as exception:
         model.validate()
-    assert '{} str_max_length config is {} however len("{}") == {}'.format(String.__name__, 2, 'str', 3) \
+    assert '{} max_length config is {} however len("{}") == {}'.format(String.__name__, 2, 'str', 3) \
            in str(exception)
 
 
 # noinspection PyUnusedLocal
 def test_str_max_and_min_are_compatible_values():
     class _Model(Model):
-        string = String.property(str_min_length=3, str_max_length=3)
+        string = String.property(min_length=3, max_length=3)
 
     with pytest.raises(PropertyConfigError) as error:
         class __Model(Model):
-            string = String.property(str_min_length=3, str_max_length=2)
+            string = String.property(min_length=3, max_length=2)
     assert 'invalid {} property configuration: ' + \
-           'str_min_length config of {} is greater than str_max_length config of {}'.format(String.__name__, 3, 2)
+           'min_length config of {} is greater than max_length config of {}'.format(String.__name__, 3, 2)
 
 
 def test_str_regex_property_rule_works():

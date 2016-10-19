@@ -274,7 +274,7 @@ def test_model_attribute_gets_configuration_passed_to_it_in_validation():
 
 def test_complex_model():
     class Item(Model):
-        name = String.property(str_min_length=3, format_regex=r'[a-zA-Z ]+')
+        name = String.property(min_length=3, format_regex=r'[a-zA-Z ]+')
         price = Float.property()
         description = String.property(required=False)
 

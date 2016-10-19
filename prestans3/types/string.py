@@ -30,21 +30,21 @@ class String(ImmutableType, str):
         return String(value)
 
 
-def _str_min_length(instance, config):
+def _min_length(instance, config):
     length = len(instance)
     if length < config:
         raise ValidationException(instance.__class__,
-                                  '{} str_min_length config is {} however len("{}") == {}'.format(
+                                  '{} min_length config is {} however len("{}") == {}'.format(
                                       instance.__class__.__name__,
                                       config, instance,
                                       length))
 
 
-def _str_max_length(instance, config):
+def _max_length(instance, config):
     length = len(instance)
     if length > config:
         raise ValidationException(instance.__class__,
-                                  '{} str_max_length config is {} however len("{}") == {}'.format(
+                                  '{} max_length config is {} however len("{}") == {}'.format(
                                       instance.__class__.__name__,
                                       config, instance,
                                       length))
@@ -57,14 +57,14 @@ def _format_regex(instance, config):
 
 
 def _min_max_string_check_config(type, config):
-    if config is not None and 'str_min_length' in config and 'str_max_length' in config \
-            and config['str_min_length'] > config['str_max_length']:
-        raise PropertyConfigError(type, 'str_min_length and str_max_length', 'invalid {} property configuration: ' + \
-                                  'str_min_length config of {} is greater than str_max_length config of {}'.format(
-                                      type.__name__, config['str_min_length'], config['str_max_length']))
+    if config is not None and 'min_length' in config and 'max_length' in config \
+            and config['min_length'] > config['max_length']:
+        raise PropertyConfigError(type, 'min_length and max_length', 'invalid {} property configuration: ' + \
+                                  'min_length config of {} is greater than max_length config of {}'.format(
+                                      type.__name__, config['min_length'], config['max_length']))
 
 
-String.register_property_rule(_str_min_length, name="str_min_length")
-String.register_property_rule(_str_max_length, name="str_max_length")
+String.register_property_rule(_min_length, name="min_length")
+String.register_property_rule(_max_length, name="max_length")
 String.register_property_rule(_format_regex, name="format_regex")
 String.register_config_check(_min_max_string_check_config, name="min_max_string_check_config")
