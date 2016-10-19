@@ -3,6 +3,9 @@ Prestans 3
 
 A `WSGI <https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_ compliant `REST <https://en.wikipedia.org/wiki/Representational_state_transfer>`_ micro framework. 
 
+.. image:: http://img.shields.io/pypi/v/prestans3.svg
+   :target: https://pypi.python.org/pypi/prestans3
+   
 .. image:: https://travis-ci.org/anomaly/prestans3.svg?branch=master&maxAge=2592000
    :target: https://travis-ci.org/anomaly/prestans3/
    :alt: build status
