@@ -63,6 +63,7 @@ def test_choices_property_rule_works():
 
 
 def test_register_config_check_raises_value_error_when_receiving_function_with_less_than_2_args():
+    # noinspection PyUnusedLocal
     def _test(x):
         pass
 
@@ -71,3 +72,15 @@ def test_register_config_check_raises_value_error_when_receiving_function_with_l
     assert 'expected property_rule function with 2 arguments, received ' \
            'function with {arg_count} argument(s): {func_name}({arg_list})'.format(
         arg_count=1, func_name='_test', arg_list=", ".join(_test.__code__.co_varnames)) in str(error.value)
+
+
+def test_register_config_has_default_config():
+    class __Model(Model):
+        pass
+
+    # noinspection PyUnusedLocal
+    def _test(x, y):
+        pass
+
+    __Model.register_config_check(_test)
+    assert __Model.config_checks['_test'] is _test
