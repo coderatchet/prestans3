@@ -9,6 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import random
+from datetime import datetime
 
 import pytest
 from prestans3.errors import ValidationException, AccessError
@@ -240,6 +241,37 @@ def test_can_mutate_prestans_attributes_for_mutable_model():
     attributes['my_string'] = 'should work'
 
 
+def test_default_parameter_inits_value_with_copy_of_default_if_none_provided():
+    class _Other(Model):
+        pass
+
+    class _Model(Model):
+        string = String.property(default="default_string")
+        other = _Other.property(default=_Other())
+
+    model = _Model()
+    model_2 = _Model()
+    assert model.string == 'default_string'
+    assert model.other is not model_2.other
+
+
+def test_model_attribute_gets_configuration_passed_to_it_in_validation():
+    class _SubModel(Model):
+        pass
+
+    def _foo(instance, config):
+        assert config == 'bar'
+
+    _SubModel.register_property_rule(_foo, name="foo", default='baz')
+
+    class _Model(Model):
+        sub = _SubModel.property(foo='bar')
+
+    model = _Model.mutable()
+    model.sub = _SubModel.mutable()
+    model.validate()
+
+
 def test_complex_model():
     class Item(Model):
         name = String.property(str_min_length=3, format_regex=r'[a-zA-Z ]+')
@@ -267,17 +299,7 @@ def test_complex_model():
         line_order.count = random.randint(1, 10)
         orders.append(line_order)
     order.orders = orders
+    order.total_price = 7.3
+    order.purchase_date = datetime(2000, 12, 26, 9, 0, 4, 0)
 
-
-def test_default_parameter_inits_value_with_copy_of_default_if_none_provided():
-    class _Other(Model):
-        pass
-
-    class _Model(Model):
-        string = String.property(default="default_string")
-        other = _Other.property(default=_Other())
-
-    model = _Model()
-    model_2 = _Model()
-    assert model.string == 'default_string'
-    assert model.other is not model_2.other
+    order.validate()

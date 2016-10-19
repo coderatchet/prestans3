@@ -15,7 +15,9 @@ from prestans3.types import ImmutableType
 # noinspection PyAbstractClass
 class Temporal(ImmutableType):
     """ Base class for all time and date style classes """
-    pass
+    @classmethod
+    def from_value(cls, value):
+        return super(Temporal, cls).from_value(value)
 
 
 def _after(instance, config):

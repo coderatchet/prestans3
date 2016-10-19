@@ -8,10 +8,9 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from datetime import time
+from datetime import time, tzinfo
 
 from prestans3.types.temporal import Temporal
-
 
 class Time(Temporal, time):
     def __init__(self, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
@@ -21,7 +20,7 @@ class Time(Temporal, time):
     @classmethod
     def from_value(cls, value):
         try:
-            super(Time, cls).from_value(value)
+            return super(Time, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, time):
                 raise TypeError(

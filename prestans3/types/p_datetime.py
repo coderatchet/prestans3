@@ -22,7 +22,7 @@ class DateTime(Temporal, datetime):
     @classmethod
     def from_value(cls, value):
         try:
-            super(DateTime, cls).from_value(value)
+            return super(DateTime, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, datetime):
                 raise TypeError(

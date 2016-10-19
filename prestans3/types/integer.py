@@ -16,7 +16,7 @@ class Integer(Number, int):
     @classmethod
     def from_value(cls, value):
         try:
-            super(Integer, cls).from_value(value)
+            return super(Integer, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, int):
                 raise ValueError(value)

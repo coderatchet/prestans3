@@ -13,10 +13,12 @@ from . import Number
 
 
 class Float(Number, float):
+
+
     @classmethod
     def from_value(cls, value):
         try:
-            super(Float, cls).from_value(value)
+            return super(Float, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, float):
                 raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))

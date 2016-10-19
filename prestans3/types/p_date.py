@@ -25,7 +25,7 @@ class Date(date, Temporal):
     @classmethod
     def from_value(cls, value):
         try:
-            super(Date, cls).from_value(value)
+            return super(Date, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, date):
                 raise TypeError(

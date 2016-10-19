@@ -19,7 +19,7 @@ class Boolean(ImmutableType):
     @classmethod
     def from_value(cls, value):
         try:
-            super(Boolean, cls).from_value(value)
+            return super(Boolean, cls).from_value(value)
         except NotImplementedError:
             if value.__class__ is not bool:
                 raise TypeError("{} of type {} is not a subclass of {} or a bool".format(value, value.__class__.__name__, cls))

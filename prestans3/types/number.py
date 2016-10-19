@@ -15,7 +15,10 @@ from . import ImmutableType
 
 # noinspection PyAbstractClass
 class Number(ImmutableType):
-    pass
+
+    @classmethod
+    def from_value(cls, value):
+        return super(Number, cls).from_value(value)
 
 
 def _min(instance, config):
