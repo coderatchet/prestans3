@@ -72,9 +72,6 @@ clean:
 	find . -name '*.egg-info' -exec rm -rf {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -rf {} +
-
-.PHONY: clean
-clean:
 	rm -rf $(BUILDDIR)/*
 
 .PHONY: html
