@@ -61,3 +61,13 @@ def test_choices_property_rule_works():
     assert "{} property is {}, valid choices are {}".format(String.__name__, 'no', "[spam, ham]") in str(ex)
     assert "{} property is {}, valid choices are {}".format(Integer.__name__, 3, '[1, 5]') in str(ex)
 
+
+def test_register_config_check_raises_value_error_when_receiving_function_with_less_than_2_args():
+    def _test(x):
+        pass
+
+    with pytest.raises(ValueError) as error:
+        ImmutableType.register_config_check(_test)
+    assert 'expected property_rule function with 2 arguments, received ' \
+           'function with {arg_count} argument(s): {func_name}({arg_list})'.format(
+        arg_count=1, func_name='_test', arg_list=", ".join(_test.__code__.co_varnames)) in str(error.value)
