@@ -84,7 +84,7 @@ class ValidationException(Exception):
             return
 
     def _default_message(self):
-        return "validation error for type {}".format(self.property_type.__name__)
+        return "validation exception for type {}".format(self.property_type.__name__)
 
     def add_validation_message(self, message):
         """ adds a validation message regarding this current |type| (not one of its |attributes|\ ) """
@@ -96,7 +96,7 @@ class ValidationException(Exception):
             self.add_validation_message(item)
 
     def __str__(self):
-        return "[ ({}) ]".format("), (".join([str(summary) for summary in self]))
+        return "{}: [ ({}) ]".format(self._default_message(), "), (".join([str(summary) for summary in self]))
 
     @property
     def messages(self):

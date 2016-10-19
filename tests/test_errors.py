@@ -71,3 +71,10 @@ def test_validation_exception_can_only_be_for_prestans_types():
         ValidationException(int)
     assert 'validation exceptions are only valid for subclasses of {}, ' \
            'received type {}'.format(ImmutableType.__name__, int.__name__) in str(error.value)
+
+
+def test_default_validation_exception_message():
+    exception = ValidationException(String)
+    expected_message = 'validation exception for type {}'.format(String.__name__)
+    assert expected_message in exception._default_message()
+    assert expected_message in str(exception)
