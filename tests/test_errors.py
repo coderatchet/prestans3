@@ -9,7 +9,8 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
-from prestans3.errors import ValidationException, InvalidMethodUseError
+from prestans3.errors import ValidationException, InvalidMethodUseError, PropertyConfigError
+from prestans3.types import Model
 from prestans3.types import String, ImmutableType
 
 exception_1 = ValidationException(String)
@@ -78,3 +79,12 @@ def test_default_validation_exception_message():
     expected_message = 'validation exception for type {}'.format(String.__name__)
     assert expected_message in exception._default_message()
     assert expected_message in str(exception)
+
+
+def test_property_config_error_has_default_message():
+    class _Model(Model):
+        foo = String.property()
+
+    value = String('foo')
+    assert 'error whilst configuring the property rule name {} on class {}'.format('foo', _Model.__name__) \
+           in str(PropertyConfigError(_Model, value))
