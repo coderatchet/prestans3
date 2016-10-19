@@ -15,7 +15,7 @@ import sys
 from subprocess import Popen, STDOUT, PIPE
 
 if __name__ == '__main__':
-    if 'TRAVIS' in os.environ and os.environ.get('TRAVIS_PYTHON_VERSION', 'unknown-version') == '3.5':
+    if 'TRAVIS' in os.environ:
         coverage_file = os.path.join(os.path.dirname(os.path.abspath(__file__)), os.pardir, '.coveragerc')
         rc = Popen(['coveralls'], stdout=PIPE, stderr=STDOUT)
         while True:

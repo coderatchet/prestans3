@@ -35,13 +35,3 @@ class Date(date, Temporal):
                 raise TypeError(
                     "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
             return Date(value.year, value.month, value.day)
-
-    def replace(self, year=None, month=None, day=None):
-        """Return a new datetime with new values for the specified fields."""
-        if year is None:
-            year = self.year
-        if month is None:
-            month = self.month
-        if day is None:
-            day = self.day
-        return Date(year, month, day)
