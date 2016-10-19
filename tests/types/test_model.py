@@ -314,3 +314,31 @@ def test_can_delete_transient_value_on_model():
     assert model.baz == 'spam'
     del model.baz
     assert 'baz' not in model.__dict__
+
+
+def test_can_pass_init_values_to_mutable_method():
+    class _Model(Model):
+        def __init__(self, foo="bar"):
+            self.foo = foo
+
+    assert _Model.mutable(foo='baz').foo == 'baz'
+
+
+def test_can_create_mutable_copy():
+    class _Model(Model):
+        string = String.property(default="foo")
+
+    model = _Model()
+    with pytest.raises(AccessError):
+        model.string = 'bar'
+    mutable_model = model.mutable_copy()
+    mutable_model.string = 'bar'
+
+
+def test_mutable_copy_has_same_rules_config():
+    class _Model(Model):
+        string = String.property(default="foo")
+
+    model = _Model()
+    mutable_copy = model.mutable_copy()
+    mutable_copy.__class__.default_rules_config() == model.__class__.default_rules_config()

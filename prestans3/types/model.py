@@ -82,7 +82,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         # for all the prestans attributes in this class, if they don't yet have a value, then set it
         for key, p_attr in list(self.__class__.prestans_attribute_properties.items()):
             if p_attr.default is not None and (
-                    key not in self.prestans_attributes or self.prestans_attributes[key] is None):
+                            key not in self.prestans_attributes or self.prestans_attributes[key] is None):
                 p_attr.__set__(self._prestans_attributes, (key, copy(p_attr.default)))
 
         super(Model, self).__init__(**kwargs)
@@ -172,17 +172,25 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         return ImmutableMergingDictionary(self._prestans_attributes)
 
     @classmethod
-    def mutable(cls, **kwargs):
+    def mutable(cls, *args, **kwargs):
+
+        _Mutable = cls.mutable_class()
+        return _Mutable(*args, **kwargs)
+
+    @classmethod
+    def mutable_class(cls):
         if cls is Model:
             raise TypeError("mutable called on base Model class. must call mutable on a concrete subclass of Model")
-        else:
-            new_mutable_model_subclass = inject_class(cls, _MutableModel, Model,
-                                                      new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
-                                                          x.__name__))
-            return new_mutable_model_subclass(**kwargs)
+        new_mutable_model_subclass = inject_class(cls, _MutableModel, Model,
+                                                  new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
+                                                      x.__name__))
+        return new_mutable_model_subclass
 
     def mutable_copy(self):
-        raise NotImplementedError
+        mutable = self.__class__.mutable()
+        for key, p_attr in list(self.prestans_attributes.items()):
+            mutable.__setattr__(key, copy(self.prestans_attributes[key]))
+        return mutable
 
     @classmethod
     def get_prestans_attribute_property(cls, attr_name):
@@ -205,12 +213,7 @@ def check_required_attributes(instance, config=True):
         for p_attr_name, p_attr in list(p_attrs.items()):
             if p_attr.required:
                 try:
-                    getattribute__ = instance.prestans_attributes[p_attr_name]
-                    if getattribute__ is None:
-                        if validation_exception is None:
-                            validation_exception = ValidationException(instance.__class__)
-                        validation_exception.add_validation_message(
-                            "required prestans attribute '{}' is None".format(p_attr_name))
+                    instance.prestans_attributes[p_attr_name]
                 except KeyError:
                     if validation_exception is None:
                         validation_exception = ValidationException(instance.__class__)
