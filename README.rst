@@ -11,10 +11,10 @@ A `WSGI <https://en.wikipedia.org/wiki/Web_Server_Gateway_Interface>`_ compliant
    :target: https://travis-ci.org/anomaly/prestans3/
    :alt: build status
 
-.. image:: https://img.shields.io/coveralls/anomaly/prestans3.svg?maxAge=2592000
-   :target: https://coveralls.io/github/anomaly/prestans3
+.. image:: https://coveralls.io/repos/github/anomaly/prestans3/badge.svg?branch=master
+   :target: https://coveralls.io/github/anomaly/prestans3?branch=master
    :alt: code coverage
-
+   
 .. image:: https://readthedocs.org/projects/prestans3/badge/?version=latest
    :target: http://prestans3.readthedocs.io/en/latest/?badge=latest
    :alt: Documentation Status
