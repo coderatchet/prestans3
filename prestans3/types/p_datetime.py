@@ -21,10 +21,11 @@ class DateTime(Temporal, datetime):
 
     @classmethod
     def from_value(cls, value):
-        if isinstance(value, cls):
-            return value
-        elif not isinstance(value, datetime):
-            raise TypeError(
-                "{} of type {} not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
-        return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond,
-                        value.tzinfo)
+        try:
+            super(DateTime, cls).from_value(value)
+        except NotImplementedError:
+            if not isinstance(value, datetime):
+                raise TypeError(
+                    "{} of type {} not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
+            return DateTime(value.year, value.month, value.day, value.hour, value.minute, value.second, value.microsecond,
+                            value.tzinfo)

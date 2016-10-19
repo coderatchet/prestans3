@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+from copy import copy
 
 from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary, \
     ContainerValidationException
@@ -57,10 +58,17 @@ class _PrestansModelTypeMeta(_PrestansTypeMeta):
 # noinspection PyAbstractClass
 class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
     """
-    Base class of complex |types|. may contain other |Models| and/or |ImmutableTypes|.
+    Base class of complex |types|. may contain other |Models| and/or |ImmutableTypes|\ . Initial values may be provided
+    in the form of a dict[str -> value] for the prestans attributes, these values will take precedence over those
+    provided by a |_Property|\ 's `default` argument.
     """
 
     def __init__(self, initial_values=None, **kwargs):
+        """
+
+        :param dict[str, value] initial_values:
+        :param kwargs:
+        """
         self._prestans_attributes = {}
         if initial_values is not None:
             for key, value in list(initial_values.items()):
@@ -73,6 +81,13 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
                     raise ValueError("Model.__init__ called with an invalid initial_values parameter: "
                                      "{} is not a configured prestans attribute of {}".format(key,
                                                                                               self.__class__.__name__))
+
+        # for all the prestans attributes in this class, if they don't yet have a value, then set it
+        for key, p_attr in list(self.__class__.prestans_attribute_properties.items()):
+            if p_attr.default is not None and (
+                    key not in self.prestans_attributes or self.prestans_attributes[key] is None):
+                p_attr.__set__(self._prestans_attributes, (key, copy(p_attr.default)))
+
         super(Model, self).__init__(**kwargs)
 
     def __setattr__(self, key, value):
@@ -100,7 +115,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         else:
             super(Model, self).__delattr__(item)
 
-    def validate(self, **kwargs):
+    def validate(self, config=None, **kwargs):
         validation_exception = None
         for p_attr_name, p_attr in list(self.prestans_attribute_properties.items()):
             try:
@@ -113,7 +128,11 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
                     validation_exception = ModelValidationException(self.__class__)
                 validation_exception.add_validation_exception(p_attr_name, error)
         try:
-            super(Model, self).validate(self.__class__.default_rules_config())
+            default_rules_config = self.__class__.default_rules_config()
+            if config is None:
+                super(Model, self).validate(default_rules_config)
+            else:
+                super(Model, self).validate(ImmutableMergingDictionary(config, default_rules_config))
         except ValidationException as error:
             if validation_exception is None:
                 validation_exception = ModelValidationException(self.__class__)

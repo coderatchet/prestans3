@@ -168,9 +168,23 @@ def test_array_can_check_min_length():
         def __init__(self):
             super(_Model, self).__init__({'min_2_int_array': [1]})
 
-    with pytest.raises(ValidationException) as error:
+    with pytest.raises(ValidationException) as ex:
         _Model()
-    assert "{} instance length is {}, the minimum configured length is {}".format(Array.__class__, 1, 2)
+    assert "{} instance length is {}, the minimum configured length is {}".format(Array.__name__, 1, 2) in str(ex)
+
+
+def test_array_can_check_max_length():
+    class _Model(Model):
+        max_2_int_array = Array.property(Integer, max_length=2)
+
+    model = _Model.mutable()
+    model.max_2_int_array = [1, 3]
+    model.validate()
+    model.max_2_int_array = [1, 3, 5]
+
+    with pytest.raises(ValidationException) as ex:
+        model.validate()
+    assert "{} instance length is {}, the maximum configured length is {}".format(Array.__name__, 3, 2) in str(ex)
 
 
 def test_cannot_create_array_of_non_immutable_type():

@@ -8,8 +8,13 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import random
+
 import pytest
 from prestans3.errors import ValidationException, AccessError
+from prestans3.types import Array
+from prestans3.types import DateTime
+from prestans3.types import Float
 from prestans3.types import Integer, String, Model
 from prestans3.types.model import ModelValidationException
 
@@ -233,3 +238,46 @@ def test_can_mutate_prestans_attributes_for_mutable_model():
     model = _Model.mutable()
     attributes = model.prestans_attributes
     attributes['my_string'] = 'should work'
+
+
+def test_complex_model():
+    class Item(Model):
+        name = String.property(str_min_length=3, format_regex=r'[a-zA-Z ]+')
+        price = Float.property()
+        description = String.property(required=False)
+
+    class LineOrder(Model):
+        count = Integer.property(min=1)
+        item = Item.property()
+
+    class Order(Model):
+        orders = Array.property(element_type=LineOrder, min_length=1, max_length=10, default=[])
+        total_price = Float.property(min=0)
+        purchase_date = DateTime.property()
+
+    order = Order.mutable()
+    orders = []
+    for i in range(10):
+        line_order = LineOrder.mutable()
+        item = Item.mutable()
+        item.name = random.choice(['shampoo', 'lead pencils', 'chips', 'milk', 'fat', 'meat', 'sour cream', 'nachos'])
+        item.price = random.random() % 100
+        item.description = random.choice(['fantastic product!', 'great buy', 'excellent quality', 'much wow'])
+        line_order.item = item
+        line_order.count = random.randint(1, 10)
+        orders.append(line_order)
+    order.orders = orders
+
+
+def test_default_parameter_inits_value_with_copy_of_default_if_none_provided():
+    class _Other(Model):
+        pass
+
+    class _Model(Model):
+        string = String.property(default="default_string")
+        other = _Other.property(default=_Other())
+
+    model = _Model()
+    model_2 = _Model()
+    assert model.string == 'default_string'
+    assert model.other is not model_2.other

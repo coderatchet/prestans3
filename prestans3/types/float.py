@@ -15,8 +15,9 @@ from . import Number
 class Float(Number, float):
     @classmethod
     def from_value(cls, value):
-        if isinstance(value, cls):
-            return value
-        elif not isinstance(value, float):
-            raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
-        return Float(value)
+        try:
+            super(Float, cls).from_value(value)
+        except NotImplementedError:
+            if not isinstance(value, float):
+                raise ValueError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
+            return Float(value)

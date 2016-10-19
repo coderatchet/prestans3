@@ -24,12 +24,13 @@ class Date(date, Temporal):
 
     @classmethod
     def from_value(cls, value):
-        if isinstance(value, cls):
-            return value
-        elif not isinstance(value, date):
-            raise TypeError(
-                "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
-        return Date(value.year, value.month, value.day)
+        try:
+            super(Date, cls).from_value(value)
+        except NotImplementedError:
+            if not isinstance(value, date):
+                raise TypeError(
+                    "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
+            return Date(value.year, value.month, value.day)
 
     def replace(self, year=None, month=None, day=None):
         """Return a new datetime with new values for the specified fields."""

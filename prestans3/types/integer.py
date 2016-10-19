@@ -12,14 +12,15 @@
 from . import Number
 
 
-class Integer(int, Number):
+class Integer(Number, int):
     @classmethod
-    def from_value(cls, integer):
-        if isinstance(integer, Integer):
-            return integer
-        elif not isinstance(integer, int):
-            raise ValueError(integer)
-        return Integer(integer)
+    def from_value(cls, value):
+        try:
+            super(Integer, cls).from_value(value)
+        except NotImplementedError:
+            if not isinstance(value, int):
+                raise ValueError(value)
+            return Integer(value)
 
     def __init__(self, value, base=10):
         int.__init__(value, base)

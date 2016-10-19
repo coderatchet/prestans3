@@ -60,3 +60,4 @@ def test_choices_property_rule_works():
         model.validate()
     assert "{} property is {}, valid choices are {}".format(String.__name__, 'no', "[spam, ham]") in str(ex)
     assert "{} property is {}, valid choices are {}".format(Integer.__name__, 3, '[1, 5]') in str(ex)
+

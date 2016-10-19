@@ -72,15 +72,12 @@ class Array(Container):
 
     @classmethod
     def from_value(cls, value):
-        if isinstance(value, cls):
-            return value
-        else:
-            try:
-                return super(Array, cls).from_value(value)
-            except NotImplementedError:
-                raise NotImplementedError(
-                    '{class_name} must declare an explicit element type, create an array from an existing native ' +
-                    'array using the constructor: {class_name}(<type>, native_array)'.format(class_name=cls.__name__))
+        try:
+            return super(Array, cls).from_value(value)
+        except NotImplementedError:
+            raise NotImplementedError(
+                '{class_name} must declare an explicit element type, create an array from an existing native ' +
+                'array using the constructor: {class_name}(<type>, native_array)'.format(class_name=cls.__name__))
 
     @classmethod
     def mutable(cls, of_type, iterable=None, **kwargs):
@@ -219,10 +216,19 @@ def _min_length(instance, config):
     if length < config:
         raise ValidationException(instance.__class__,
                                   "{} instance length is {}, the minimum configured length is {}".format(
-                                      instance.__class__, length, config))
+                                      instance.__class__.__name__, length, config))
+
+
+def _max_length(instance, config):
+    length = len(instance)
+    if length > config:
+        raise ValidationException(instance.__class__,
+                                  "{} instance length is {}, the maximum configured length is {}".format(
+                                      instance.__class__.__name__, length, config))
 
 
 Array.register_property_rule(_min_length, name="min_length")
+Array.register_property_rule(_max_length, name="max_length")
 
 
 class _ArrayProperty(_Property):
@@ -231,7 +237,8 @@ class _ArrayProperty(_Property):
     """
 
     def __init__(self, of_type, element_type, **kwargs):
-        super(_ArrayProperty, self).__init__(of_type)
+        super(_ArrayProperty, self).__init__(of_type, **{key: config for key, config in list(kwargs.items()) if
+                                                         key in ['required', 'default']})
         self._element_type = element_type
         self._array_rules_config = {}
         self._rules_config = MergingProxyDictionary(self._get_and_check_rules_config(kwargs),

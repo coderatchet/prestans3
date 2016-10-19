@@ -121,6 +121,8 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         :param value: an acceptable value according to the |type|\ 's subclass
         :raises NotImplementedError: if called on a subclass that does not override this method
         """
+        if isinstance(value, cls):
+            return value
         raise NotImplementedError
 
     # noinspection PyUnusedLocal,PyAbstractClass
@@ -283,7 +285,10 @@ class _Property(object):
         try:
             _rule = self.property_type.get_property_rule(key)
         except KeyError:
-            raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
+            if key in ['required', 'default']:
+                return key, config
+            else:
+                raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         if not _rule.configurable:
             raise PropertyConfigError(self.property_type, key,
                                       "{} is a non-configurable rule in class {}, (see {}.{}()))"
