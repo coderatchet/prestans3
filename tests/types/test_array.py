@@ -232,7 +232,7 @@ def test_array_does_not_accept_iterable_array_of_different_type():
 
 def test_array_element_rule_configuration_checks_elements():
     class _Model(Model):
-        array = Array.property(Integer, min=1)
+        array = Array.property(Integer, element_rules=dict(min=1))
 
     model = _Model.mutable()
     model.array = [3, 4, 0, 2, -4]
@@ -242,7 +242,7 @@ def test_array_element_rule_configuration_checks_elements():
 
 def test_array_validation_stops_at_first_error_by_default():
     class _Model(Model):
-        array = Array.property(Integer, min=1)
+        array = Array.property(Integer, element_rules=dict(min=1))
 
     model = _Model.mutable()
     model.array = Array(Integer, [3, 4, 0, 2, -4])

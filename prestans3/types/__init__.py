@@ -11,7 +11,7 @@
 import functools
 
 from prestans3.errors import PropertyConfigError, ValidationException
-from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph
+from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
 
 
 class _PropertyRulesProperty(object):
@@ -84,23 +84,22 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
         :raises: |ValidationException| on invalid state
         """
-
-        # iterate through own rules
-        exception_messages = []
         if config is None:
             config = {}
+        config = ImmutableMergingDictionary(config, self.default_rules_config())
+        exception_messages = None
         for rule_name, rule in list(self.__class__.property_rules.items()):
             try:
                 if rule_name in config:
                     rule(self, config[rule_name])
-                elif rule.default_config:
-                    rule(self, rule.default_config)
             except ValidationException as ex:
+                if exception_messages is None:
+                    exception_messages = []
                 exception_messages += ex.messages
-        if exception_messages:
-            this_type_exception = ValidationException(self.__class__)
-            this_type_exception.add_validation_messages(exception_messages)
-            raise this_type_exception
+            if exception_messages:
+                exception = ValidationException(self.__class__)
+                exception.add_validation_messages(exception_messages)
+                raise exception
 
     @classmethod
     def from_value(cls, value):

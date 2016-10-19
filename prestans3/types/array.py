@@ -89,12 +89,12 @@ class Array(Container):
         return new_mutable_model_subclass(cls, **kwargs)
 
     @classmethod
-    def property(cls, element_type, **kwargs):
+    def property(cls, element_type, element_rules=None, **kwargs):
         """
         :return: configured |_Property| Class
         :rtype: |_Property|
         """
-        return _ArrayProperty(of_type=cls, element_type=element_type, **kwargs)
+        return _ArrayProperty(of_type=cls, element_type=element_type, element_rules=element_rules, **kwargs)
 
     def validate(self, config=None):
         """
@@ -108,31 +108,29 @@ class Array(Container):
         """
         validation_exception = None
         _index = 0
-        array_config, element_config = self._split_config(config)
+        element_rules = {}
+        if config is None:
+            array_rules = {}
+        else:
+            array_rules = {key: config for key, config in list(config.items()) if key != 'element_rules'}
+            if 'element_rules' in config:
+                element_rules = config['element_rules']
         try:
             for index, element in enumerate(self._values):  # type: ImmutableType
                 _index = index
-                element.validate(ImmutableMergingDictionary(element_config, element.default_rules_config()))
+                element.validate(element_rules)
         except ValidationException as exception:
             if not validation_exception:
                 validation_exception = ArrayValidationException(self.__class__)
             validation_exception.add_validation_exception('{}[{}]'.format(self.__class__.__name__, _index), exception)
         try:
-            super(Array, self).validate(array_config)
+            super(Array, self).validate(array_rules)
         except ValidationException as exception:
             if not validation_exception:
                 validation_exception = ArrayValidationException(self.__class__)
             validation_exception.add_validation_messages(exception.messages)
         if validation_exception:
             raise validation_exception
-
-    def _split_config(self, config):
-        if config is None:
-            return {}, {}
-        element_config = {key: config for key, config in list(config.items()) if
-                          key in self._of_type.property_rules}
-        array_config = {key: config for key, config in list(config.items()) if key not in element_config}
-        return array_config, element_config
 
     #### list like magic methods
 
@@ -236,12 +234,12 @@ class _ArrayProperty(_Property):
     allows for property rule configuration that checks all elements
     """
 
-    def __init__(self, of_type, element_type, **kwargs):
+    def __init__(self, of_type, element_type, element_rules=None, **kwargs):
         super(_ArrayProperty, self).__init__(of_type, **{key: config for key, config in list(kwargs.items()) if
                                                          key in ['required', 'default']})
         self._element_type = element_type
-        self._array_rules_config = {}
-        self._rules_config = MergingProxyDictionary(self._get_and_check_rules_config(kwargs),
+        self._element_rules_config = element_rules if element_rules is not None else {}
+        self._rules_config = MergingProxyDictionary({'element_rules': element_rules}, self._get_and_check_rules_config(kwargs),
                                                     of_type.default_rules_config())
 
     def __set__(self, instance, value):
@@ -260,7 +258,6 @@ class _ArrayProperty(_Property):
     def _get_and_check_rule_config(self, key, config):
         try:
             key, config = super(_ArrayProperty, self)._get_and_check_rule_config(key, config)
-            self._array_rules_config.update({key: config})
             return key, config
         except ValueError:
             if key not in self._element_type.property_rules:
