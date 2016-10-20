@@ -344,17 +344,18 @@ class _Property(object):
 
         def _func(instance):
             """ recursively resolves and calls prepare functions in order """
-            if hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
-                def _all(x, rest):
-                    if len(rest) == 0:
-                        return x
-                    return _all(self._resolve_prepare_function(rest[0])(x), rest[1:])
-
-                return lambda x: _all(x, self.prepare)
+            if not is_str(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
+                return self._aggregate_prepare_functions(instance, self.prepare)
             else:
                 return self._resolve_prepare_function(self.prepare)
 
         return _func(self.prepare)
+
+    def _aggregate_prepare_functions(self, x, rest):
+        if len(rest) == 0:
+            return x
+        return self._aggregate_prepare_functions(self._resolve_prepare_function(rest[0])(x), rest[1:])
+
 
     def _resolve_prepare_function(self, str_or_func):
         """

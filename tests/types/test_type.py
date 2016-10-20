@@ -166,9 +166,18 @@ def test_get_prepare_process_method_on_property_returns_function_that_adjusts_in
     assert function(1) == 2
     assert function("foo") == "foofoo"
 
-#
-# def test_get_prepare_process_method_accepts_named_parameter_correctly():
-#     class _IM
+
+def test_get_prepare_process_method_accepts_named_parameter_correctly():
+    class _IM(ImmutableType):
+        pass
+
+    double = lambda x: x + x
+    _IM.register_prepare_function(double, name="double")
+
+    prop = _IM.property(prepare="double")
+    function = prop.prepare_process_function
+    assert function(1) == 2
+    assert function("foo") == "foofoo"
 
 # def test_prepare_argument_will_accept_predefined_function_name():
 #     class _IM(ImmutableType):
