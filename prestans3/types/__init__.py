@@ -26,9 +26,16 @@ class _ConfigChecksProperty(object):
         return _config_check_graph[cls]
 
 
+class _PrepareFunctionsProperty(object):
+    # noinspection PyUnusedLocal
+    def __get__(self, cls, _mcs):
+        return _prepare_functions_graph[cls]
+
+
 class _PrestansTypeMeta(type):
     property_rules = _PropertyRulesProperty()  # type: dict[str, (T <= ImmutableType, any) -> None]
     config_checks = _ConfigChecksProperty()  # type: dict[str, (type, any) -> None]
+    prepare_functions = _PrepareFunctionsProperty()  # type: dict[str, (T <= ImmutableType) -> T]
 
 
 class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
@@ -196,7 +203,6 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         return {rule_name: rule.default_config if not callable(rule.default_config) else rule.default_config()
                 for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
-
     @classmethod
     def register_prepare_function(cls, func):
         pass
@@ -204,6 +210,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
 
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
 _config_check_graph = LazyOneWayGraph(ImmutableType)
+_prepare_functions_graph = LazyOneWayGraph(ImmutableType)
 
 
 def _choices(instance, config):
