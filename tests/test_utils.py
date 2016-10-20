@@ -418,3 +418,21 @@ def test_merging_dictionary_does_not_skip_items():
 def test_terminating_type_is_object_when_not_specified_for_lazy_one_way_graph():
     # noinspection PyProtectedMember
     assert utils.LazyOneWayGraph()._terminating_type is object
+
+
+def test_merging_dictionary_can_access_own_items():
+    dictionary = MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'})
+    assert dictionary.own_items() == {'foo': 'bar'}.items()
+
+
+def test_merging_dictionary_can_access_own_keys():
+    dictionary = MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'})
+    assert dictionary.own_keys() == {'foo': 'bar'}.keys()
+
+
+def test_merging_dictionary_can_access_own_values():
+    dictionary = MergingProxyDictionary({'foo': 'bar'}, {'baz': 'spam'})
+    values = dictionary.own_values()
+    assert len(values) == 1
+    assert list(values)[0] == list({'foo': 'bar'}.values())[0]
+

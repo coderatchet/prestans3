@@ -125,6 +125,15 @@ class MergingProxyDictionary(dict):
         else:
             super(MergingProxyDictionary, self).__init__(initial_values)
 
+    def own_items(self):
+        return super(MergingProxyDictionary, self).items()
+
+    def own_keys(self):
+        return super(MergingProxyDictionary, self).keys()
+
+    def own_values(self):
+        return super(MergingProxyDictionary, self).values()
+
     def _append_others(self, item):
         if self._others:
             return self._others.append(item)

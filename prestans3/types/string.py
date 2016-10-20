@@ -56,6 +56,11 @@ def _format_regex(instance, config):
                                                                                                      config))
 
 
+String.register_property_rule(_min_length, name="min_length")
+String.register_property_rule(_max_length, name="max_length")
+String.register_property_rule(_format_regex, name="format_regex")
+
+
 def _min_max_string_check_config(type, config):
     if config is not None and 'min_length' in config and 'max_length' in config \
             and config['min_length'] > config['max_length']:
@@ -64,7 +69,16 @@ def _min_max_string_check_config(type, config):
                                       type.__name__, config['min_length'], config['max_length']))
 
 
-String.register_property_rule(_min_length, name="min_length")
-String.register_property_rule(_max_length, name="max_length")
-String.register_property_rule(_format_regex, name="format_regex")
 String.register_config_check(_min_max_string_check_config, name="min_max_string_check_config")
+
+
+def _prepare_trim(x):
+    return x.strip()
+
+
+def _prepare_normalize_whitespace(x):
+    return re.sub(r'[ ]{2,}', ' ', _prepare_trim(x))
+
+
+String.register_prepare_function(_prepare_trim, name="trim")
+String.register_prepare_function(_prepare_normalize_whitespace, name="normalize_whitespace")

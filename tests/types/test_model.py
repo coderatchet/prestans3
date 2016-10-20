@@ -353,3 +353,12 @@ def test_get_prestans_attribute_property_raises_key_error_on_normal_attribute_ke
         _Model.get_prestans_attribute_property('spam')
     assert "'{}' is a normal python class attribute, not a {} instance".format('spam', _Property.__name__) in str(
         error.value)
+
+
+def test_property_with_prepare_stores_prepared_argument():
+    class _Model(Model):
+        foo = String.property(prepare=lambda x: 'bar')
+
+    model = _Model.mutable()
+    model.foo = 'not bar'
+    assert model.foo == 'bar'

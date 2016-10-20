@@ -11,7 +11,7 @@
 import functools
 
 from prestans3.errors import PropertyConfigError, ValidationException
-from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
+from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary, is_str
 
 
 class _PropertyRulesProperty(object):
@@ -26,9 +26,16 @@ class _ConfigChecksProperty(object):
         return _config_check_graph[cls]
 
 
+class _PrepareFunctionsProperty(object):
+    # noinspection PyUnusedLocal
+    def __get__(self, cls, _mcs):
+        return _prepare_functions_graph[cls]
+
+
 class _PrestansTypeMeta(type):
     property_rules = _PropertyRulesProperty()  # type: dict[str, (T <= ImmutableType, any) -> None]
     config_checks = _ConfigChecksProperty()  # type: dict[str, (type, any) -> None]
+    prepare_functions = _PrepareFunctionsProperty()  # type: dict[str, (T <= ImmutableType) -> T]
 
 
 class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
@@ -196,9 +203,14 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         return {rule_name: rule.default_config if not callable(rule.default_config) else rule.default_config()
                 for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
+    @classmethod
+    def register_prepare_function(cls, func, name=None):
+        cls.prepare_functions[name] = func
+
 
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
 _config_check_graph = LazyOneWayGraph(ImmutableType)
+_prepare_functions_graph = LazyOneWayGraph(ImmutableType)
 
 
 def _choices(instance, config):
@@ -219,7 +231,7 @@ class _Property(object):
     the setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type, required=True, default=None, **kwargs):
+    def __init__(self, of_type, required=True, default=None, prepare=None, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`
@@ -229,6 +241,7 @@ class _Property(object):
                                                     of_type.default_rules_config())
         self.required = required
         self.default = default
+        self.prepare = prepare if prepare is not None else []
 
     def __set__(self, instance, value):
         """
@@ -241,10 +254,11 @@ class _Property(object):
         :type value: T <= G
         """
         # if value is a ImmutableType then set it otherwise construct it from variable
+        prepared_value = self.prepare_process_function(value[1])
         if isinstance(value[1], self._of_type):
-            instance[value[0]] = value[1]
+            instance[value[0]] = prepared_value
         else:
-            instance[value[0]] = self._of_type.from_value(value[1])
+            instance[value[0]] = self._of_type.from_value(prepared_value)
 
     # noinspection PyUnusedLocal
     def __get__(self, instance, owner):
@@ -318,6 +332,62 @@ class _Property(object):
         for key, config_check in list(self.config_checks.items()):
             config_check(self._of_type, all_config)
         return all_config
+
+    @property
+    def prepare_process_function(self):
+        """
+        Return the aggregated process chain function that will iterate through configured prepare parameter from the
+        init function. it will honour the order of arguments in the list and produce a resulting object that must be of
+        the same type as its input, otherwise an error will be raised
+
+        :return: a function that will process the string
+        """
+
+        """ recursively resolves and calls prepare functions in order """
+        if not is_str(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
+            return self._aggregate_prepare_functions(self.prepare)
+        else:
+            return self._resolve_prepare_function(self.prepare)
+
+    def _aggregate_prepare_functions(self, rest):
+        def _all(x, tail):
+            if len(tail) < 1:
+                return x
+            return _all(self._resolve_prepare_function(tail[0])(x), tail[1:])
+
+        return lambda x: _all(x, rest)
+
+    def _resolve_prepare_function(self, str_or_func):
+        """
+        Will resolve a string into the named function stored in self.__class__.prepare_functions dictionary and throw an
+        error on no resolution or will return the function provided given it accepts only one argument
+
+        :param str_or_func: name of a predefined and registered prepare function or a custom function with one argument
+                            that returns the same type.
+        :type str_or_func: str or (t: T <= ImmutableType) -> T
+        :raises TypeError: if the provided function has 0 or more than 1 argument
+        :raises KeyError: if the provided string does not map to a pre-registered prepare function on this property's
+                          type
+        :return: (t: T <= ImmutableType) -> T
+        """
+        if is_str(str_or_func):
+            try:
+                return self.property_type.prepare_functions[str_or_func]
+            except KeyError:
+                raise KeyError(
+                    "'{}' is not a registered prepare function of {}".format(str_or_func, self.property_type.__name__))
+        if callable(str_or_func):
+            if str_or_func.__code__.co_argcount != 1:
+                raise TypeError(
+                    'provided prepare function should only 1 argument, received function has {}: {}({})'.format(
+                        str_or_func.__code__.co_argcount, str_or_func.__name__,
+                        ", ".join(str_or_func.__code__.co_varnames)
+                    ))
+            return str_or_func
+        else:
+            raise TypeError("prepare argument to property must be a str name of a pre-registered prepare function, a" +
+                            "custom one-argument function or a list of any of the previous values, " +
+                            "received: {} of type {}".format(str_or_func, str_or_func.__class__.__name__))
 
 
 # noinspection PyAbstractClass
