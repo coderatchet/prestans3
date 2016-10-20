@@ -76,4 +76,9 @@ def _prepare_trim(x):
     return x.strip()
 
 
+def _prepare_normalize_whitespace(x):
+    return re.sub(r'[ ]{2,}', ' ', _prepare_trim(x))
+
+
 String.register_prepare_function(_prepare_trim, name="trim")
+String.register_prepare_function(_prepare_normalize_whitespace, name="normalize_whitespace")

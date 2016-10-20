@@ -12,7 +12,7 @@ import pytest
 from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.types import Model
 from prestans3.types import String
-from prestans3.types.string import _prepare_trim
+from prestans3.types.string import _prepare_trim, _prepare_normalize_whitespace
 
 
 def test_can_create_string():
@@ -122,3 +122,16 @@ def test_prepare_trim_works_on_property():
     assert model.my_string == 'hello'
     model.my_string = '   hello        '
     assert model.my_string == 'hello'
+
+
+def test_remove_whitespace():
+    assert _prepare_normalize_whitespace('my        name is    bob   ') == 'my name is bob'
+
+
+def test_remove_whitespace_works_on_property():
+    class _M(Model):
+        my_string = String.property(prepare='normalize_whitespace')
+
+    model = _M.mutable()
+    model.my_string = '   hello world      of white     space  removal         !  '
+    assert model.my_string == 'hello world of white space removal !'
