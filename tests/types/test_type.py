@@ -14,6 +14,7 @@ from prestans3.errors import ValidationException
 from prestans3.types import Integer
 from prestans3.types import Model
 from prestans3.types import String, _Property, ImmutableType
+from prestans3.utils import MergingProxyDictionary
 
 
 class MyClass(Model):
@@ -91,15 +92,21 @@ def test_property_may_accept_prepare_argument():
         prop = ImmutableType.property(prepare=lambda x: None)
 
 
-def test_type_may_register_relevant_prepare_function():
-    class _IM(ImmutableType):
-        pass
+# def test_type_can_access_graph_storage_for_own_prepare_functions():
+#     class _IM(ImmutableType):
+#         pass
+#
+#     assert isinstance(_IM.prepare_functions, MergingProxyDictionary)
+#     assert len(_IM.own_values) == 0
 
-    _IM.register_prepare_function(lambda x: None)
 
-    class _Model(Model):
-        im = _IM.property(prepare='some_new_prepare_func')
-
+# def test_type_may_register_relevant_prepare_function():
+#     class _IM(ImmutableType):
+#         pass
+#
+#     noop = lambda x: None
+#     _IM.register_prepare_function(noop, name="noop")
+#     _IM.prepare_functions['noop'] == noop
 
 # def test_prepare_argument_will_accept_predefined_function_name():
 #     class _Model(Model):
