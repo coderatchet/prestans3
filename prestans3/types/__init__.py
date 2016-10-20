@@ -219,7 +219,7 @@ class _Property(object):
     the setting of prestans attributes on it's containing class
     """
 
-    def __init__(self, of_type, required=True, default=None, **kwargs):
+    def __init__(self, of_type, required=True, default=None, prepare=None, **kwargs):
         """
         :param of_type: The class of the |type| being configured. Must be a subclass of |ImmutableType|
         :type of_type: T <= :attr:`ImmutableType.__class__<prestans3.types.ImmutableType>`

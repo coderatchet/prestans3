@@ -84,3 +84,13 @@ def test_register_config_has_default_config():
 
     __Model.register_config_check(_test)
     assert __Model.config_checks['_test'] is _test
+
+
+def test_property_may_accept_prepare_argument():
+    class _Model(Model):
+        prop = ImmutableType.property(prepare=lambda x: None)
+
+
+# def test_prepare_argument_will_accept_predefined_function_name():
+#     class _Model(Model):
+#         prop = ImmutableType.property(prepare='some_func')
