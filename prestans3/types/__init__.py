@@ -11,7 +11,7 @@
 import functools
 
 from prestans3.errors import PropertyConfigError, ValidationException
-from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
+from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary, is_str
 
 
 class _PropertyRulesProperty(object):
@@ -204,8 +204,8 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
                 for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
     @classmethod
-    def register_prepare_function(cls, func):
-        pass
+    def register_prepare_function(cls, func, name=None):
+        cls.prepare_functions[name] = func
 
 
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
@@ -241,6 +241,7 @@ class _Property(object):
                                                     of_type.default_rules_config())
         self.required = required
         self.default = default
+        self.prepare = prepare
 
     def __set__(self, instance, value):
         """
@@ -330,6 +331,46 @@ class _Property(object):
         for key, config_check in list(self.config_checks.items()):
             config_check(self._of_type, all_config)
         return all_config
+
+    @property
+    def prepare_process_function(self):
+        """
+        Return the aggregated process chain function that will iterate through configured prepare parameter from the
+        init function. it will honour the order of arguments in the list and produce a resulting object that must be of
+        the same type as its input, otherwise an error will be raised
+
+        :return: a function that will process the string
+        """
+
+        def _func(instance):
+            if is_str(self.prepare):
+                pass
+            if hasattr(self.prepare, '__iter__'):
+                pass
+
+    def _resolve_preapre_function(self, str_or_func):
+        """
+        will resolve a string into the named function stored in self.__class__.prepare_functions dictionary and throw an
+        error on no resolution or will return the function provided given it accepts only one argument
+
+        :param str_or_func: name of a predefined and registered prepare function or a custom function with one argument
+                            that returns the same type.
+        :type str_or_func: str or (t: T <= ImmutableType) -> T
+        :raises TypeError: if the provided function has 0 or more than 1 argument
+        :raises KeyError: if the provided string does not map to a pre-registered prepare function on this property's
+                          type
+        :return: (t: T <= ImmutableType) -> T
+        """
+        if is_str(str_or_func):
+            return self.property_type.prepare_functions[str_or_func]
+        if callable(str_or_func):
+            if str_or_func.__code__.co_argcount != 1:
+                raise TypeError(
+                    'provided prepare function should only 1 argument, received function has {}: {}({})'.format(
+                        str_or_func.__code__.co_argcount, str_or_func.__name__,
+                        ", ".join(str_or_func.__code__.co_varnames)
+                    ))
+            return str_or_func
 
 
 # noinspection PyAbstractClass

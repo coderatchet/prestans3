@@ -100,15 +100,76 @@ def test_type_can_access_graph_storage_for_own_prepare_functions():
     assert len(_IM.prepare_functions.own_items()) == 0
 
 
+def test_type_may_register_relevant_prepare_function():
+    class _IM(ImmutableType):
+        pass
 
-    # def test_type_may_register_relevant_prepare_function():
-    #     class _IM(ImmutableType):
-    #         pass
-    #
-    #     noop = lambda x: None
-    #     _IM.register_prepare_function(noop, name="noop")
-    #     _IM.prepare_functions['noop'] == noop
+    noop = lambda x: None
+    _IM.register_prepare_function(noop, name="noop")
+    _IM.prepare_functions['noop'] == noop
 
-    # def test_prepare_argument_will_accept_predefined_function_name():
-    #     class _Model(Model):
-    #         prop = ImmutableType.property(prepare='some_func')
+
+def test_resolve_prepare_function_on_property_will_return_func_if_function_provided():
+    prop = _Property(ImmutableType)
+    noop = lambda x: None
+    assert prop._resolve_preapre_function(noop) == noop
+
+
+def test_resolve_prepare_function_raises_type_error_when_passed_function_with_less_or_more_than_one_argument():
+    prop = _Property(ImmutableType)
+
+    def _no_args(): None
+
+    def _two_args(x, y): None
+
+    def _one_arg(x): None
+
+    with pytest.raises(TypeError) as error:
+        prop._resolve_preapre_function(_no_args)
+    assert 'provided prepare function should only 1 argument, received function has {}: {}({})'.format(
+        0, _no_args.__name__, ''
+    )
+
+    with pytest.raises(TypeError) as error:
+        prop._resolve_preapre_function(_two_args)
+    assert 'provided prepare function should only 1 argument, received function has {}: {}({})'.format(
+        2, _two_args.__name__, ", ".join(_two_args.__code__.co_varnames)
+    )
+
+    assert prop._resolve_preapre_function(_one_arg) == _one_arg
+
+
+def test_string_parameter_raises_key_error_on_no_pre_registered_prepare_function_with_name():
+    class _IM(ImmutableType):
+        pass
+
+    noop = lambda x: None
+    _IM.register_prepare_function(noop, name='here')
+    prop = _IM.property()
+
+    assert prop._resolve_preapre_function('here') == noop
+
+# def test_get_prepare_process_method_on_property_returns_function_that_adjusts_input_as_expected():
+#     class _IM(ImmutableType):
+#         pass
+#
+#     double = lambda x: x + x
+#     _IM.register_prepare_function(double, name="double")
+#
+#     prop = ImmutableType.property(prepare=double)
+#     function = prop.get_prepare_input_function()
+#     assert function.__code__.co_argcount == 1
+#     assert function(1) == 2
+#     assert function("foo") == "foofoo"
+
+# def test_prepare_argument_will_accept_predefined_function_name():
+#     class _IM(ImmutableType):
+#         pass
+#
+#     noop = lambda x: None
+#     _IM.register_prepare_function(noop, name="something")
+#
+#     class _M(Model):
+#         prop = ImmutableType.property(prepare='something')
+#
+#     assert _M.prepare_functions['something']
