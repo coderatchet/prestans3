@@ -112,7 +112,7 @@ def test_type_may_register_relevant_prepare_function():
 def test_resolve_prepare_function_on_property_will_return_func_if_function_provided():
     prop = _Property(ImmutableType)
     noop = lambda x: None
-    assert prop._resolve_preapre_function(noop) == noop
+    assert prop._resolve_prepare_function(noop) == noop
 
 
 def test_resolve_prepare_function_raises_type_error_when_passed_function_with_less_or_more_than_one_argument():
@@ -125,18 +125,18 @@ def test_resolve_prepare_function_raises_type_error_when_passed_function_with_le
     def _one_arg(x): None
 
     with pytest.raises(TypeError) as error:
-        prop._resolve_preapre_function(_no_args)
+        prop._resolve_prepare_function(_no_args)
     assert 'provided prepare function should only 1 argument, received function has {}: {}({})'.format(
         0, _no_args.__name__, ''
     )
 
     with pytest.raises(TypeError) as error:
-        prop._resolve_preapre_function(_two_args)
+        prop._resolve_prepare_function(_two_args)
     assert 'provided prepare function should only 1 argument, received function has {}: {}({})'.format(
         2, _two_args.__name__, ", ".join(_two_args.__code__.co_varnames)
     )
 
-    assert prop._resolve_preapre_function(_one_arg) == _one_arg
+    assert prop._resolve_prepare_function(_one_arg) == _one_arg
 
 
 def test_string_parameter_raises_key_error_on_no_pre_registered_prepare_function_with_name():
@@ -147,9 +147,9 @@ def test_string_parameter_raises_key_error_on_no_pre_registered_prepare_function
     _IM.register_prepare_function(noop, name='here')
     prop = _IM.property()
 
-    assert prop._resolve_preapre_function('here') == noop
+    assert prop._resolve_prepare_function('here') == noop
     with pytest.raises(KeyError) as error:
-        prop._resolve_preapre_function('not here')
+        prop._resolve_prepare_function('not here')
     assert "'{}' is not a registered prepare function of {}".format('not here', _IM.__name__) in str(error.value)
 
 # def test_get_prepare_process_method_on_property_returns_function_that_adjusts_input_as_expected():

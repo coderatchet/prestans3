@@ -348,7 +348,7 @@ class _Property(object):
             if hasattr(self.prepare, '__iter__'):
                 pass
 
-    def _resolve_preapre_function(self, str_or_func):
+    def _resolve_prepare_function(self, str_or_func):
         """
         will resolve a string into the named function stored in self.__class__.prepare_functions dictionary and throw an
         error on no resolution or will return the function provided given it accepts only one argument
