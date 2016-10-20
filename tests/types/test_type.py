@@ -197,21 +197,20 @@ def test_can_provide_list_of_prepare_functions_resolved_in_order():
         pass
 
     _IM.register_prepare_function(lambda x: x * x, name="square")
+
     def _divide_by_2(x):
         return x / 2
 
     prop = _IM.property(prepare=['square', lambda x: x + 2, _divide_by_2])
-    prop.prepare_process_function(2) == 3
+    assert prop.prepare_process_function(2) == 3
+    prop = _IM.property(prepare=[lambda x: x + 2, 'square', _divide_by_2])
+    assert prop.prepare_process_function(2) == 8
 
 
-# def test_prepare_argument_will_accept_predefined_function_name():
-#     class _IM(ImmutableType):
-#         pass
-#
-#     noop = lambda x: None
-#     _IM.register_prepare_function(noop, name="something")
-#
-#     class _M(Model):
-#         prop = ImmutableType.property(prepare='something')
-#
-#     assert _M.prepare_functions['something']
+def test_resolve_prepare_function_raises_type_error_on_invalid_argument():
+    with pytest.raises(TypeError) as error:
+        _Property(ImmutableType)._resolve_prepare_function(1)
+    assert "prepare argument to property must be a str name of a pre-registered prepare function, a" + \
+           "custom one-argument function or a list of any of the previous values, received: {} of type {}".format(
+               1, int.__name__
+           ) in str(error.value)

@@ -384,8 +384,9 @@ class _Property(object):
                     ))
             return str_or_func
         else:
-            raise TypeError("prepare argument to property must be a str name of a pre-registered prepare function, a"
-                            "custom one-argument function or a list of any of the previous values")
+            raise TypeError("prepare argument to property must be a str name of a pre-registered prepare function, a" +
+                            "custom one-argument function or a list of any of the previous values, " +
+                            "received: {} of type {}".format(str_or_func, str_or_func.__class__.__name__))
 
 
 # noinspection PyAbstractClass
