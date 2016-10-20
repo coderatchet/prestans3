@@ -24,7 +24,8 @@ if __name__ == '__main__':
             line = rc.stdout.readline()
             if not line:
                 break
-            print(line)
+            sys.stdout.write(str(line)git)
+            sys.stdout.flush()
         if sys.version_info.major == 2:
             exit(rc.wait())
         else:
