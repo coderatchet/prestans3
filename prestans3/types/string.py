@@ -70,3 +70,10 @@ def _min_max_string_check_config(type, config):
 
 
 String.register_config_check(_min_max_string_check_config, name="min_max_string_check_config")
+
+
+def _prepare_trim(x):
+    return x.strip()
+
+
+String.register_prepare_function(_prepare_trim, name="trim")

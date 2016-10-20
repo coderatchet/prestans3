@@ -12,6 +12,7 @@ import pytest
 from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.types import Model
 from prestans3.types import String
+from prestans3.types.string import _prepare_trim
 
 
 def test_can_create_string():
@@ -102,3 +103,22 @@ def test_str_regex_property_rule_works():
     with pytest.raises(ValidationException) as exception:
         model.validate()
     assert '{} does not match the format_regex {}'.format('s1', r'[abc][123]')
+
+
+def test_prepare_trim_works():
+    assert _prepare_trim(' hello') == 'hello'
+    assert _prepare_trim(' hello ') == 'hello'
+    assert _prepare_trim('hello ') == 'hello'
+
+
+def test_prepare_trim_works_on_property():
+    class _M(Model):
+        my_string = String.property(prepare='trim')
+
+    model = _M.mutable()
+    model.my_string = ' hello'
+    assert model.my_string == 'hello'
+    model.my_string = 'hello '
+    assert model.my_string == 'hello'
+    model.my_string = '   hello        '
+    assert model.my_string == 'hello'
