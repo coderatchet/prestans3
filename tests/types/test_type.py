@@ -148,6 +148,9 @@ def test_string_parameter_raises_key_error_on_no_pre_registered_prepare_function
     prop = _IM.property()
 
     assert prop._resolve_preapre_function('here') == noop
+    with pytest.raises(KeyError) as error:
+        prop._resolve_preapre_function('not here')
+    assert "'{}' is not a registered prepare function of {}".format('not here', _IM.__name__) in str(error.value)
 
 # def test_get_prepare_process_method_on_property_returns_function_that_adjusts_input_as_expected():
 #     class _IM(ImmutableType):

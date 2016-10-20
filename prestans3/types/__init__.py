@@ -362,7 +362,11 @@ class _Property(object):
         :return: (t: T <= ImmutableType) -> T
         """
         if is_str(str_or_func):
-            return self.property_type.prepare_functions[str_or_func]
+            try:
+                return self.property_type.prepare_functions[str_or_func]
+            except KeyError:
+                raise KeyError(
+                    "'{}' is not a registered prepare function of {}".format(str_or_func, self.property_type.__name__))
         if callable(str_or_func):
             if str_or_func.__code__.co_argcount != 1:
                 raise TypeError(
