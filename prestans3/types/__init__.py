@@ -241,7 +241,7 @@ class _Property(object):
                                                     of_type.default_rules_config())
         self.required = required
         self.default = default
-        self.prepare = prepare
+        self.prepare = prepare if prepare is not None else []
 
     def __set__(self, instance, value):
         """
@@ -254,10 +254,11 @@ class _Property(object):
         :type value: T <= G
         """
         # if value is a ImmutableType then set it otherwise construct it from variable
+        prepared_value = self.prepare_process_function(value[1])
         if isinstance(value[1], self._of_type):
-            instance[value[0]] = value[1]
+            instance[value[0]] = prepared_value
         else:
-            instance[value[0]] = self._of_type.from_value(value[1])
+            instance[value[0]] = self._of_type.from_value(prepared_value)
 
     # noinspection PyUnusedLocal
     def __get__(self, instance, owner):

@@ -214,3 +214,7 @@ def test_resolve_prepare_function_raises_type_error_on_invalid_argument():
            "custom one-argument function or a list of any of the previous values, received: {} of type {}".format(
                1, int.__name__
            ) in str(error.value)
+
+
+def test_no_prepare_argument_does_not_break_code():
+    _Property(ImmutableType).prepare_process_function(1)
