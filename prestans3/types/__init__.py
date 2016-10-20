@@ -342,24 +342,23 @@ class _Property(object):
         :return: a function that will process the string
         """
 
-        def _func(instance):
-            """ recursively resolves and calls prepare functions in order """
-            if not is_str(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
-                return self._aggregate_prepare_functions(instance, self.prepare)
-            else:
-                return self._resolve_prepare_function(self.prepare)
+        """ recursively resolves and calls prepare functions in order """
+        if not is_str(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
+            return self._aggregate_prepare_functions(self.prepare)
+        else:
+            return self._resolve_prepare_function(self.prepare)
 
-        return _func(self.prepare)
+    def _aggregate_prepare_functions(self, rest):
+        def _all(x, tail):
+            if len(tail) < 1:
+                return x
+            return _all(self._resolve_prepare_function(tail[0])(x), tail[1:])
 
-    def _aggregate_prepare_functions(self, x, rest):
-        if len(rest) == 0:
-            return x
-        return self._aggregate_prepare_functions(self._resolve_prepare_function(rest[0])(x), rest[1:])
-
+        return lambda x: _all(x, rest)
 
     def _resolve_prepare_function(self, str_or_func):
         """
-        will resolve a string into the named function stored in self.__class__.prepare_functions dictionary and throw an
+        Will resolve a string into the named function stored in self.__class__.prepare_functions dictionary and throw an
         error on no resolution or will return the function provided given it accepts only one argument
 
         :param str_or_func: name of a predefined and registered prepare function or a custom function with one argument

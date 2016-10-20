@@ -179,6 +179,31 @@ def test_get_prepare_process_method_accepts_named_parameter_correctly():
     assert function(1) == 2
     assert function("foo") == "foofoo"
 
+
+def test_can_provide_custom_function():
+    class _IM(ImmutableType):
+        pass
+
+    double = lambda x: x + x
+    prop_1 = ImmutableType.property(prepare=double)
+    prop_2 = ImmutableType.property(prepare=lambda x: x - x)
+
+    assert prop_1.prepare_process_function(1) == 2
+    assert prop_2.prepare_process_function(1) == 0
+
+
+def test_can_provide_list_of_prepare_functions_resolved_in_order():
+    class _IM(ImmutableType):
+        pass
+
+    _IM.register_prepare_function(lambda x: x * x, name="square")
+    def _divide_by_2(x):
+        return x / 2
+
+    prop = _IM.property(prepare=['square', lambda x: x + 2, _divide_by_2])
+    prop.prepare_process_function(2) == 3
+
+
 # def test_prepare_argument_will_accept_predefined_function_name():
 #     class _IM(ImmutableType):
 #         pass
