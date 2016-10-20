@@ -197,6 +197,11 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
                 for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
 
+    @classmethod
+    def register_prepare_function(cls, func):
+        pass
+
+
 _property_rule_graph = LazyOneWayGraph(ImmutableType)
 _config_check_graph = LazyOneWayGraph(ImmutableType)
 

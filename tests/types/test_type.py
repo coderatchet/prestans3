@@ -91,6 +91,16 @@ def test_property_may_accept_prepare_argument():
         prop = ImmutableType.property(prepare=lambda x: None)
 
 
+def test_type_may_register_relevant_prepare_function():
+    class _IM(ImmutableType):
+        pass
+
+    _IM.register_prepare_function(lambda x: None)
+
+    class _Model(Model):
+        im = _IM.property(prepare='some_new_prepare_func')
+
+
 # def test_prepare_argument_will_accept_predefined_function_name():
 #     class _Model(Model):
 #         prop = ImmutableType.property(prepare='some_func')
