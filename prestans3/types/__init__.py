@@ -343,10 +343,18 @@ class _Property(object):
         """
 
         def _func(instance):
-            if is_str(self.prepare):
-                pass
-            if hasattr(self.prepare, '__iter__'):
-                pass
+            """ recursively resolves and calls prepare functions in order """
+            if hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
+                def _all(x, rest):
+                    if len(rest) == 0:
+                        return x
+                    return _all(self._resolve_prepare_function(rest[0])(x), rest[1:])
+
+                return lambda x: _all(x, self.prepare)
+            else:
+                return self._resolve_prepare_function(self.prepare)
+
+        return _func(self.prepare)
 
     def _resolve_prepare_function(self, str_or_func):
         """
@@ -375,6 +383,9 @@ class _Property(object):
                         ", ".join(str_or_func.__code__.co_varnames)
                     ))
             return str_or_func
+        else:
+            raise TypeError("prepare argument to property must be a str name of a pre-registered prepare function, a"
+                            "custom one-argument function or a list of any of the previous values")
 
 
 # noinspection PyAbstractClass
