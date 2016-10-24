@@ -15,7 +15,7 @@ from prestans3.types.temporal import Temporal
 
 class Date(date, Temporal):
     """
-    Prestans3 Date Type.
+    Prestans3 Date Type. Acts as a native python :class:`datetime.date` class with added prestans 3 functionality.
     """
 
     def __init__(self, year, month, day):

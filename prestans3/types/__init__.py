@@ -47,9 +47,10 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
                             - |Integer|
                             - |Float|
                         - |String|
-                        - |Date|
-                        - |DateTime|
-                        - |Time|
+                        - |Temporal|
+                            - |Date|
+                            - |DateTime|
+                            - |Time|
     """
 
     is_scalar = True

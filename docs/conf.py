@@ -130,6 +130,9 @@ rst_epilog = """
 .. |Array|  replace:: :class:`Array<.array.Array>`
 .. |Arrays|  replace:: :class:`Arrays<.array.Array>`
 
+.. |Temporal|  replace:: :class:`Temporal<.temporal.Temporal>`
+.. |Temporals|  replace:: :class:`Temporals<.temporal.Temporal>`
+
 .. |Date|  replace:: :class:`Date<.p_date.Date>`
 .. |Dates|  replace:: :class:`Dates<.p_date.Date>`
 

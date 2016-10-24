@@ -94,6 +94,16 @@ Array
     :members:
     :exclude-members: __weakref__
 
+
+Temporal
+--------
+
+.. py:currentmodule:: prestans3.types.temporal
+
+.. autoclass:: Temporal
+    :show-inheritance:
+
+
 Date
 ----
 
