@@ -17,6 +17,9 @@ from . import ImmutableType
 
 
 class String(ImmutableType, str):
+    """
+    Prestans 3 String type. Acts as a native :class:`str` with additional Prestans 3 functionality.
+    """
     def __init__(self, value=None):
         if value is None:
             value = ""

@@ -13,7 +13,9 @@ from . import Number
 
 
 class Float(Number, float):
-
+    """
+    Prestans 3 Float type. Acts as a native :class:`float` with additional Prestans 3 functionality.
+    """
 
     @classmethod
     def from_value(cls, value):
