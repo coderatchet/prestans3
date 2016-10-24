@@ -36,6 +36,13 @@ def find_first(array, func):
 
 # noinspection PyAbstractClass
 class Array(Container):
+    """
+    Prestans 3 Array type. Wraps a native python list and delegates most operations to it. Provides Prestans 3
+    functionality such as serialization and validation.
+
+    Note: Validation will stop at the first error by default.
+    """
+
     def __init__(self, of_type, iterable=None, **kwargs):
         if iterable is None:
             iterable = []
@@ -239,7 +246,8 @@ class _ArrayProperty(_Property):
                                                          key in ['required', 'default']})
         self._element_type = element_type
         self._element_rules_config = element_rules if element_rules is not None else {}
-        self._rules_config = MergingProxyDictionary({'element_rules': element_rules}, self._get_and_check_rules_config(kwargs),
+        self._rules_config = MergingProxyDictionary({'element_rules': element_rules},
+                                                    self._get_and_check_rules_config(kwargs),
                                                     of_type.default_rules_config())
 
     def __set__(self, instance, value):
