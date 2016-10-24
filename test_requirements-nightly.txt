@@ -1,3 +1,2 @@
 pytest
 git+https://github.com/pytest-dev/pytest-mock@931785ca86113c62baaad1e677f5dc61d69ec39a
-setuptools_scm>=1.9
