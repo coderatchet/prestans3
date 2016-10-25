@@ -13,7 +13,8 @@ from copy import copy
 from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary, \
     ContainerValidationException
 from prestans3.types import Container, _Property, _PrestansTypeMeta
-from prestans3.utils import is_str, inject_class, with_metaclass, ImmutableMergingDictionary, LazyOneWayGraph
+from prestans3.utils import is_str, inject_class, with_metaclass, ImmutableMergingDictionary, LazyOneWayGraph, \
+    _PrestansTypeMeta
 
 
 class ModelValidationException(ContainerValidationException):

@@ -135,3 +135,18 @@ def test_remove_whitespace_works_on_property():
     model = _M.mutable()
     model.my_string = '   hello world      of white     space  removal         !  '
     assert model.my_string == 'hello world of white space removal !'
+
+
+def test_string_accepts_unicode():
+    String(u'unicode string')
+
+
+def test_string_unicode_comparison_works():
+    assert String('hello') == u'hello'
+    assert String(u'hello') == String('hello')
+    assert String(u'hello') == 'hello'
+    assert String(u'hello') == u'hello'
+    assert String('hello') != u'world'
+    assert String(u'hello') != String('world')
+    assert String(u'hello') != 'world'
+    assert String(u'hello') != u'world'

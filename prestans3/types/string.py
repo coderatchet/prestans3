@@ -11,15 +11,17 @@
 import re
 
 from prestans3.errors import ValidationException, PropertyConfigError
+from . import ImmutableType
+from prestans3.future.newstr import newstr
 from prestans3.utils import is_str
 
-from . import ImmutableType
 
-
-class String(ImmutableType, str):
+# noinspection PyAbstractClass
+class String(ImmutableType, newstr):
     """
     Prestans 3 String type. Acts as a native :class:`str` with additional Prestans 3 functionality.
     """
+
     def __init__(self, value=None):
         if value is None:
             value = ""

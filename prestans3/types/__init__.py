@@ -11,31 +11,8 @@
 import functools
 
 from prestans3.errors import PropertyConfigError, ValidationException
-from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary, is_str
-
-
-class _PropertyRulesProperty(object):
-    # noinspection PyUnusedLocal
-    def __get__(self, cls, _mcs):
-        return _property_rule_graph[cls]
-
-
-class _ConfigChecksProperty(object):
-    # noinspection PyUnusedLocal
-    def __get__(self, cls, _mcs):
-        return _config_check_graph[cls]
-
-
-class _PrepareFunctionsProperty(object):
-    # noinspection PyUnusedLocal
-    def __get__(self, cls, _mcs):
-        return _prepare_functions_graph[cls]
-
-
-class _PrestansTypeMeta(type):
-    property_rules = _PropertyRulesProperty()  # type: dict[str, (T <= ImmutableType, any) -> None]
-    config_checks = _ConfigChecksProperty()  # type: dict[str, (type, any) -> None]
-    prepare_functions = _PrepareFunctionsProperty()  # type: dict[str, (T <= ImmutableType) -> T]
+from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary, \
+    is_str, _PrestansTypeMeta
 
 
 class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
@@ -209,9 +186,9 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         cls.prepare_functions[name] = func
 
 
-_property_rule_graph = LazyOneWayGraph(ImmutableType)
-_config_check_graph = LazyOneWayGraph(ImmutableType)
-_prepare_functions_graph = LazyOneWayGraph(ImmutableType)
+_PrestansTypeMeta._property_rule_graph = LazyOneWayGraph(ImmutableType)
+_PrestansTypeMeta._config_check_graph = LazyOneWayGraph(ImmutableType)
+_PrestansTypeMeta._prepare_functions_graph = LazyOneWayGraph(ImmutableType)
 
 
 def _choices(instance, config):
