@@ -13,6 +13,8 @@ Why do this? Without it, the Python 2 bytes object is a very, very
 different beast to the Python 3 bytes object.
 """
 
+# py2to3 remove dependencies to this package and remove
+
 import string
 from collections import Iterable
 from numbers import Integral

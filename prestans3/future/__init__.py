@@ -94,6 +94,8 @@ docstring for more details.
 
 """
 
+# py2to3 remove dependencies to this package and remove
+
 import functools
 import numbers
 import sys

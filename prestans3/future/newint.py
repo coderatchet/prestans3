@@ -13,6 +13,9 @@ They are very similar. The most notable difference is:
 
 - representation: trailing L in Python 2 removed in Python 3
 """
+
+# py2to3 remove dependencies to this package and remove
+
 import collections
 
 from prestans3.future.newbytes import newbytes

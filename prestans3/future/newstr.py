@@ -47,6 +47,9 @@ representations of your objects portably across Py3 and Py2, use the
 :func:`python_2_unicode_compatible` decorator in  :mod:`future.utils`.
 
 """
+
+# py2to3 remove dependencies to this package and remove
+
 from collections import Iterable
 
 from prestans3.types.meta import PrestansTypeMeta
