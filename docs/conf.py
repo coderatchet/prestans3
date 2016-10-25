@@ -145,6 +145,9 @@ rst_epilog = """
 .. |_Property|  replace:: :class:`_Property<._Property>`
 .. |_Properties|  replace:: :class:`_Properties<._Property>`
 
+.. |PrestansTypeMeta|  replace:: :class:`PrestansTypeMeta<.meta.PrestansTypeMeta>
+.. |PrestansTypeMetas|  replace:: :class:`PrestansTypeMetas<.meta.PrestansTypeMeta>
+
 .. validation
 .. ----------
 

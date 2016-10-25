@@ -12,10 +12,10 @@ import functools
 
 from prestans3.future import with_metaclass, istext
 from prestans3.utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
-from .meta import _PrestansTypeMeta
+from .meta import PrestansTypeMeta
 
 
-class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
+class ImmutableType(with_metaclass(PrestansTypeMeta, object)):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
@@ -187,9 +187,9 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         cls.prepare_functions[name] = func
 
 
-_PrestansTypeMeta._property_rule_graph = LazyOneWayGraph(ImmutableType)
-_PrestansTypeMeta._config_check_graph = LazyOneWayGraph(ImmutableType)
-_PrestansTypeMeta._prepare_functions_graph = LazyOneWayGraph(ImmutableType)
+PrestansTypeMeta._property_rule_graph = LazyOneWayGraph(ImmutableType)
+PrestansTypeMeta._config_check_graph = LazyOneWayGraph(ImmutableType)
+PrestansTypeMeta._prepare_functions_graph = LazyOneWayGraph(ImmutableType)
 
 
 def _choices(instance, config):

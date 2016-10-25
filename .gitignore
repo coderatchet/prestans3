@@ -91,6 +91,8 @@ ENV/
 # intellij-idea
 /.idea/workspace.xml
 /.idea/dictionaries/*
+# for now this is interferring with user defined settings.
+/.idea/misc.xml
 
 /.idea/inspectionProfiles/
 /.idea/codeStyleSettings.xml

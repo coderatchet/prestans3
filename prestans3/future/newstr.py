@@ -49,7 +49,7 @@ representations of your objects portably across Py3 and Py2, use the
 """
 from collections import Iterable
 
-from prestans3.types.meta import _PrestansTypeMeta
+from prestans3.types.meta import PrestansTypeMeta
 from prestans3.future import with_metaclass
 from . import PY3, issubset, isnewbytes, no, istext
 
@@ -58,7 +58,7 @@ if PY3:
     unicode = str
 
 
-class BaseNewStr(_PrestansTypeMeta):
+class BaseNewStr(PrestansTypeMeta):
     def __instancecheck__(cls, instance):
         if cls == newstr:
             return isinstance(instance, unicode)

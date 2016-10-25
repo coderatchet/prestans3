@@ -13,7 +13,7 @@ from copy import copy
 from prestans3.errors import ValidationException, AccessError, ContainerValidationException
 from prestans3.future import with_metaclass
 from prestans3.types import Container, _Property
-from prestans3.types.meta import _PrestansTypeMeta
+from prestans3.types.meta import PrestansTypeMeta
 from prestans3.utils import inject_class, ImmutableMergingDictionary, LazyOneWayGraph
 
 
@@ -44,7 +44,7 @@ class _PrestansAttributesProperties(object):
         return _prestans_attribute_properties[self._of_type]
 
 
-class _PrestansModelTypeMeta(_PrestansTypeMeta):
+class _PrestansModelTypeMeta(PrestansTypeMeta):
     def __init__(cls, what, bases, attrs, **kwargs):
         cls.prestans_attribute_properties = _PrestansAttributesProperties(cls)
         for attr_name, attr in list(attrs.items()):
