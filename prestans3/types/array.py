@@ -183,35 +183,37 @@ class Array(Container):
         return Array(self._of_type, reversed(self._values), validate_immediately=False)
 
     def append(self, item):
+        """ append an element to the array """
         raise AccessError(self.__class__, "append called on an immutable {class_name}, "
                                           "for a mutable array, initialise with {class_name}.mutable()"
                           .format(class_name=self.__class__.__name__))
 
     def head(self):
-        # get the first element
+        """ get the first element """
         return self._values[0]
 
     def tail(self):
-        # get all elements after the first
+        """ get all elements after the first """
         return Array(self._of_type, self._values[1:], validate_immediately=False)
 
     def init(self):
-        # get elements up to the last
+        """ get elements up to the last """
         return Array(self._of_type, self._values[:-1], validate_immediately=False)
 
     def last(self):
-        # get last element
+        """ get last element """
         return self._values[-1]
 
     def drop(self, n):
-        # get all elements except first n
+        """ get all elements except first n """
         return Array(self._of_type, self._values[n:], validate_immediately=False)
 
     def take(self, n):
-        # get first n elements
+        """ get first n elements """
         return Array(self._of_type, self._values[:n], validate_immediately=False)
 
     def copy(self):
+        """ create a copy of the array """
         return Array(self._of_type, copy(self._values), validate_immediately=False)
 
 

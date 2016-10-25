@@ -193,6 +193,7 @@ def test_new_type_is_sub_type_of_old_type_for_inject_class():
             assert __A.mro()
 
 
+# py2to3 remove when use cases are removed
 def test_with_meta_class():
     class Meta(type):
         # noinspection PyMethodParameters,PyUnusedLocal

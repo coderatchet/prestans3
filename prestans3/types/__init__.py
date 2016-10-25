@@ -10,12 +10,14 @@
 """
 import functools
 
+# py2to3 with_metaclass and istext should be replaced
 from prestans3.future import with_metaclass, istext
 from prestans3.utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
 from .meta import PrestansTypeMeta
 
 
-class ImmutableType(with_metaclass(PrestansTypeMeta, object)):
+# py2to3 replace with_metaclass with metaclass=PrestansTypeMeta
+class ImmutableType(with_metaclass(PrestansTypeMeta)):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
@@ -324,7 +326,7 @@ class _Property(object):
         :return: a function that will process the string
         """
 
-        """ recursively resolves and calls prepare functions in order """
+        # py2to3 replace istext with isinstance(x, str)
         if not istext(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
             return self._aggregate_prepare_functions(self.prepare)
         else:
@@ -351,6 +353,8 @@ class _Property(object):
                           type
         :return: (t: T <= ImmutableType) -> T
         """
+
+        # py2to3 replace istext with isinstance(x, str)
         if istext(str_or_func):
             try:
                 return self.property_type.prepare_functions[str_or_func]

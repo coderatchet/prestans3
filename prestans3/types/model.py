@@ -52,7 +52,7 @@ class _PrestansModelTypeMeta(PrestansTypeMeta):
                 cls.prestans_attribute_properties[attr_name] = attr
         super(_PrestansModelTypeMeta, cls).__init__(what, bases, attrs)
 
-
+# py2to3 replace with_metaclass with metaclass=_PrestansModelTypeMeta
 # noinspection PyAbstractClass
 class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
     """
@@ -230,6 +230,7 @@ Model.register_property_rule(check_required_attributes, name="check_required_att
                              default=True)
 
 
+# py2to3 replace with_metaclass with metaclass=_PrestansModelTypeMeta
 # noinspection PyAbstractClass
 class _MutableModel(with_metaclass(_PrestansModelTypeMeta, Model)):
     """

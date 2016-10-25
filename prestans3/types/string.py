@@ -32,6 +32,7 @@ class String(newstr, ImmutableType):
         try:
             return super(String, cls).from_value(value)
         except NotImplementedError:
+            # py2to3 replace istext with isinstance(x, str)
             if not istext(value):
                 raise TypeError(
                     "{} of type {} is not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
