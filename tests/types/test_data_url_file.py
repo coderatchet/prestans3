@@ -13,5 +13,11 @@ from prestans3.types.data_url_file import DataURLFile
 
 
 def test_can_create_data_url_file():
-    model = DataURLFile()
-    assert model.__class__ is DataURLFile
+    data_url_file = DataURLFile()
+    assert data_url_file.__class__ is DataURLFile
+
+def test_can_create_uuid():
+    uuid = DataURLFile.generate_filename()
+    assert isinstance(uuid, str)
+    assert len(uuid) == 32
+

@@ -13,4 +13,8 @@ from . import ImmutableType
 
 
 class DataURLFile(ImmutableType):
-    pass
+
+    @classmethod
+    def generate_filename(cls):
+        import uuid
+        return uuid.uuid4().hex
