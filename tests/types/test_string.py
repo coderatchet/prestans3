@@ -155,3 +155,8 @@ def test_string_unicode_comparison_works():
 def test_unicode_special_character_comparison_works():
     assert String(u'きたないのよりきれいな方がいい\n') == u'きたないのよりきれいな方がいい\n'
     assert String(u'きたないのよりきれいな方がいい\n') != u'きたないのよりきれいな方がい\n'
+
+
+def test_encode_decode_property():
+    string = String('utf-8')
+    assert string.encode('utf-8').decode('utf-8') == string

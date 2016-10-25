@@ -13,11 +13,12 @@ Why do this? Without it, the Python 2 bytes object is a very, very
 different beast to the Python 3 bytes object.
 """
 
+import string
 from collections import Iterable
 from numbers import Integral
-import string
 
-from prestans3.utils import PY3, with_metaclass, istext, isbytes, issubset, no
+from . import PY3, istext, isbytes, issubset, no
+from prestans3.utils import with_metaclass
 
 _builtin_bytes = bytes
 
@@ -206,7 +207,7 @@ class newbytes(with_metaclass(BaseNewBytes, _builtin_bytes)):
         # Py2 str.encode() takes encoding and errors as optional parameter,
         # not keyword arguments as in Python 3 str.
 
-        from future.types.newstr import newstr
+        from prestans3.future.newstr import newstr
 
         if errors == 'surrogateescape':
             from future.utils.surrogateescape import register_surrogateescape

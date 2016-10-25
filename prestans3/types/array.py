@@ -11,12 +11,9 @@
 from collections import Iterable
 from copy import copy
 
-import collections
-
-from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError, PropertyConfigError, \
-    ContainerValidationExceptionSummary, ContainerValidationException
+from prestans3.errors import ValidationException, AccessError, ContainerValidationException
 from prestans3.types import Container, ImmutableType, _Property
-from prestans3.utils import inject_class, MergingProxyDictionary, is_str, ImmutableMergingDictionary
+from prestans3.utils import inject_class, MergingProxyDictionary
 
 
 def find_first(array, func):

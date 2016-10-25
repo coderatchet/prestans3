@@ -49,8 +49,8 @@ representations of your objects portably across Py3 and Py2, use the
 """
 from collections import Iterable
 
-from prestans3.types import _PrestansTypeMeta
-from prestans3.utils import PY3, with_metaclass, issubset, isnewbytes, no, istext, _PrestansTypeMeta
+from prestans3.utils import _PrestansTypeMeta, with_metaclass
+from . import PY3, issubset, isnewbytes, no, istext
 
 if PY3:
     # We'll probably never use newstr on Py3 anyway...
@@ -191,7 +191,7 @@ class newstr(with_metaclass(BaseNewStr, unicode)):
         'xmlcharrefreplace' as well as any other name registered with
         codecs.register_error that can handle UnicodeEncodeErrors.
         """
-        from future.types.newbytes import newbytes
+        from prestans3.future.newbytes import newbytes
         # Py2 unicode.encode() takes encoding and errors as optional parameter,
         # not keyword arguments as in Python 3 str.
 

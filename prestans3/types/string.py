@@ -11,9 +11,9 @@
 import re
 
 from prestans3.errors import ValidationException, PropertyConfigError
-from . import ImmutableType
 from prestans3.future.newstr import newstr
 from prestans3.utils import is_str
+from . import ImmutableType
 
 
 # noinspection PyAbstractClass
@@ -25,7 +25,7 @@ class String(ImmutableType, newstr):
     def __init__(self, value=None):
         if value is None:
             value = ""
-        str.__init__(value)
+        newstr.__init__(value)
 
     @classmethod
     def from_value(cls, value):
