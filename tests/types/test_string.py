@@ -150,3 +150,8 @@ def test_string_unicode_comparison_works():
     assert String(u'hello') != String('world')
     assert String(u'hello') != 'world'
     assert String(u'hello') != u'world'
+
+
+def test_unicode_special_character_comparison_works():
+    assert String(u'きたないのよりきれいな方がいい\n') == u'きたないのよりきれいな方がいい\n'
+    assert String(u'きたないのよりきれいな方がいい\n') != u'きたないのよりきれいな方がい\n'
