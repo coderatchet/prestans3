@@ -13,11 +13,13 @@ from prestans3.types.data_url_file import DataURLFile
 
 
 def test_can_create_data_url_file():
-    data_url_file = DataURLFile()
+    # small red dot png
+    data_url_file = DataURLFile("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
+                                "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==")
     assert data_url_file.__class__ is DataURLFile
+
 
 def test_can_create_uuid():
     uuid = DataURLFile.generate_filename()
     assert isinstance(uuid, str)
     assert len(uuid) == 32
-
