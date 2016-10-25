@@ -11,29 +11,31 @@
 import re
 
 from prestans3.errors import ValidationException, PropertyConfigError
+from prestans3.future import istext
 from prestans3.future.newstr import newstr
-from prestans3.utils import is_str
 from . import ImmutableType
 
 
 # noinspection PyAbstractClass
-class String(ImmutableType, newstr):
+class String(newstr, ImmutableType):
     """
     Prestans 3 String type. Acts as a native :class:`str` with additional Prestans 3 functionality.
     """
 
     def __init__(self, value=None):
         if value is None:
-            value = ""
-        newstr.__init__(value)
+            value = u""
+        super(String, self).__init__(value)
 
     @classmethod
     def from_value(cls, value):
-        if not is_str(value):
-            raise TypeError(
-                "{} of type {} is not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
-        return String(value)
-
+        try:
+            return super(String, cls).from_value(value)
+        except NotImplementedError:
+            if not istext(value):
+                raise TypeError(
+                    "{} of type {} is not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
+            return String(value)
 
 def _min_length(instance, config):
     length = len(instance)

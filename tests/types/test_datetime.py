@@ -8,9 +8,9 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import pytest
 from datetime import datetime, tzinfo
 
-import pytest
 from prestans3.types import DateTime
 
 

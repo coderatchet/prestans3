@@ -101,7 +101,6 @@ from numbers import Integral
 
 PY3 = sys.version_info[0] == 3
 PY2 = sys.version_info[0] == 2
-PY26 = sys.version_info[0:2] == (2, 6)
 PY27 = sys.version_info[0:2] == (2, 7)
 PYPY = hasattr(sys, 'pypy_translation_info')
 
@@ -226,18 +225,18 @@ def issubset(list1, list2):
     return False
 
 
+if PY3 or PYPY:
+    string_types = str,
+
+else:
+    string_types = basestring,
 
 
 def istext(obj):
-    """
-    Deprecated. Use::
-        >>> isinstance(obj, str)
-    after this import:
-        >>> from future.builtins import str
-    """
-    return isinstance(obj, type(u''))
+    return isinstance(obj, string_types)
 
 
+# noinspection PyUnresolvedReferences
 def isbytes(obj):
     """
     Deprecated. Use::
@@ -261,6 +260,7 @@ def isnewbytes(obj):
     return type(obj) == newbytes
 
 
+# noinspection PyUnresolvedReferences
 def isint(obj):
     """
     Deprecated. Tests whether an object is a Py3 ``int`` or either a Py2 ``int`` or
@@ -280,6 +280,7 @@ def isint(obj):
     return isinstance(obj, numbers.Integral)
 
 
+# noinspection PyUnresolvedReferences
 def native(obj):
     """
     On Py3, this is a no-op: native(obj) -> obj
@@ -315,6 +316,27 @@ def native(obj):
         return obj
 
 
+def with_metaclass(meta, *bases):
+    """
+    Create a base class with a metaclass.
+
+    code from `six`_ PyPi package licenced under `MIT licence`_
+
+    .. _MIT Licence: https://opensource.org/licenses/MIT
+    .. _six: https://pypi.python.org/pypi/six
+    """
+
+    # This requires a bit of explanation: the basic idea is to make a dummy
+    # metaclass for one level of class instantiation that replaces itself with
+    # the actual metaclass.
+    class MetaClass(meta):
+        # noinspection PyUnusedLocal
+        def __new__(cls, name, this_bases, d):
+            return meta(name, bases, d)
+
+    return type.__new__(MetaClass, 'temporary_class', (), {})
+
+
 if PY3:
     import builtins
 
@@ -335,7 +357,8 @@ if PY3:
                 range: range,
                 str: str}
 
-    __all__ = ['newtypes']
+    __all__ = ['newtypes', 'with_metaclass', 'isint', 'issubset', 'isbytes', 'isnewbytes', 'istext', 'no',
+               'disallow_types', 'native', 'PY3', 'PY2', 'PY27', 'PYPY']
 
 else:
 
@@ -349,4 +372,5 @@ else:
                 str: newbytes,
                 unicode: newstr}
 
-    __all__ = ['newbytes', 'newint', 'newstr', 'newtypes']
+    __all__ = ['newbytes', 'newint', 'newstr', 'newtypes', 'with_metaclass', 'isint', 'issubset', 'isbytes',
+               'isnewbytes', 'istext', 'no', 'disallow_types', 'native', 'PY3', 'PY2', 'PY27', 'PYPY']

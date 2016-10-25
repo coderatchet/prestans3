@@ -10,8 +10,9 @@
 """
 import pytest
 import pytest_mock
-from prestans3.errors import InvalidMethodUseError, ValidationException, PropertyConfigError
-from prestans3.types import ImmutableType, Container, _Property
+
+from prestans3.errors import ValidationException, PropertyConfigError
+from prestans3.types import ImmutableType, _Property
 from prestans3.types import Model
 from prestans3.types import String
 

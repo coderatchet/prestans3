@@ -10,6 +10,7 @@
 """
 
 import pytest
+
 from prestans3.errors import AccessError, ValidationException
 from prestans3.types import Array
 from prestans3.types import Integer
@@ -125,7 +126,8 @@ def test_adding_non_of_type_subclass_to_array_raises_value_error():
 
     with pytest.raises(ValueError) as error:
         Array(String, [1])
-    assert 'in Array.__init__, iterable[{}] is {} but the declared type of this array is {}'.format(0, 1,
+    assert 'in Array.__init__, iterable[{}] is {} of type {}, but the declared type of this array is {}'.format(0, 1,
+                                                                                                    int.__name__,
                                                                                                     String.__name__) \
            in str(error)
 

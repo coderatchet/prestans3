@@ -66,11 +66,13 @@ class Array(Container):
             except TypeError:
                 return False
 
+        iterable = list(iterable)
         first_error_index = find_first(iterable, _check_and_store)
         if first_error_index > -1:
-            raise ValueError(self.__class__, 'in Array.__init__, iterable[{}] is {} '
+            raise ValueError(self.__class__, 'in Array.__init__, iterable[{}] is {} of type {}, '
                                              'but the declared type of this array is {}'.format(
-                first_error_index, iterable[first_error_index], of_type.__name__))
+                first_error_index, iterable[first_error_index], iterable[first_error_index].__class__.__name__,
+                of_type.__name__))
         self._values = list(coerced_iterable)
         super(Array, self).__init__(**kwargs)
 

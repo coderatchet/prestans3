@@ -49,7 +49,8 @@ representations of your objects portably across Py3 and Py2, use the
 """
 from collections import Iterable
 
-from prestans3.utils import _PrestansTypeMeta, with_metaclass
+from prestans3.types.meta import _PrestansTypeMeta
+from prestans3.future import with_metaclass
 from . import PY3, issubset, isnewbytes, no, istext
 
 if PY3:
@@ -65,6 +66,7 @@ class BaseNewStr(_PrestansTypeMeta):
             return issubclass(instance.__class__, cls)
 
 
+# noinspection PyTypeChecker
 class newstr(with_metaclass(BaseNewStr, unicode)):
     """
     A backport of the Python 3 str object to Py2

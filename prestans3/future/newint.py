@@ -18,7 +18,7 @@ import collections
 from prestans3.future.newbytes import newbytes
 
 from . import PY3, isint, isbytes, istext, native
-from prestans3.utils import with_metaclass
+from prestans3.future import with_metaclass
 
 if PY3:
     long = int

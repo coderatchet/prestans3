@@ -9,9 +9,9 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
+
 from prestans3.errors import ValidationException, InvalidMethodUseError, PropertyConfigError
-from prestans3.types import Model
-from prestans3.types import String, ImmutableType
+from prestans3.types import Model, String, ImmutableType
 
 exception_1 = ValidationException(String)
 exception_2 = ValidationException(String)
@@ -35,8 +35,6 @@ def test_leaf_validation_exception_has_correct_error_message():
 
 
 # noinspection PyTypeChecker
-
-
 def test_property_type_returns_correct_value():
     assert ValidationException(String).property_type == String
 

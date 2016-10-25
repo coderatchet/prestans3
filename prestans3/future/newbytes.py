@@ -18,7 +18,7 @@ from collections import Iterable
 from numbers import Integral
 
 from . import PY3, istext, isbytes, issubset, no
-from prestans3.utils import with_metaclass
+from prestans3.future import with_metaclass
 
 _builtin_bytes = bytes
 

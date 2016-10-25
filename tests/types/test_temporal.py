@@ -8,9 +8,9 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import pytest
 from datetime import date
 
-import pytest
 from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.types import Date
 from prestans3.types import Model
