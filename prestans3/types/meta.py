@@ -1,3 +1,14 @@
+# -*- coding: utf-8 -*-
+"""
+    prestans.types.meta
+    ~~~~~~~~~~~~~~~~~~~
+
+    A WSGI compliant REST micro-framework.
+
+    :copyright: (c) 2016 Anomaly Software
+    :license: Apache 2.0, see LICENSE for more details.
+"""
+
 class _PropertyRulesProperty(object):
     # noinspection PyUnusedLocal
     def __get__(self, cls, _mcs):
