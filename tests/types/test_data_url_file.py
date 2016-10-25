@@ -8,6 +8,8 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import base64
+
 import pytest
 
 from prestans3.types.data_url_file import DataURLFile
@@ -46,3 +48,11 @@ def test_raises_error_if_data_is_invalid():
             "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==")
     assert "encoded_data was not in the expected format. for an explaination of how to format a data url file, see " + \
            "https://en.wikipedia.org/wiki/Data_URI_scheme" in str(error.value)
+
+
+def test_can_get_decoded_contents():
+    url_file = DataURLFile("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
+                           "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==")
+    assert url_file.decoded_contents == base64.decodestring(
+        "iVBORw0KGgoAAAANSUhEUgAAAAUA AAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
+        "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==")

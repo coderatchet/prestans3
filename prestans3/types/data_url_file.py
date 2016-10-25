@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import codecs
 
 from . import ImmutableType
 import re
@@ -54,3 +55,8 @@ class DataURLFile(ImmutableType):
     @property
     def contents(self):
         return self._contents
+
+    @property
+    def decoded_contents(self):
+        return codecs.lookup(self.encoding).decode(self.contents)[0]
+
