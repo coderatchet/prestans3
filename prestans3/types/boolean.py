@@ -15,6 +15,9 @@ from . import ImmutableType
 # http://stackoverflow.com/questions/2172189/why-i-cant-extend-bool-in-python
 # noinspection PyAbstractClass
 class Boolean(ImmutableType):
+    """
+    Prestans 3 Boolean type. Acts as a native :class:`bool` with additional Prestans 3 functionality.
+    """
 
     @classmethod
     def from_value(cls, value):
