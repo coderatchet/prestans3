@@ -10,35 +10,14 @@
 """
 import functools
 
-from prestans3.errors import PropertyConfigError, ValidationException
-from prestans3.utils import with_metaclass, MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary, is_str
+# py2to3 with_metaclass and istext should be replaced
+from prestans3.future import with_metaclass, istext
+from prestans3.utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
+from .meta import PrestansTypeMeta
 
 
-class _PropertyRulesProperty(object):
-    # noinspection PyUnusedLocal
-    def __get__(self, cls, _mcs):
-        return _property_rule_graph[cls]
-
-
-class _ConfigChecksProperty(object):
-    # noinspection PyUnusedLocal
-    def __get__(self, cls, _mcs):
-        return _config_check_graph[cls]
-
-
-class _PrepareFunctionsProperty(object):
-    # noinspection PyUnusedLocal
-    def __get__(self, cls, _mcs):
-        return _prepare_functions_graph[cls]
-
-
-class _PrestansTypeMeta(type):
-    property_rules = _PropertyRulesProperty()  # type: dict[str, (T <= ImmutableType, any) -> None]
-    config_checks = _ConfigChecksProperty()  # type: dict[str, (type, any) -> None]
-    prepare_functions = _PrepareFunctionsProperty()  # type: dict[str, (T <= ImmutableType) -> T]
-
-
-class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
+# py2to3 replace with_metaclass with metaclass=PrestansTypeMeta
+class ImmutableType(with_metaclass(PrestansTypeMeta)):
     """
     Base class of all |types|. Default behaviour of setting an attribute on this class is to throw an
     :class:`AttributeError<builtins.AttributeError>`
@@ -54,9 +33,10 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
                             - |Integer|
                             - |Float|
                         - |String|
-                        - |Date|
-                        - |DateTime|
-                        - |Time|
+                        - |Temporal|
+                            - |Date|
+                            - |DateTime|
+                            - |Time|
     """
 
     is_scalar = True
@@ -96,6 +76,7 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         config = ImmutableMergingDictionary(config, self.default_rules_config())
         exception_messages = None
         for rule_name, rule in list(self.__class__.property_rules.items()):
+            from prestans3.errors import ValidationException
             try:
                 if rule_name in config:
                     rule(self, config[rule_name])
@@ -208,13 +189,14 @@ class ImmutableType(with_metaclass(_PrestansTypeMeta, object)):
         cls.prepare_functions[name] = func
 
 
-_property_rule_graph = LazyOneWayGraph(ImmutableType)
-_config_check_graph = LazyOneWayGraph(ImmutableType)
-_prepare_functions_graph = LazyOneWayGraph(ImmutableType)
+PrestansTypeMeta._property_rule_graph = LazyOneWayGraph(ImmutableType)
+PrestansTypeMeta._config_check_graph = LazyOneWayGraph(ImmutableType)
+PrestansTypeMeta._prepare_functions_graph = LazyOneWayGraph(ImmutableType)
 
 
 def _choices(instance, config):
     if instance not in config:
+        from prestans3.errors import ValidationException
         raise ValidationException(instance.__class__,
                                   "{} property is {}, valid choices are [{}]"
                                   .format(instance.__class__.__name__, instance,
@@ -293,7 +275,7 @@ class _Property(object):
         adds a configuration of a |rule| to this instance
 
         :raises ValueError: if the key is not registered property rule name on this property_type
-        :raises PropertyConfigError: if the property rule is a non-configurable property
+        :raises |PropertyConfigError|: if the property rule is a non-configurable property
         """
         try:
             _rule = self.property_type.get_property_rule(key)
@@ -303,6 +285,7 @@ class _Property(object):
             else:
                 raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         if not _rule.configurable:
+            from prestans3.errors import PropertyConfigError
             raise PropertyConfigError(self.property_type, key,
                                       "{} is a non-configurable rule in class {}, (see {}.{}()))"
                                       .format(key, self.property_type.__name__, ImmutableType.__name__,
@@ -343,8 +326,8 @@ class _Property(object):
         :return: a function that will process the string
         """
 
-        """ recursively resolves and calls prepare functions in order """
-        if not is_str(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
+        # py2to3 replace istext with isinstance(x, str)
+        if not istext(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
             return self._aggregate_prepare_functions(self.prepare)
         else:
             return self._resolve_prepare_function(self.prepare)
@@ -370,7 +353,9 @@ class _Property(object):
                           type
         :return: (t: T <= ImmutableType) -> T
         """
-        if is_str(str_or_func):
+
+        # py2to3 replace istext with isinstance(x, str)
+        if istext(str_or_func):
             try:
                 return self.property_type.prepare_functions[str_or_func]
             except KeyError:

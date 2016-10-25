@@ -9,7 +9,9 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
+
 from prestans3.errors import ValidationException, PropertyConfigError
+from prestans3.future import PYPY
 from prestans3.types import Model
 from prestans3.types import String
 from prestans3.types.string import _prepare_trim, _prepare_normalize_whitespace
@@ -135,3 +137,28 @@ def test_remove_whitespace_works_on_property():
     model = _M.mutable()
     model.my_string = '   hello world      of white     space  removal         !  '
     assert model.my_string == 'hello world of white space removal !'
+
+
+def test_string_accepts_unicode():
+    String(u'unicode string')
+
+
+def test_string_unicode_comparison_works():
+    assert String('hello') == u'hello'
+    assert String(u'hello') == String('hello')
+    assert String(u'hello') == 'hello'
+    assert String(u'hello') == u'hello'
+    assert String('hello') != u'world'
+    assert String(u'hello') != String('world')
+    assert String(u'hello') != 'world'
+    assert String(u'hello') != u'world'
+
+
+def test_unicode_special_character_comparison_works():
+    assert String(u'きたないのよりきれいな方がいい\n') == u'きたないのよりきれいな方がいい\n'
+    assert String(u'きたないのよりきれいな方がいい\n') != u'きたないのよりきれいな方がい\n'
+
+
+def test_encode_decode_property():
+    string = String('utf-8')
+    assert string.encode('utf-8').decode('utf-8') == string

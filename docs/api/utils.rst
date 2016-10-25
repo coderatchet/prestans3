@@ -16,12 +16,6 @@ ImmutableMergingDictionary
 .. autoclass:: ImmutableMergingDictionary
     :show-inheritance:
 
-with_metaclass
---------------
-
-.. autofunction:: with_metaclass
-
-
 inject_class
 ------------
 

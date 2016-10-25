@@ -15,6 +15,9 @@ from . import ImmutableType
 # http://stackoverflow.com/questions/2172189/why-i-cant-extend-bool-in-python
 # noinspection PyAbstractClass
 class Boolean(ImmutableType):
+    """
+    Prestans 3 Boolean type. Acts as a native :class:`bool` with additional Prestans 3 functionality.
+    """
 
     @classmethod
     def from_value(cls, value):
@@ -22,7 +25,8 @@ class Boolean(ImmutableType):
             return super(Boolean, cls).from_value(value)
         except NotImplementedError:
             if value.__class__ is not bool:
-                raise TypeError("{} of type {} is not a subclass of {} or a bool".format(value, value.__class__.__name__, cls))
+                raise TypeError(
+                    "{} of type {} is not a subclass of {} or a bool".format(value, value.__class__.__name__, cls))
             return Boolean(value)
 
     def __init__(self, value=False):

@@ -18,6 +18,19 @@ _Property
     :special-members:
     :exclude-members: __weakref__
 
+PrestansTypeMeta
+----------------
+
+.. py:currentmodule:: prestans3.types.meta
+
+.. autoclass:: PrestansTypeMeta
+
+.. autoattribute:: PrestansTypeMeta.property_rules
+.. autoattribute:: PrestansTypeMeta.prepare_functions
+.. autoattribute:: PrestansTypeMeta.config_checks
+
+
+
 Number
 ------
 
@@ -93,6 +106,16 @@ Array
 .. autoclass:: Array
     :members:
     :exclude-members: __weakref__
+
+
+Temporal
+--------
+
+.. py:currentmodule:: prestans3.types.temporal
+
+.. autoclass:: Temporal
+    :show-inheritance:
+
 
 Date
 ----

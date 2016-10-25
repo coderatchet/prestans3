@@ -138,13 +138,14 @@ class ContainerValidationException(ValidationException):
         :param message_or_key_exception_tuple:
         :type message_or_key_exception_tuple: str or (str, ValidationException)
         """
-        from prestans3.utils import is_str
+        from prestans3.future import istext
         self.validation_exceptions = {}
         if isinstance(message_or_key_exception_tuple, tuple):
             super(ContainerValidationException, self).__init__(of_type)
             self.add_validation_exception(message_or_key_exception_tuple[0],
                                           message_or_key_exception_tuple[1])  # when message_or... is tuple
-        elif is_str(message_or_key_exception_tuple):
+        # py2to3 replace istext with isinstance(x, str)
+        elif istext(message_or_key_exception_tuple):
             super(ContainerValidationException, self).__init__(of_type, message_or_key_exception_tuple)
         else:
             super(ContainerValidationException, self).__init__(of_type)

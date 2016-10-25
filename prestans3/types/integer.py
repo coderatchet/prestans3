@@ -13,6 +13,10 @@ from . import Number
 
 
 class Integer(Number, int):
+    """
+    Prestans 3 Integer type. Acts as a native :class:`int` with additional Prestans 3 functionality.
+    """
+
     @classmethod
     def from_value(cls, value):
         try:

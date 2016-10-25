@@ -10,22 +10,6 @@
 """
 from copy import copy
 
-from prestans3.errors import AccessError
-
-try:
-    # noinspection PyUnresolvedReferences,PyStatementEffect
-    basestring
-
-
-    def is_str(s):
-        """python 2.7 safe version"""
-        # noinspection PyUnresolvedReferences
-        return isinstance(s, basestring)
-except NameError:
-    def is_str(s):
-        """python 3+ safe version"""
-        return isinstance(s, str)
-
 
 # noinspection PyUnusedLocal
 def prefix_with_injected(template_class, class_to_inject, target_base_class):
@@ -77,27 +61,6 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
     else:
         injected_class_cache.update({args_key: template_class})
         return template_class
-
-
-def with_metaclass(meta, *bases):
-    """
-    Create a base class with a metaclass.
-
-    code from `six`_ PyPi package licenced under `MIT licence`_
-
-    .. _MIT Licence: https://opensource.org/licenses/MIT
-    .. _six: https://pypi.python.org/pypi/six
-    """
-
-    # This requires a bit of explanation: the basic idea is to make a dummy
-    # metaclass for one level of class instantiation that replaces itself with
-    # the actual metaclass.
-    class MetaClass(meta):
-        # noinspection PyUnusedLocal
-        def __new__(cls, name, this_bases, d):
-            return meta(name, bases, d)
-
-    return type.__new__(MetaClass, 'temporary_class', (), {})
 
 
 class MergingProxyDictionary(dict):
@@ -220,30 +183,37 @@ class ImmutableMergingDictionary(MergingProxyDictionary):
 
     def __delitem__(self, key):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__, key)
 
     def __setitem__(self, key, value):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__, key)
 
     def update(self, other=None, **kwargs):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__)
 
     def popitem(self):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__)
 
     def setdefault(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__)
 
     def pop(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__)
 
     def clear(self):
         """ :raises AccessError: when attempting to call this function. """
+        from prestans3.errors import AccessError
         raise AccessError(self.__class__)
 
 

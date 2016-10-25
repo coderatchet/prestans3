@@ -9,6 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import pytest
+
 from prestans3.types import Float
 
 

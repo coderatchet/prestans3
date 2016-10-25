@@ -10,6 +10,7 @@
 """
 
 import pytest
+
 from prestans3.errors import ValidationException
 from prestans3.types import Integer
 from prestans3.types import Model

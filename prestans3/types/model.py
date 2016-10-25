@@ -10,10 +10,11 @@
 """
 from copy import copy
 
-from prestans3.errors import ValidationException, AccessError, ContainerValidationExceptionSummary, \
-    ContainerValidationException
-from prestans3.types import Container, _Property, _PrestansTypeMeta
-from prestans3.utils import is_str, inject_class, with_metaclass, ImmutableMergingDictionary, LazyOneWayGraph
+from prestans3.errors import ValidationException, AccessError, ContainerValidationException
+from prestans3.future import with_metaclass
+from prestans3.types import Container, _Property
+from prestans3.types.meta import PrestansTypeMeta
+from prestans3.utils import inject_class, ImmutableMergingDictionary, LazyOneWayGraph
 
 
 class ModelValidationException(ContainerValidationException):
@@ -43,7 +44,7 @@ class _PrestansAttributesProperties(object):
         return _prestans_attribute_properties[self._of_type]
 
 
-class _PrestansModelTypeMeta(_PrestansTypeMeta):
+class _PrestansModelTypeMeta(PrestansTypeMeta):
     def __init__(cls, what, bases, attrs, **kwargs):
         cls.prestans_attribute_properties = _PrestansAttributesProperties(cls)
         for attr_name, attr in list(attrs.items()):
@@ -51,7 +52,7 @@ class _PrestansModelTypeMeta(_PrestansTypeMeta):
                 cls.prestans_attribute_properties[attr_name] = attr
         super(_PrestansModelTypeMeta, cls).__init__(what, bases, attrs)
 
-
+# py2to3 replace with_metaclass with metaclass=_PrestansModelTypeMeta
 # noinspection PyAbstractClass
 class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
     """
@@ -229,6 +230,7 @@ Model.register_property_rule(check_required_attributes, name="check_required_att
                              default=True)
 
 
+# py2to3 replace with_metaclass with metaclass=_PrestansModelTypeMeta
 # noinspection PyAbstractClass
 class _MutableModel(with_metaclass(_PrestansModelTypeMeta, Model)):
     """

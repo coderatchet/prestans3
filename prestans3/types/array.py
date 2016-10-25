@@ -11,12 +11,9 @@
 from collections import Iterable
 from copy import copy
 
-import collections
-
-from prestans3.errors import ValidationException, ValidationExceptionSummary, AccessError, PropertyConfigError, \
-    ContainerValidationExceptionSummary, ContainerValidationException
+from prestans3.errors import ValidationException, AccessError, ContainerValidationException
 from prestans3.types import Container, ImmutableType, _Property
-from prestans3.utils import inject_class, MergingProxyDictionary, is_str, ImmutableMergingDictionary
+from prestans3.utils import inject_class, MergingProxyDictionary
 
 
 def find_first(array, func):
@@ -36,6 +33,13 @@ def find_first(array, func):
 
 # noinspection PyAbstractClass
 class Array(Container):
+    """
+    Prestans 3 Array type. Wraps a native python list and delegates most operations to it. Provides Prestans 3
+    functionality such as serialization and validation.
+
+    Note: Validation will stop at the first error by default.
+    """
+
     def __init__(self, of_type, iterable=None, **kwargs):
         if iterable is None:
             iterable = []
@@ -62,11 +66,13 @@ class Array(Container):
             except TypeError:
                 return False
 
+        iterable = list(iterable)
         first_error_index = find_first(iterable, _check_and_store)
         if first_error_index > -1:
-            raise ValueError(self.__class__, 'in Array.__init__, iterable[{}] is {} '
+            raise ValueError(self.__class__, 'in Array.__init__, iterable[{}] is {} of type {}, '
                                              'but the declared type of this array is {}'.format(
-                first_error_index, iterable[first_error_index], of_type.__name__))
+                first_error_index, iterable[first_error_index], iterable[first_error_index].__class__.__name__,
+                of_type.__name__))
         self._values = list(coerced_iterable)
         super(Array, self).__init__(**kwargs)
 
@@ -177,35 +183,37 @@ class Array(Container):
         return Array(self._of_type, reversed(self._values), validate_immediately=False)
 
     def append(self, item):
+        """ append an element to the array """
         raise AccessError(self.__class__, "append called on an immutable {class_name}, "
                                           "for a mutable array, initialise with {class_name}.mutable()"
                           .format(class_name=self.__class__.__name__))
 
     def head(self):
-        # get the first element
+        """ get the first element """
         return self._values[0]
 
     def tail(self):
-        # get all elements after the first
+        """ get all elements after the first """
         return Array(self._of_type, self._values[1:], validate_immediately=False)
 
     def init(self):
-        # get elements up to the last
+        """ get elements up to the last """
         return Array(self._of_type, self._values[:-1], validate_immediately=False)
 
     def last(self):
-        # get last element
+        """ get last element """
         return self._values[-1]
 
     def drop(self, n):
-        # get all elements except first n
+        """ get all elements except first n """
         return Array(self._of_type, self._values[n:], validate_immediately=False)
 
     def take(self, n):
-        # get first n elements
+        """ get first n elements """
         return Array(self._of_type, self._values[:n], validate_immediately=False)
 
     def copy(self):
+        """ create a copy of the array """
         return Array(self._of_type, copy(self._values), validate_immediately=False)
 
 
@@ -239,7 +247,8 @@ class _ArrayProperty(_Property):
                                                          key in ['required', 'default']})
         self._element_type = element_type
         self._element_rules_config = element_rules if element_rules is not None else {}
-        self._rules_config = MergingProxyDictionary({'element_rules': element_rules}, self._get_and_check_rules_config(kwargs),
+        self._rules_config = MergingProxyDictionary({'element_rules': element_rules},
+                                                    self._get_and_check_rules_config(kwargs),
                                                     of_type.default_rules_config())
 
     def __set__(self, instance, value):

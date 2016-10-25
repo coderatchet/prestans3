@@ -9,9 +9,10 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import random
-from datetime import datetime
 
 import pytest
+from datetime import datetime
+
 from prestans3.errors import ValidationException, AccessError
 from prestans3.types import Array, _Property
 from prestans3.types import DateTime

@@ -15,6 +15,11 @@ from prestans3.types.temporal import Temporal
 
 # noinspection PyAbstractClass
 class DateTime(Temporal, datetime):
+    """
+    Prestans 3 DateTime type.  Acts as a native python :class:`datetime.datetime` class with added prestans 3
+    functionality.
+    """
+
     def __init__(self, year, month=None, day=None, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
         import platform
         if platform.python_implementation() == 'PyPy':

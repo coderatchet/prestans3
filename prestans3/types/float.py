@@ -13,7 +13,9 @@ from . import Number
 
 
 class Float(Number, float):
-
+    """
+    Prestans 3 Float type. Acts as a native :class:`float` with additional Prestans 3 functionality.
+    """
 
     @classmethod
     def from_value(cls, value):
@@ -21,5 +23,6 @@ class Float(Number, float):
             return super(Float, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, float):
-                raise TypeError("{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
+                raise TypeError(
+                    "{} of type {} not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
             return Float(value)

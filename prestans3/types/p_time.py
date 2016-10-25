@@ -8,11 +8,16 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from datetime import time, tzinfo
+from datetime import time
 
 from prestans3.types.temporal import Temporal
 
+
 class Time(Temporal, time):
+    """
+    Prestans 3 Time type.  Acts as a native python :class:`datetime.time` class with added prestans 3 functionality.
+    """
+
     def __init__(self, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
         import platform
         if platform.python_implementation() == 'PyPy':

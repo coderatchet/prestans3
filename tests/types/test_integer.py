@@ -10,9 +10,8 @@
 """
 
 import pytest
-from prestans3.errors import ValidationException
 
-from prestans3.types import Integer, Model
+from prestans3.types import Integer
 
 
 def test_can_create_integer():

@@ -12,14 +12,11 @@
 from copy import copy
 
 import pytest
+
+import prestans3.future
 from prestans3.errors import AccessError
-from prestans3.utils import is_str, inject_class, MergingProxyDictionary
+from prestans3.utils import inject_class, MergingProxyDictionary
 import prestans3.utils as utils
-
-
-def test_is_str():
-    assert is_str("yes")
-    assert not is_str(1)
 
 
 class InjectableClass(object):
@@ -196,6 +193,7 @@ def test_new_type_is_sub_type_of_old_type_for_inject_class():
             assert __A.mro()
 
 
+# py2to3 remove when use cases are removed
 def test_with_meta_class():
     class Meta(type):
         # noinspection PyMethodParameters,PyUnusedLocal
@@ -203,7 +201,7 @@ def test_with_meta_class():
             cls.attr = 'foo'
             super(Meta, cls).__init__(name, bases, attrs)
 
-    class WithMeta(utils.with_metaclass(Meta, object)):
+    class WithMeta(prestans3.future.with_metaclass(Meta, object)):
         pass
 
     # noinspection PyUnresolvedReferences
