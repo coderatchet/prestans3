@@ -25,9 +25,13 @@ if __name__ == '__main__':
             line = rc.stdout.readline()
             if not line:
                 break
-            sys.stdout.write(str(line))
+            # py2to3 execute only else statement
+            if sys.version_info.major == 2:
+                sys.stdout.write(str(line))
+            else:
+                sys.stdout.write(line.decode('utf-8'))
             sys.stdout.flush()
-        # py2to3
+        # py2to3 execute only else statement
         if sys.version_info.major == 2:
             exit(rc.wait())
         else:
