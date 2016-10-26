@@ -23,20 +23,22 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
     :class:`AttributeError<builtins.AttributeError>`
 
     Attributes:
-        property_rules  registered property rules for this |type|
-        is_scalar       informs whether the class is a scalar type object or otherwise
+        property_rules      registered property rules for this |type|
+        prepare_functions   registered prepare functions for this |type|
+        config_checks       registered config checks for this |type|
+        is_scalar           informs whether the class is a scalar type object or otherwise
 
-                        known Scalars
-                        -------------
-                        - |Boolean|
-                        - |Number|
-                            - |Integer|
-                            - |Float|
-                        - |String|
-                        - |Temporal|
-                            - |Date|
-                            - |DateTime|
-                            - |Time|
+                            known Scalars
+
+                            - |Boolean|
+                            - |Number|
+                                - |Integer|
+                                - |Float|
+                            - |String|
+                            - |Temporal|
+                                - |Date|
+                                - |DateTime|
+                                - |Time|
     """
 
     is_scalar = True
