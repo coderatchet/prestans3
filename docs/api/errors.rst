@@ -39,6 +39,8 @@ ContainerValidationException
 ContainerValidationExceptionSummary
 -----------------------------------
 
+.. py:currentmodule:: prestans3.errors
+
 .. autoclass:: ContainerValidationExceptionSummary
         :show-inheritance:
         :members:
