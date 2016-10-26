@@ -10,6 +10,7 @@
 """
 import codecs
 
+from prestans3.future import istext
 from . import ImmutableType
 import re
 
@@ -29,6 +30,18 @@ class DataURLFile(ImmutableType):
     def generate_filename(cls):
         import uuid
         return uuid.uuid4().hex
+
+    @classmethod
+    def from_value(cls, value):
+        try:
+            return super(DataURLFile, cls).from_value(value)
+        except:
+            # py2to3 replace istext(value) with isinstance(value, str)
+            if not istext(value):
+                raise TypeError("{} of type {} is not coercible to type {}".format(value, value.__class__.__name__,
+                                                                                   cls.__name__))
+            else:
+                return DataURLFile(value)
 
     def __init__(self, encoded_data):
         self._encoded_data = encoded_data
@@ -59,4 +72,3 @@ class DataURLFile(ImmutableType):
     @property
     def decoded_contents(self):
         return codecs.lookup(self.encoding).decode(self.contents)[0]
-
