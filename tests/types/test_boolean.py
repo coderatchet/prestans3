@@ -77,3 +77,8 @@ def test_non_bool_value_raises_type_error():
     with pytest.raises(TypeError) as error:
         Boolean.from_value('cheese')
     assert "{} of type {} is not a subclass of {} or a bool".format('cheese', str.__name__, Boolean)
+
+
+def test_native_value():
+    assert Boolean(True).native_value == True
+    assert Boolean(False).native_value == False
