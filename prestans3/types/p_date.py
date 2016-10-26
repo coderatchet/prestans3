@@ -35,3 +35,6 @@ class Date(date, Temporal):
                 raise TypeError(
                     "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
             return Date(value.year, value.month, value.day)
+
+    def __copy__(self):
+        return Date(self.year, self.month, self.day)
