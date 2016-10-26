@@ -10,6 +10,8 @@
 """
 import codecs
 
+from future.utils import isbytes
+
 from prestans3.future import istext
 from . import ImmutableType
 import re
@@ -45,17 +47,32 @@ class DataURLFile(ImmutableType):
 
     @classmethod
     def create(cls, contents, mime_type, encoding=None):
-        if not istext(contents) or not istext(mime_type) or not istext(encoding):
+        """
+        create a |DataURLFile| instance from raw contents
+
+        :param contents: the raw contents to encode
+        :type contents: str or bytes or bytearray
+        :param str mime_type: mime type of encoding
+        :param str encoding: codec for encoding
+        :rType: DataURLFile
+        """
+
+        # py2to3 replace `istext(contents) or isbytes(contents) or isinstance(contents, bytearray)`
+        # with `isinstance(contents, (str, bytes, bytearray))`
+        if not (istext(contents) or isbytes(contents) or isinstance(contents, bytearray)) or not istext(
+                mime_type) or not istext(encoding):
             raise TypeError("contents, mime_type and encoding should all be strings")
         else:
-            return DataURLFile("data:{};{},{}".format(mime_type, encoding, contents))
-
+            codec = codecs.lookup(encoding)
+            encoded = codec.encode(contents)[0]
+            if codec.name == 'base64':
+                encoded = re.sub('\n$', '', encoded)
+            return DataURLFile("data:{};{},{}".format(mime_type, encoding, encoded))
 
     def __init__(self, encoded_data):
         self._encoded_data = encoded_data
         match = self.regex.match(encoded_data)
         if match:
-            # todo match start and end should be 0 and len(encoded_data) respectively else raise error
             [a, b, c] = match.groups()
             self._mime_type = a
             self._encoding = b

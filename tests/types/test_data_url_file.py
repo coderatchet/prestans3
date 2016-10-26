@@ -120,10 +120,8 @@ def test_can_ne():
 
 def test_can_compile_data_url_from_parts():
     data_url_file = DataURLFile.create(
-        contents="iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4" \
-                 "OHwAAAABJRU5ErkJggg==", encoding='base64', mime_type='image/png')
-    assert data_url_file.contents == "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO" \
-                                     "9TXL0Y4OHwAAAABJRU5ErkJggg=="
+        contents='abc', encoding='base64', mime_type='image/png')
+    assert data_url_file.contents == 'YWJj'
     assert data_url_file.encoding == 'base64'
     assert data_url_file.mime_type == 'image/png'
 
@@ -138,3 +136,16 @@ def test_create_url_from_parts_raises_error_on_invalid_params():
     with pytest.raises(TypeError) as error:
         DataURLFile.create(contents='ABC=', encoding='base64', mime_type=[])
     assert "contents, mime_type and encoding should all be strings" in str(error.value)
+
+
+def test_create_url_from_parts_accepts_bytes():
+    bytearray_data = DataURLFile.create(bytearray(b'abc'), encoding='base64', mime_type='image/png')
+    assert bytearray_data.contents == 'YWJj'
+    assert bytearray_data.encoding == 'base64'
+    assert bytearray_data.mime_type == 'image/png'
+    bytes_data = DataURLFile.create(b'abc', encoding='base64', mime_type='image/png')
+    assert bytes_data.contents == 'YWJj'
+    assert bytes_data.encoding == 'base64'
+    assert bytes_data.mime_type == 'image/png'
+
+
