@@ -11,6 +11,7 @@
 import codecs
 
 import prestans3
+from prestans3.errors import ValidationException
 from prestans3.future import istext, isbytes
 from . import ImmutableType
 import re
@@ -110,3 +111,20 @@ class DataURLFile(ImmutableType):
 
     def __ne__(self, other):
         return not self == other
+
+
+def _allowed_mime_types(instance, config):
+    """
+    checks whether the |DataURLFile|\ 's mime_type is in the configured list of strings
+
+    :type instance: |DataURLFile|
+    :param list[str] config: list of allowed mime types
+    :raises ValidationException: if instsance.mime_type isn't in the config
+    """
+    if instance.mime_type not in config:
+        raise ValidationException(instance.__class__,
+                                  "{} is an invalid mime type, valid types are [{}]".format(instance.mime_type,
+                                                                                            ", ".join(config)))
+
+
+DataURLFile.register_property_rule(_allowed_mime_types, name="allowed_mime_types")

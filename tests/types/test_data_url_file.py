@@ -12,6 +12,8 @@ import base64
 
 import pytest
 
+from prestans3.errors import ValidationException
+from prestans3.types import Model
 from prestans3.types.data_url_file import DataURLFile
 
 
@@ -147,3 +149,21 @@ def test_create_url_from_parts_raises_error_on_invalid_params():
 def test_encoding_is_base64_by_default_when_creating_data_url_file():
     data_url_file = DataURLFile.create('abc=', 'image/png')
     assert data_url_file.encoding == 'base64'
+
+
+def test_allowed_mime_types_property_rule():
+    allowed_types = ['image/png', 'image/gif']
+
+    class _M(Model):
+        duf = DataURLFile.property(allowed_mime_types=allowed_types)
+
+    instance = _M.mutable()
+    instance.duf = "data:image/png;base64,abc="
+    instance.validate()
+    instance.duf = "data:image/gif;base64,abc="
+    instance.validate()
+    instance.duf = "data:image/jpg;base64,abc="
+    with pytest.raises(ValidationException) as error:
+        instance.validate()
+    assert "{} is an invalid mime type, valid types are [{}]".format('image/jpg', ", ".join(allowed_types)) \
+           in str(error)
