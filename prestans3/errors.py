@@ -14,7 +14,7 @@ import re
 class ValidationExceptionSummary(tuple):
     """
     Returned when iterating through a |ValidationException|. Each ValidationExceptionSummary is a
-    (``str``, |list[str]|) which represents a fully qualified name and its list of exception messages
+    (``str``, list[str]) which represents a fully qualified name and its list of exception messages
     """
 
     # noinspection PyInitNewSignature
