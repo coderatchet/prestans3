@@ -10,6 +10,7 @@
 """
 import codecs
 
+import prestans3
 from prestans3.future import istext, isbytes
 from . import ImmutableType
 import re
@@ -44,7 +45,7 @@ class DataURLFile(ImmutableType):
                 return DataURLFile(value)
 
     @classmethod
-    def create(cls, contents, mime_type, encoding=None):
+    def create(cls, contents, mime_type, encoding='base64'):
         """
         create a |DataURLFile| instance from raw contents
 
@@ -57,15 +58,11 @@ class DataURLFile(ImmutableType):
 
         # py2to3 replace `istext(contents) or isbytes(contents) or isinstance(contents, bytearray)`
         # with `isinstance(contents, (str, bytes, bytearray))`
-        if not (istext(contents) or isbytes(contents) or isinstance(contents, bytearray)) or not istext(
-                mime_type) or not istext(encoding):
+        if not istext(contents) or not istext(mime_type) or not istext(encoding):
             raise TypeError("contents, mime_type and encoding should all be strings")
         else:
-            codec = codecs.lookup(encoding)
-            encoded = codec.encode(contents)[0]
-            if codec.name == 'base64':
-                encoded = re.sub('\n$', '', encoded)
-            return DataURLFile("data:{};{},{}".format(mime_type, encoding, encoded))
+            return DataURLFile("data:{mime_type};{encoding},{contents}".format(mime_type=mime_type, encoding=encoding,
+                                                                               contents=contents))
 
     def __init__(self, encoded_data):
         self._encoded_data = encoded_data
@@ -94,7 +91,12 @@ class DataURLFile(ImmutableType):
 
     @property
     def decoded_contents(self):
-        return codecs.lookup(self.encoding).decode(self.contents)[0]
+        # py2to3 remove else statement and PY3 check
+        if prestans3.future.PY3:
+            contents_ = bytes(self.contents, encoding='utf-8')
+        else:
+            contents_ = self.contents
+        return codecs.lookup(self.encoding).decode(contents_)[0]
 
     def __eq__(self, other):
         if isinstance(other, DataURLFile):
