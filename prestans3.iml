@@ -10,7 +10,7 @@
       <excludeFolder url="file://$MODULE_DIR$/.tox" />
       <excludeFolder url="file://$MODULE_DIR$/docs/build" />
     </content>
-    <orderEntry type="jdk" jdkName="Python 2.7.12 virtualenv at ~/venvs/prestans3-py27" jdkType="Python SDK" />
+    <orderEntry type="jdk" jdkName="Python 3.5.2 virtualenv for prestans3" jdkType="Python SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
   </component>
 </module>

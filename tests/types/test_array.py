@@ -9,6 +9,8 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
+from datetime import datetime, time, tzinfo
+
 import pytest
 
 from prestans3.errors import AccessError, ValidationException
@@ -16,6 +18,7 @@ from prestans3.types import Array
 from prestans3.types import Integer
 from prestans3.types import Model
 from prestans3.types import String
+from prestans3.types import Time
 from prestans3.types.array import _ArrayProperty
 
 
@@ -127,8 +130,8 @@ def test_adding_non_of_type_subclass_to_array_raises_value_error():
     with pytest.raises(ValueError) as error:
         Array(String, [1])
     assert 'in Array.__init__, iterable[{}] is {} of type {}, but the declared type of this array is {}'.format(0, 1,
-                                                                                                    int.__name__,
-                                                                                                    String.__name__) \
+                                                                                                                int.__name__,
+                                                                                                                String.__name__) \
            in str(error)
 
     __array = Array.mutable(String, validate_immediately=False)
@@ -264,3 +267,24 @@ def test_array_from_value_raises_error_when_native_array_received():
 def test_array_from_value_with_array_type_returns_self():
     array = Array(String, ['spam', 'ham', 'bam'])
     assert Array.from_value(array) is array
+
+
+class _UTC(tzinfo):
+    def name(self):
+        return 'UTC'
+
+    def dst(self, dt):
+        return 0
+
+    def utcoffset(self, dt):
+        return 0
+
+
+utc = _UTC()
+
+
+def test_native_value():
+    assert Array(Integer, [1, 2, 3]).native_value == [1, 2, 3]
+    assert Array(String, ['yellow', 'red', 'blue']).native_value == ['yellow', 'red', 'blue']
+    assert Array(Time, [time(1, 2, 3, 4, utc), time(4, 3, 2, 1, utc)]).native_value == [time(1, 2, 3, 4, utc),
+                                                                                        time(4, 3, 2, 1, utc)]
