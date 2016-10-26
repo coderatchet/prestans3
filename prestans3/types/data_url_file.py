@@ -24,7 +24,7 @@ class DataURLFile(ImmutableType):
     .. _png: https://en.wikipedia.org/wiki/Data_URI_scheme#HTML
     """
 
-    regex = re.compile(r'^data:([\w/\-\.]+);(\w+),(.*)$')
+    regex = re.compile(r'^data:([\w/\-.]+);(\w+),(.*)$')
 
     @classmethod
     def generate_filename(cls):
@@ -42,6 +42,14 @@ class DataURLFile(ImmutableType):
                                                                                    cls.__name__))
             else:
                 return DataURLFile(value)
+
+    @classmethod
+    def create(cls, contents, mime_type, encoding=None):
+        if not istext(contents) or not istext(mime_type) or not istext(encoding):
+            raise TypeError("contents, mime_type and encoding should all be strings")
+        else:
+            return DataURLFile("data:{};{},{}".format(mime_type, encoding, contents))
+
 
     def __init__(self, encoded_data):
         self._encoded_data = encoded_data
