@@ -72,3 +72,13 @@ class DataURLFile(ImmutableType):
     @property
     def decoded_contents(self):
         return codecs.lookup(self.encoding).decode(self.contents)[0]
+
+    def __eq__(self, other):
+        if isinstance(other, DataURLFile):
+            return (
+                self.mime_type == other.mime_type and
+                self.contents == other.contents and
+                self.encoding == other.encoding
+            )
+        else:
+            return False
