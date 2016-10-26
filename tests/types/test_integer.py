@@ -55,5 +55,9 @@ def test_from_value_raises_value_error_on_non_int_subclass():
         Integer.from_value(0.3)
 
 
+def test_can_to_native_value():
+    assert Integer(1).native_value == 1
+    assert Integer(-4).native_value == -4
+
 
 

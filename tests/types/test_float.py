@@ -40,3 +40,8 @@ def test_can_from_value_float():
     with pytest.raises(TypeError) as error:
         Float.from_value('no')
     assert "{} of type {} not coercible to {}".format("no", "no".__class__.__name__, Float.__name__) in str(error.value)
+
+
+def test_native_value():
+    assert Float(1.7).native_value == 1.7
+    assert Float(-930.2435).native_value == -930.2435

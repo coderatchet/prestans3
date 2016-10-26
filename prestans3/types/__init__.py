@@ -11,6 +11,8 @@
 import functools
 
 # py2to3 with_metaclass and istext should be replaced
+from copy import copy
+
 from prestans3.future import with_metaclass, istext
 from prestans3.utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
 from .meta import PrestansTypeMeta
@@ -56,6 +58,10 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
         """
         if validate_immediately:
             self.validate()
+
+    @property
+    def native_value(self):
+        return copy(self)
 
     @classmethod
     def property(cls, **kwargs):
