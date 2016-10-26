@@ -167,3 +167,7 @@ def test_allowed_mime_types_property_rule():
         instance.validate()
     assert "{} is an invalid mime type, valid types are [{}]".format('image/jpg', ", ".join(allowed_types)) \
            in str(error)
+
+
+def test_native_value():
+    assert DataURLFile("data:image/png;base64,abc=").native_value == "data:image/png;base64,abc="
