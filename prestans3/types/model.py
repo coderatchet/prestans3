@@ -113,8 +113,14 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         else:
             super(Model, self).__delattr__(item)
 
+    @property
+    def native_value(self):
+        # py2to3 replace `list(self.prestans_attributes.items())` with `self.prestans_attributes.items()`
+        return {key: value.native_value for key, value in list(self.prestans_attributes.items())}
+
     def validate(self, config=None, **kwargs):
         validation_exception = None
+        # py2to3 replace `list(self.prestans_attribute_properties.items())` with `self.prestans_attribute_properties.items()`
         for p_attr_name, p_attr in list(self.prestans_attribute_properties.items()):
             try:
                 attr = self.prestans_attributes[p_attr_name]  # T <= ImmutableType
