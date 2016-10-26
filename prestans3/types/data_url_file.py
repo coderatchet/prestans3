@@ -10,9 +10,7 @@
 """
 import codecs
 
-from future.utils import isbytes
-
-from prestans3.future import istext
+from prestans3.future import istext, isbytes
 from . import ImmutableType
 import re
 
