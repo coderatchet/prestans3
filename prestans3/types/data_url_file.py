@@ -37,7 +37,7 @@ class DataURLFile(ImmutableType):
     def from_value(cls, value):
         try:
             return super(DataURLFile, cls).from_value(value)
-        except:
+        except NotImplementedError:
             # py2to3 replace istext(value) with isinstance(value, str)
             if not istext(value):
                 raise TypeError("{} of type {} is not coercible to type {}".format(value, value.__class__.__name__,

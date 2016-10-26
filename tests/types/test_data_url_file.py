@@ -68,8 +68,10 @@ def test_can_compile_data_url_from_value():
     assert data_url_file.encoding == 'base64'
     assert data_url_file.contents == "iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8" + \
                                      "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="
-    with pytest.raises(TypeError):
-        DataURLFile(123)
+    with pytest.raises(TypeError) as error:
+        DataURLFile.from_value(123)
+    assert "{} of type {} is not coercible to type {}".format(123, int.__name__, DataURLFile.__name__) \
+           in str(error.value)
 
 
 def test_can_eq():
@@ -94,6 +96,9 @@ def test_can_eq():
                DataURLFile(("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
                             "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="))
 
+    assert not DataURLFile("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
+                           "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==") == 1
+
 
 def test_can_ne():
     assert not DataURLFile("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
@@ -116,6 +121,9 @@ def test_can_ne():
                         "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==")) != \
            DataURLFile(("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
                         "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=="))
+
+    assert DataURLFile("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8"
+                       "/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==") != 1
 
 
 def test_can_compile_data_url_from_parts():
@@ -147,5 +155,3 @@ def test_create_url_from_parts_accepts_bytes():
     assert bytes_data.contents == 'YWJj'
     assert bytes_data.encoding == 'base64'
     assert bytes_data.mime_type == 'image/png'
-
-
