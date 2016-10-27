@@ -60,4 +60,6 @@ def test_can_to_native_value():
     assert Integer(-4).native_value == -4
 
 
-
+def test_to_from_value_invariant():
+    my_int = Integer(42)
+    assert my_int == Integer.from_value(my_int.native_value)
