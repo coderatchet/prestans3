@@ -283,6 +283,8 @@ class _ArrayProperty(_Property):
 
 # noinspection PyAbstractClass
 class _MutableArray(Array):
+    """ mutable class of an array """
+
     def __setitem__(self, key, value):
         self._values[key] = self._of_type.from_value(value)
 
