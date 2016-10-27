@@ -114,6 +114,9 @@ class DataURLFile(ImmutableType):
                 self.contents == other.contents and
                 self.encoding == other.encoding
             )
+        # py2to3 replace with isinstance(other, str)
+        elif istext(other):
+            return self == DataURLFile.from_value(other)
         else:
             return False
 

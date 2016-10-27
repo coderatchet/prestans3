@@ -159,7 +159,8 @@ def test_cached_object_returned_when_called_twice_with_same_args(mocker):
     mocker.patch.dict(utils.injected_class_cache, {(__B, __A, object, None): Proof})
     new_type = inject_class(__B, __A)
     test_type = inject_class(__B, __A)
-    assert test_type == Proof
+    assert test_type is new_type
+    assert test_type is Proof
 
 
 # noinspection PyClassHasNoInit

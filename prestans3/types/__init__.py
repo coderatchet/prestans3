@@ -393,6 +393,10 @@ class Container(ImmutableType):
     # func raises |ValidationException| on invalidation
 
 
+def new_mutable_type_func_name(template_class, _y=None, _z=None):
+    return "PMutable{}".format(template_class.__name__)
+
+
 from .boolean import Boolean as Boolean
 from .number import Number as Number
 from .integer import Integer as Integer

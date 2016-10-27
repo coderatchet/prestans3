@@ -381,6 +381,7 @@ class _UTC(tzinfo):
 
 utc = _UTC()
 
+
 def test_native_value():
     class _Sub(Model):
         one = String.property()
@@ -428,3 +429,118 @@ def test_native_value():
             'three': 2
         }
     }
+
+
+def test_can_eq():
+    class _Sub(Model):
+        one = String.property()
+        two = Array.property(Float)
+        three = Integer.property()
+
+    class _Model(Model):
+        my_string = String.property()
+        my_int = Integer.property()
+        my_date = Date.property()
+        my_float = Float.property()
+        my_datetime = DateTime.property()
+        my_time = Time.property()
+        my_data_url_file = DataURLFile.property()
+        my_array = Array.property(String)
+        my_model = _Sub.property()
+
+    sub_model = _Sub.mutable()
+    sub_model.one = 'yes'
+    sub_model.two = [5.0, 2.3]
+    sub_model.three = 2
+    model = _Model.mutable()
+    model.my_string = 'pie'
+    model.my_int = 1
+    model.my_float = 1.3
+    model.my_date = date(2000, 2, 3)
+    model.my_datetime = datetime(2000, 2, 3, 4, 5, 6, 7, utc)
+    model.my_time = time(1, 2, 3, 4, utc)
+    model.my_data_url_file = 'data:image/png;base64,abc='
+    model.my_array = ['hello', 'world']
+    model.my_model = sub_model
+
+    sub_model2 = _Sub.mutable()
+    sub_model2.one = 'yes'
+    sub_model2.two = [5.0, 2.3]
+    sub_model2.three = 2
+    model2 = _Model.mutable()
+    model2.my_string = 'pie'
+    model2.my_int = 1
+    model2.my_float = 1.3
+    model2.my_date = date(2000, 2, 3)
+    model2.my_datetime = datetime(2000, 2, 3, 4, 5, 6, 7, utc)
+    model2.my_time = time(1, 2, 3, 4, utc)
+    model2.my_data_url_file = 'data:image/png;base64,abc='
+    model2.my_array = ['hello', 'world']
+    model2.my_model = sub_model
+
+    assert model == model2
+    dictionary = {
+        'my_string': 'pie',
+        'my_int': 1,
+        'my_float': 1.3,
+        'my_date': date(2000, 2, 3),
+        'my_datetime': datetime(2000, 2, 3, 4, 5, 6, 7, utc),
+        'my_time': time(1, 2, 3, 4, utc),
+        'my_data_url_file': 'data:image/png;base64,abc=',
+        'my_array': ['hello', 'world'],
+        'my_model': {
+            'one': 'yes',
+            'two': [5.0, 2.3],
+            'three': 2
+        }
+    }
+    assert model == dictionary
+
+
+def test_from_value():
+    class _Sub(Model):
+        one = String.property()
+        two = Array.property(Float)
+        three = Integer.property()
+
+    class _Model(Model):
+        my_string = String.property()
+        my_int = Integer.property()
+        my_date = Date.property()
+        my_float = Float.property()
+        my_datetime = DateTime.property()
+        my_time = Time.property()
+        my_data_url_file = DataURLFile.property()
+        my_array = Array.property(String)
+        my_model = _Sub.property()
+
+    sub_model = _Sub.mutable()
+    sub_model.one = 'yes'
+    sub_model.two = [5.0, 2.3]
+    sub_model.three = 2
+    model = _Model.mutable()
+    model.my_string = 'pie'
+    model.my_int = 1
+    model.my_float = 1.3
+    model.my_date = date(2000, 2, 3)
+    model.my_datetime = datetime(2000, 2, 3, 4, 5, 6, 7, utc)
+    model.my_time = time(1, 2, 3, 4, utc)
+    model.my_data_url_file = 'data:image/png;base64,abc='
+    model.my_array = ['hello', 'world']
+    model.my_model = sub_model
+
+    assert _Model.from_value({
+        'my_string': 'pie',
+        'my_int': 1,
+        'my_float': 1.3,
+        'my_date': date(2000, 2, 3),
+        'my_datetime': datetime(2000, 2, 3, 4, 5, 6, 7, utc),
+        'my_time': time(1, 2, 3, 4, utc),
+        'my_data_url_file': 'data:image/png;base64,abc=',
+        'my_array': ['hello', 'world'],
+        'my_model': {
+            'one': 'yes',
+            'two': [5.0, 2.3],
+            'three': 2
+        }
+    }) == model
