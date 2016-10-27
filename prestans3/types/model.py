@@ -293,6 +293,7 @@ class _MutableModel(with_metaclass(_PrestansModelTypeMeta, Model)):
     """
 
     def __init__(self, initial_values=None, **kwargs):
+        """ accepts the same arguments as the init of the corresponding immutable |Model| subclass. """
         kwargs.update(validate_immediately=False)
         super(_MutableModel, self).__init__(initial_values, **kwargs)
 
@@ -318,4 +319,5 @@ class _MutableModel(with_metaclass(_PrestansModelTypeMeta, Model)):
 
     @property
     def prestans_attributes(self):
+        """ own reference to prestans attributes """
         return self._prestans_attributes
