@@ -12,7 +12,7 @@ from copy import copy
 
 from prestans3.errors import ValidationException, AccessError, ContainerValidationException
 from prestans3.future import with_metaclass
-from prestans3.types import Container, _Property
+from prestans3.types import Container, _Property, new_mutable_type_func_name
 from prestans3.types.meta import PrestansTypeMeta
 from prestans3.utils import inject_class, ImmutableMergingDictionary, LazyOneWayGraph
 
@@ -51,6 +51,7 @@ class _PrestansModelTypeMeta(PrestansTypeMeta):
             if isinstance(attr, _Property):
                 cls.prestans_attribute_properties[attr_name] = attr
         super(_PrestansModelTypeMeta, cls).__init__(what, bases, attrs)
+
 
 # py2to3 replace with_metaclass with metaclass=_PrestansModelTypeMeta
 # noinspection PyAbstractClass
@@ -113,8 +114,25 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         else:
             super(Model, self).__delattr__(item)
 
+    def __eq__(self, other):
+        if isinstance(other, Model):
+            return self.prestans_attributes == other.prestans_attributes
+        elif isinstance(other, dict):
+            return self.prestans_attributes == other
+        else:
+            return False
+
+    def __ne__(self, other):
+        return not self == other
+
+    @property
+    def native_value(self):
+        # py2to3 replace `list(self.prestans_attributes.items())` with `self.prestans_attributes.items()`
+        return {key: value.native_value for key, value in list(self.prestans_attributes.items())}
+
     def validate(self, config=None, **kwargs):
         validation_exception = None
+        # py2to3 replace `list(self.prestans_attribute_properties.items())` with `self.prestans_attribute_properties.items()`
         for p_attr_name, p_attr in list(self.prestans_attribute_properties.items()):
             try:
                 attr = self.prestans_attributes[p_attr_name]  # T <= ImmutableType
@@ -137,6 +155,16 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
             validation_exception.add_validation_messages(error.messages)
         if validation_exception:
             raise validation_exception
+
+    @classmethod
+    def from_value(cls, value):
+        try:
+            return super(Model, cls).from_value(value)
+        except NotImplementedError:
+            if not isinstance(value, dict):
+                raise TypeError(
+                    "{} of type {} is not coercible to type {}".format(value, value.__class__.__name__, cls.__name__))
+            return cls(initial_values=value)
 
     @classmethod
     def is_prestans_attribute(cls, key):
@@ -183,8 +211,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         if cls is Model:
             raise TypeError("mutable called on base Model class. must call mutable on a concrete subclass of Model")
         new_mutable_model_subclass = inject_class(cls, _MutableModel, Model,
-                                                  new_type_name_func=lambda x, _y, _z: "PMutable{}".format(
-                                                      x.__name__))
+                                                  new_type_name_func=new_mutable_type_func_name)
         return new_mutable_model_subclass
 
     def mutable_copy(self):

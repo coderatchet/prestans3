@@ -41,3 +41,7 @@ def test_can_from_value_create_time():
         Time.from_value("pickle")
     assert '{} of type {} is not coercible to type {}'.format("pickle", str.__name__, Time.__name__) \
            in str(error.value)
+
+
+def test_native_value():
+    assert Time(1, 2, 3, 4, utc).native_value == time(1, 2, 3, 4, utc)

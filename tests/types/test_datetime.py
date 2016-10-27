@@ -52,3 +52,12 @@ def test_can_from_value():
     with pytest.raises(TypeError) as error:
         DateTime.from_value("no")
     assert "{} of type {} not coercible to type {}".format("no", str.__name__, DateTime.__name__)
+
+
+def test_native_value():
+    assert DateTime(2000, 1, 2, 3, 4, 5, 6, utc).native_value == datetime(2000, 1, 2, 3, 4, 5, 6, utc)
+
+
+def test_to_from_value_invariant():
+    my_datetime = DateTime(2000, 1, 2, 3, 4, 5, 6, utc)
+    assert my_datetime == DateTime.from_value(my_datetime.native_value)

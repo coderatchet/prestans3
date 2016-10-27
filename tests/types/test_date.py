@@ -8,6 +8,8 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+from copy import copy
+
 import pytest
 from datetime import date
 
@@ -47,3 +49,19 @@ def test_from_value_works():
     with pytest.raises(TypeError) as error:
         Date.from_value('mango')
     assert "{} of type {} is not coercible to type {}".format('mango', str.__name__, Date.__name__) in str(error.value)
+
+
+def test_can_copy_self():
+    date1 = Date(2000, 1, 3)
+    date2 = copy(date1)
+    assert date1 == date2
+    assert date1 is not date2
+
+
+def test_native_value():
+    assert Date(2000, 1, 1).native_value == date(2000, 1, 1)
+
+
+def test_to_from_value_invariant():
+    my_date = Date(2000, 1, 1)
+    assert my_date == Date.from_value(my_date.native_value)

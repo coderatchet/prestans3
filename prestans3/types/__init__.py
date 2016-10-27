@@ -11,6 +11,8 @@
 import functools
 
 # py2to3 with_metaclass and istext should be replaced
+from copy import copy
+
 from prestans3.future import with_metaclass, istext
 from prestans3.utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
 from .meta import PrestansTypeMeta
@@ -56,6 +58,10 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
         """
         if validate_immediately:
             self.validate()
+
+    @property
+    def native_value(self):
+        return copy(self)
 
     @classmethod
     def property(cls, **kwargs):
@@ -385,6 +391,10 @@ class Container(ImmutableType):
 
     # dict[str, func(owner: |ImmutableType|, instance: |ImmutableType|, config: any) -> bool]
     # func raises |ValidationException| on invalidation
+
+
+def new_mutable_type_func_name(template_class, _y=None, _z=None):
+    return "PMutable{}".format(template_class.__name__)
 
 
 from .boolean import Boolean as Boolean

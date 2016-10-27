@@ -15,6 +15,12 @@ from prestans3.errors import ValidationException, AccessError, ContainerValidati
 from prestans3.types import Container, ImmutableType, _Property
 from prestans3.utils import inject_class, MergingProxyDictionary
 
+# py2to3 remove try, prefer builtins
+try:
+    from __builtin__ import property as prop
+except ImportError:
+    from builtins import property as prop
+
 
 def find_first(array, func):
     """
@@ -138,23 +144,17 @@ class Array(Container):
         if validation_exception:
             raise validation_exception
 
+    @prop
+    def native_value(self):
+        return [value.native_value for value in self]
+
     #### list like magic methods
 
     def __eq__(self, other):
         if isinstance(other, Array):
             return self._values == other._values
         else:
-            if len(self) != len(other):
-                return False
-            zipped = zip(self, other)
-            for one, two in zipped:
-                try:
-                    _coerced = self._of_type.from_value(two)
-                    if one != _coerced:
-                        return False
-                except TypeError:
-                    return False
-        return True
+            return self._values == other
 
     def __ne__(self, other):
         return not self.__eq__(other)

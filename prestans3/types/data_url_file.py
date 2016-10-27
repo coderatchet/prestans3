@@ -28,6 +28,10 @@ class DataURLFile(ImmutableType):
 
     regex = re.compile(r'^data:([\w/\-.]+);(\w+),(.*)$')
 
+    @property
+    def native_value(self):
+        return self.to_native_value(self.contents, self.encoding, self.mime_type)
+
     @classmethod
     def generate_filename(cls):
         import uuid
@@ -62,8 +66,12 @@ class DataURLFile(ImmutableType):
         if not istext(contents) or not istext(mime_type) or not istext(encoding):
             raise TypeError("contents, mime_type and encoding should all be strings")
         else:
-            return DataURLFile("data:{mime_type};{encoding},{contents}".format(mime_type=mime_type, encoding=encoding,
-                                                                               contents=contents))
+            return DataURLFile(DataURLFile.to_native_value(contents, encoding, mime_type))
+
+    @classmethod
+    def to_native_value(cls, contents, encoding, mime_type):
+        return "data:{mime_type};{encoding},{contents}".format(mime_type=mime_type, encoding=encoding,
+                                                               contents=contents)
 
     def __init__(self, encoded_data):
         self._encoded_data = encoded_data
@@ -106,6 +114,9 @@ class DataURLFile(ImmutableType):
                 self.contents == other.contents and
                 self.encoding == other.encoding
             )
+        # py2to3 replace with isinstance(other, str)
+        elif istext(other):
+            return self == DataURLFile.from_value(other)
         else:
             return False
 

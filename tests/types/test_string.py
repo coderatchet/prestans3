@@ -162,3 +162,7 @@ def test_unicode_special_character_comparison_works():
 def test_encode_decode_property():
     string = String('utf-8')
     assert string.encode('utf-8').decode('utf-8') == string
+
+
+def test_native_value():
+    assert String("ok").native_value == "ok"
