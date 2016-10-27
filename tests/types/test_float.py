@@ -45,3 +45,8 @@ def test_can_from_value_float():
 def test_native_value():
     assert Float(1.7).native_value == 1.7
     assert Float(-930.2435).native_value == -930.2435
+
+
+def test_to_from_value_invariant():
+    my_float = Float(1.3)
+    assert my_float == Float.from_value(my_float.native_value)
