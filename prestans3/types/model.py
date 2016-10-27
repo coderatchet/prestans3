@@ -43,6 +43,7 @@ class ModelValidationException(ContainerValidationException):
 
 class _PrestansAttributesProperties(object):
     """ property descriptor for accessing a |Model|\ 's |attributes| """
+
     def __init__(self, of_type):
         self._of_type = of_type
 
@@ -52,6 +53,7 @@ class _PrestansAttributesProperties(object):
 
 class _PrestansModelTypeMeta(PrestansTypeMeta):
     """ Metaclass of |Models|\ . Saves |attributes| of defined class in its class-local storage """
+
     def __init__(cls, what, bases, attrs, **kwargs):
         cls.prestans_attribute_properties = _PrestansAttributesProperties(cls)
         # py2to3 unwrap .items()
@@ -121,6 +123,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
             super(Model, self).__setattr__(key, value)
 
     def __delattr__(self, item):
+        """ disabled on default Model, see :function:`Model.mutable()` for creating a mutable version """
         if self.is_prestans_attribute(item):
             raise AccessError(self.__class__, "attempted to delete value of prestans3 attribute on an immutable Model, "
                                               "For a mutable {class_name}, call {class_name}.mutable(...)".format(
@@ -145,6 +148,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         return {key: value.native_value for key, value in list(self.prestans_attributes.items())}
 
     def validate(self, config=None, **kwargs):
+        """ validates all |attributes| before validating itself """
         validation_exception = None
         # py2to3 replace `list(self.prestans_attribute_properties.items())` with `self.prestans_attribute_properties.items()`
         for p_attr_name, p_attr in list(self.prestans_attribute_properties.items()):
@@ -172,6 +176,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     @classmethod
     def from_value(cls, value):
+        """ create a model from an arbitrarily complex model conforming to the configuration of this subclass """
         try:
             return super(Model, cls).from_value(value)
         except NotImplementedError:
@@ -216,12 +221,16 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     @classmethod
     def mutable(cls, *args, **kwargs):
-
+        """
+        create a mutable instance of this class with valid access to adding new variables and defering immediate
+        validation. accepts the same parameters as the defined __init__ function on your subclass
+        """
         _Mutable = cls.mutable_class()
         return _Mutable(*args, **kwargs)
 
     @classmethod
     def mutable_class(cls):
+        """ retrieve the generated mutable class type for this subclass of |Model|\ . """
         if cls is Model:
             raise TypeError("mutable called on base Model class. must call mutable on a concrete subclass of Model")
         new_mutable_model_subclass = inject_class(cls, _MutableModel, Model,
@@ -229,6 +238,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         return new_mutable_model_subclass
 
     def mutable_copy(self):
+        """ create a mutable copy of an immutable |type|\ . """
         mutable = self.__class__.mutable()
         # py2to3 unwrap .items()
         for key, p_attr in list(self.prestans_attributes.items()):
@@ -237,6 +247,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     @classmethod
     def get_prestans_attribute_property(cls, attr_name):
+        """ retrieve a configured |_Property| on this class by name """
         p_attrs = cls.prestans_attribute_properties
         if attr_name in cls.__dict__ and attr_name not in p_attrs:
             raise AttributeError(
