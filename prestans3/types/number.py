@@ -22,6 +22,7 @@ class Number(ImmutableType):
 
 
 def _min(instance, config):
+    """ checks the `instance` is at least `config` """
     if instance < config:
         raise ValidationException(instance.__class__,
                                   "{} property is {}, however the configured minimum value is {}".format(
@@ -29,6 +30,7 @@ def _min(instance, config):
 
 
 def _max(instance, config):
+    """ checks the `instance` is at most `config` """
     if instance > config:
         raise ValidationException(instance.__class__,
                                   "{} property is {}, however the configured maximum value is {}".format(
