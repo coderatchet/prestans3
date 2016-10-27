@@ -59,4 +59,5 @@ def test_native_value():
 
 
 def test_to_from_value_invariant():
-    pass
+    my_datetime = DateTime(2000, 1, 2, 3, 4, 5, 6, utc)
+    assert my_datetime == DateTime.from_value(my_datetime.native_value)
