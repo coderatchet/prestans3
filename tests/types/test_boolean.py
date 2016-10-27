@@ -82,3 +82,10 @@ def test_non_bool_value_raises_type_error():
 def test_native_value():
     assert Boolean(True).native_value == True
     assert Boolean(False).native_value == False
+
+
+def test_to_from_value_invariant():
+    my_bool = Boolean(True)
+    assert my_bool == Boolean.from_value(my_bool.native_value)
+    my_bool = Boolean(False)
+    assert my_bool == Boolean.from_value(my_bool.native_value)

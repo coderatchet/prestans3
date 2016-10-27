@@ -56,3 +56,7 @@ def test_can_from_value():
 
 def test_native_value():
     assert DateTime(2000, 1, 2, 3, 4, 5, 6, utc).native_value == datetime(2000, 1, 2, 3, 4, 5, 6, utc)
+
+
+def test_to_from_value_invariant():
+    pass
