@@ -544,3 +544,37 @@ def test_from_value():
             'three': 2
         }
     }) == model
+
+def test_to_from_value_invariant():
+    class _Sub(Model):
+        one = String.property()
+        two = Array.property(Float)
+        three = Integer.property()
+
+    class _Model(Model):
+        my_string = String.property()
+        my_int = Integer.property()
+        my_date = Date.property()
+        my_float = Float.property()
+        my_datetime = DateTime.property()
+        my_time = Time.property()
+        my_data_url_file = DataURLFile.property()
+        my_array = Array.property(String)
+        my_model = _Sub.property()
+
+    sub_model = _Sub.mutable()
+    sub_model.one = 'yes'
+    sub_model.two = [5.0, 2.3]
+    sub_model.three = 2
+    model = _Model.mutable()
+    model.my_string = 'pie'
+    model.my_int = 1
+    model.my_float = 1.3
+    model.my_date = date(2000, 2, 3)
+    model.my_datetime = datetime(2000, 2, 3, 4, 5, 6, 7, utc)
+    model.my_time = time(1, 2, 3, 4, utc)
+    model.my_data_url_file = 'data:image/png;base64,abc='
+    model.my_array = ['hello', 'world']
+    model.my_model = sub_model
+
+    assert model == _Model.from_value(model.native_value)
