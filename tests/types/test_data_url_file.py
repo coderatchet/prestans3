@@ -171,3 +171,8 @@ def test_allowed_mime_types_property_rule():
 
 def test_native_value():
     assert DataURLFile("data:image/png;base64,abc=").native_value == "data:image/png;base64,abc="
+
+
+def test_to_from_value_invariant():
+    url_file = DataURLFile("data:image/png;base64,abc=")
+    assert url_file == DataURLFile.from_value(url_file.native_value)
