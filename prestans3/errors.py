@@ -152,6 +152,7 @@ class ContainerValidationException(ValidationException):
 
     def __iter__(self):
         """ iterate through the summaries for this exception """
+        # py2to3 unwrap all 3 iters here
         for summary in list(super(ContainerValidationException, self).__iter__()):
             yield summary
         for key, validation_exception in list(self.validation_exceptions.items()):  # type: (str, ValidationException)

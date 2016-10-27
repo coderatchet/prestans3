@@ -83,6 +83,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
             config = {}
         config = ImmutableMergingDictionary(config, self.default_rules_config())
         exception_messages = None
+        # py2to3 unwrap .items()
         for rule_name, rule in list(self.__class__.property_rules.items()):
             from prestans3.errors import ValidationException
             try:
@@ -189,6 +190,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
 
         :return: dict (str -> any)
         """
+        # py2to3 unwrap .items()
         return {rule_name: rule.default_config if not callable(rule.default_config) else rule.default_config()
                 for rule_name, rule in list(cls.property_rules.items()) if rule.default_config}
 
@@ -316,6 +318,7 @@ class _Property(object):
         """
 
         def _gen():
+            # py2to3 unwrap 3 list(...) wrappings
             for key, config in list(kwargs.items()):
                 yield self._get_and_check_rule_config(key, config)
 

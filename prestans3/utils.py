@@ -117,6 +117,7 @@ class MergingProxyDictionary(dict):
             raise error
 
     def _find_first(self, dictionary, condition):
+        # py2to3 unwrap dictinoary.items()
         for key, value in list(dictionary.items()):
             if condition(key, value):
                 return key, value

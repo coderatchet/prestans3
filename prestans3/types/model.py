@@ -47,6 +47,7 @@ class _PrestansAttributesProperties(object):
 class _PrestansModelTypeMeta(PrestansTypeMeta):
     def __init__(cls, what, bases, attrs, **kwargs):
         cls.prestans_attribute_properties = _PrestansAttributesProperties(cls)
+        # py2to3 unwrap .items()
         for attr_name, attr in list(attrs.items()):
             if isinstance(attr, _Property):
                 cls.prestans_attribute_properties[attr_name] = attr
@@ -70,6 +71,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         """
         self._prestans_attributes = {}
         if initial_values is not None:
+            # py2to3 unwrap .items()
             for key, value in list(initial_values.items()):
                 if self.is_prestans_attribute(key):
                     self.get_prestans_attribute_property(key).__set__(
@@ -82,6 +84,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
                                                                                               self.__class__.__name__))
 
         # for all the prestans attributes in this class, if they don't yet have a value, then set it
+        # py2to3 unwrap .items()
         for key, p_attr in list(self.__class__.prestans_attribute_properties.items()):
             if p_attr.default is not None and (
                             key not in self.prestans_attributes or self.prestans_attributes[key] is None):
@@ -216,6 +219,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     def mutable_copy(self):
         mutable = self.__class__.mutable()
+        # py2to3 unwrap .items()
         for key, p_attr in list(self.prestans_attributes.items()):
             mutable.__setattr__(key, copy(self.prestans_attributes[key]))
         return mutable
@@ -238,6 +242,7 @@ def check_required_attributes(instance, config=True):
     if config:
         p_attrs = instance.__class__.prestans_attribute_properties
         validation_exception = None
+        # py2to3 unwrap .items()
         for p_attr_name, p_attr in list(p_attrs.items()):
             if p_attr.required:
                 try:

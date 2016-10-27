@@ -124,6 +124,7 @@ class Array(Container):
         if config is None:
             array_rules = {}
         else:
+            # py2to3 unwrap .items()
             array_rules = {key: config for key, config in list(config.items()) if key != 'element_rules'}
             if 'element_rules' in config:
                 element_rules = config['element_rules']
@@ -243,6 +244,7 @@ class _ArrayProperty(_Property):
     """
 
     def __init__(self, of_type, element_type, element_rules=None, **kwargs):
+        # py2to3 unwrap .items()
         super(_ArrayProperty, self).__init__(of_type, **{key: config for key, config in list(kwargs.items()) if
                                                          key in ['required', 'default']})
         self._element_type = element_type
