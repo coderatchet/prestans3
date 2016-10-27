@@ -22,10 +22,13 @@ class Temporal(ImmutableType):
 
 def _after(instance, config):
     """
+    checks if the temporal instance occurs after (non-inclusive) the configured temporal
 
-    :param instance:
-    :param config:
-    :return:
+    :param instance: the temporal instance (Date, Time, DateTime)
+    :type instance: T <= |Temporal|
+    :param config: the temporal instance to compare with (must match type of instance: Date, Time, DateTime)
+    :type config: T <= |Temporal|
+    :raises |ValidationException| if the configured temporal is equal or before the instance
     """
     if not instance > config:
         raise ValidationException(instance.__class__,
@@ -34,10 +37,13 @@ def _after(instance, config):
 
 def _before(instance, config):
     """
+    checks if the temporal instance occurs before (non-inclusive) the configured temporal
 
-    :param instance:
-    :param config:
-    :return:
+    :param instance: the temporal instance (Date, Time, DateTime)
+    :type instance: T <= |Temporal|
+    :param config: the temporal instance to compare with (must match type of instance: Date, Time, DateTime)
+    :type config: T <= |Temporal|
+    :raises |ValidationException| if the configured temporal is equal or after the instance
     """
     if not instance < config:
         raise ValidationException(instance.__class__,
