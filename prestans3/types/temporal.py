@@ -15,6 +15,7 @@ from prestans3.types import ImmutableType
 # noinspection PyAbstractClass
 class Temporal(ImmutableType):
     """ Base class for all time and date style classes """
+
     @classmethod
     def from_value(cls, value):
         return super(Temporal, cls).from_value(value)
@@ -51,6 +52,14 @@ def _before(instance, config):
 
 
 def _before_after_config_check(type, all_config):
+    """
+    checks if the before and after configuration does not conflict with each other,
+    i.e. `before` does not occur on or after `after`
+
+    :param type: a subclass of |Temporal|
+    :type type: class<T <= |Temporal|\ >
+    :param dict all_config: a dictionary of configured rules on the type
+    """
     if all_config is not None and 'after' in all_config and 'before' in all_config:
         after = all_config['after']
         before = all_config['before']
