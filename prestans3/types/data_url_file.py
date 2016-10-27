@@ -88,18 +88,24 @@ class DataURLFile(ImmutableType):
 
     @property
     def mime_type(self):
+        """
+        IANA compliant media type for this content. See https://en.wikipedia.org/wiki/Media_type for more details
+        """
         return self._mime_type
 
     @property
     def encoding(self):
+        """ encoding of the text (separate from the encoding of the page). e.g. base64 """
         return self._encoding
 
     @property
     def contents(self):
+        """ the encoded contents of this media type """
         return self._contents
 
     @property
     def decoded_contents(self):
+        """ attempts to decode the contents according to the configured encoding """
         # py2to3 remove else statement and PY3 check
         if prestans3.future.PY3:
             contents_ = bytes(self.contents, encoding='utf-8')
