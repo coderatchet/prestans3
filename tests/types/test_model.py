@@ -578,3 +578,9 @@ def test_to_from_value_invariant():
     model.my_model = sub_model
 
     assert model == _Model.from_value(model.native_value)
+
+def test_eq_with_non_dict_returns_false():
+    class _M(Model):
+        pass
+
+    assert not _M == 3
