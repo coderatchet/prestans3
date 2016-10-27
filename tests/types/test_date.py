@@ -60,3 +60,8 @@ def test_can_copy_self():
 
 def test_native_value():
     assert Date(2000, 1, 1).native_value == date(2000, 1, 1)
+
+
+def test_to_from_value_invariant():
+    my_date = Date(2000, 1, 1)
+    assert my_date == Date.from_value(my_date.native_value)
