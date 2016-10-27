@@ -545,6 +545,7 @@ def test_from_value():
         }
     }) == model
 
+
 def test_to_from_value_invariant():
     class _Sub(Model):
         one = String.property()
@@ -579,8 +580,20 @@ def test_to_from_value_invariant():
 
     assert model == _Model.from_value(model.native_value)
 
+
 def test_eq_with_non_dict_returns_false():
     class _M(Model):
         pass
 
-    assert not _M == 3
+    assert not _M() == 3
+    assert _M() != 3
+
+
+def test_from_value_with_non_model_or_dict_raises_type_error():
+    class _M(Model):
+        pass
+
+    with pytest.raises(TypeError) as error:
+        _M.from_value(5)
+
+    assert "{} of type {} is not coercible to type {}".format(5, int.__name__, _M.__name__) in str(error.value)
