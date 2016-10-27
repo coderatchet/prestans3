@@ -288,3 +288,15 @@ def test_native_value():
     assert Array(String, ['yellow', 'red', 'blue']).native_value == ['yellow', 'red', 'blue']
     assert Array(Time, [time(1, 2, 3, 4, utc), time(4, 3, 2, 1, utc)]).native_value == [time(1, 2, 3, 4, utc),
                                                                                         time(4, 3, 2, 1, utc)]
+
+
+def test_from_and_to_invariant():
+    class _M(Model):
+        my_array = Array.property(Integer)
+
+    model = _M.mutable()
+    model.my_array = [1, 2, 3]
+    dictionary = {
+        'my_array': model.my_array.native_value
+    }
+    assert _M.from_value(dictionary) == model

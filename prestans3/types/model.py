@@ -115,7 +115,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
             super(Model, self).__delattr__(item)
 
     def __eq__(self, other):
-        if isinstance(other, self.__class__):
+        if isinstance(other, Model):
             return self.prestans_attributes == other.prestans_attributes
         elif isinstance(other, dict):
             try:
