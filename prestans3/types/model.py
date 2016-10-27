@@ -18,6 +18,11 @@ from prestans3.utils import inject_class, ImmutableMergingDictionary, LazyOneWay
 
 
 class ModelValidationException(ContainerValidationException):
+    """
+    Difference between superclass is it checks whether the exception is invalid according to its configured
+    |attributes|
+    """
+
     def check_validation_exception(self, key, validation_exception):
         super(ModelValidationException, self).check_validation_exception(key, validation_exception)
         if not self._of_type.is_prestans_attribute(key):
@@ -37,6 +42,7 @@ class ModelValidationException(ContainerValidationException):
 
 
 class _PrestansAttributesProperties(object):
+    """ property descriptor for accessing a |Model|\ 's |attributes| """
     def __init__(self, of_type):
         self._of_type = of_type
 
@@ -45,6 +51,7 @@ class _PrestansAttributesProperties(object):
 
 
 class _PrestansModelTypeMeta(PrestansTypeMeta):
+    """ Metaclass of |Models|\ . Saves |attributes| of defined class in its class-local storage """
     def __init__(cls, what, bases, attrs, **kwargs):
         cls.prestans_attribute_properties = _PrestansAttributesProperties(cls)
         # py2to3 unwrap .items()
@@ -65,9 +72,13 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
 
     def __init__(self, initial_values=None, **kwargs):
         """
+        subclasses should call :function:`Model.__init__()` with any initial values passed to its init method in order
+        for validation to occur correctly. `initial_values` is a dictionary of values to set before performing
+        immediate validation of the model. if this object is not a mutable model, validation will fail for any required
+        |attributes| not present or invalid values in either the `initial_values` or default setting for each property.
 
-        :param dict[str, value] initial_values:
-        :param kwargs:
+        :param dict[str, value] initial_values: |attribute| values to set on the object when created
+        :param dict kwargs: additional values to pass to the next super call (see :class:`~prestans3.types.Container`)
         """
         self._prestans_attributes = {}
         if initial_values is not None:
