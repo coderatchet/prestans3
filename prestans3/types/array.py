@@ -154,17 +154,7 @@ class Array(Container):
         if isinstance(other, Array):
             return self._values == other._values
         else:
-            if len(self) != len(other):
-                return False
-            zipped = zip(self, other)
-            for one, two in zipped:
-                try:
-                    _coerced = self._of_type.from_value(two)
-                    if one != _coerced:
-                        return False
-                except TypeError:
-                    return False
-        return True
+            return self._values == other
 
     def __ne__(self, other):
         return not self.__eq__(other)
