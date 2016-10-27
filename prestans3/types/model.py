@@ -118,11 +118,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
         if isinstance(other, Model):
             return self.prestans_attributes == other.prestans_attributes
         elif isinstance(other, dict):
-            try:
-                return len(self.prestans_attributes) == len(other) and \
-                       not any(self._prestans_attributes[key] != other[key] for key in self.prestans_attributes)
-            except KeyError:
-                return False
+            return self.prestans_attributes == other
         else:
             return False
 
