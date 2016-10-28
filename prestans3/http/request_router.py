@@ -9,3 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
+
+class RequestRouter(object):
+    def __call__(self, environ, start_response):
+        pass
