@@ -11,6 +11,8 @@
 import os
 import wsgiref.util
 
+import pytest
+
 from prestans3.http.request_router import RequestRouter
 
 
@@ -86,3 +88,32 @@ def test_route_always_starts_and_ends_with_proper_dollar_and_carets():
     assert r.routes[0][0] == r'^/$'
     r = RequestRouter(routes=[(r'^/$', _test_handler)])
     assert r.routes[0][0] == r'^/$'
+
+
+def test_route_configuration_only_accepts_valid_tuples():
+    RequestRouter(routes=[('/valid', _test_handler)])
+    with pytest.raises(Exception):
+        RequestRouter(routes=['no'])
+    with pytest.raises(Exception):
+        RequestRouter(routes=[('/valid', _test_handler, 'too many arguments')])
+    with pytest.raises(ValueError) as error:
+        RequestRouter(routes=[('/invalid', 123)])
+    assert "invalid route definition: ('{}', '{}'). " \
+           "The correct format is (route: str, handler: (environ, start_response) -> any)".format('/invalid', 123) \
+           in str(error.value)
+    with pytest.raises(ValueError) as error:
+        RequestRouter(routes=[(432, _test_handler)])
+    assert "invalid route definition: ('{}', '{}'). " \
+           "The correct format is (route: str, handler: (environ, start_response) -> any)".format(432, _test_handler) \
+           in str(error.value)
+
+    # noinspection PyUnusedLocal
+    def _incorrect(x):
+        pass
+
+    with pytest.raises(ValueError) as error:
+        RequestRouter(routes=[('/invalid', _incorrect)])
+    assert "invalid route definition: ('{}', '{}'). " \
+           "The correct format is (route: str, handler: (environ, start_response) -> any)".format('/invalid',
+                                                                                                  _incorrect) \
+           in str(error.value)
