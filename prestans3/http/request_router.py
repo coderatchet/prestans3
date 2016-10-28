@@ -11,5 +11,9 @@
 
 
 class RequestRouter(object):
+
+    def __init__(self, routes):
+        self._routes = routes
+
     def __call__(self, environ, start_response):
         pass

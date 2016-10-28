@@ -13,7 +13,11 @@ from prestans3.http.request_router import RequestRouter
 
 
 def test_router_is_a_callable_with_two_args():
-    assert callable(RequestRouter())
+    assert callable(RequestRouter(routes=[]))
     func = RequestRouter.__call__
     var_names = func.__code__.co_varnames
     assert len(var_names) == 2 or (len(var_names) == 3 and (var_names[0] == 'self' or var_names[0] == 'cls'))
+
+
+def test_router_accepts_a_list_of_routes():
+    RequestRouter(routes=[])
