@@ -17,3 +17,7 @@ class RequestRouter(object):
 
     def __call__(self, environ, start_response):
         pass
+
+    @property
+    def routes(self):
+        return self._routes
