@@ -14,7 +14,8 @@ from prestans3.future import istext
 
 
 class RequestRouter(object):
-    def __init__(self, routes):
+    def __init__(self, routes, logger=None):
+        self._logger = logger
         self._routes = self._normalize_routes(routes)
 
     def __call__(self, environ, start_response):
@@ -27,6 +28,10 @@ class RequestRouter(object):
     @property
     def routes(self):
         return self._routes
+
+    @property
+    def logger(self):
+        return self._logger
 
     @classmethod
     def _normalize_routes(cls, routes):

@@ -12,6 +12,7 @@ import os
 import wsgiref.util
 
 import pytest
+import logging
 
 from prestans3.http.request_router import RequestRouter
 
@@ -117,3 +118,9 @@ def test_route_configuration_only_accepts_valid_tuples():
            "The correct format is (route: str, handler: (environ, start_response) -> any)".format('/invalid',
                                                                                                   _incorrect) \
            in str(error.value)
+
+
+def test_request_router_accepts_logger():
+    logger = logging.getLogger("test logger")
+    r = RequestRouter(routes=[], logger=logger)
+    assert r.logger == logger
