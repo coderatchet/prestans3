@@ -21,7 +21,12 @@ def setup_test_environ(overrides=None):
     wsgiref.util.setup_testing_defaults(dictionary)
     return dictionary
 
+
 _default_wsgi_environ = setup_test_environ()
+
+
+def _test_handler(x, y):
+    pass
 
 
 def test_router_is_a_callable_with_two_args():
@@ -37,7 +42,7 @@ def test_router_accepts_a_list_of_routes():
 
 
 def test_can_get_routes():
-    my_routes = [('^/api.*', lambda _x, _y: None)]
+    my_routes = [('^/api.*$', lambda _x, _y: None)]
     router = RequestRouter(routes=my_routes)
     assert router.routes == my_routes
 
@@ -49,12 +54,35 @@ def test_router_may_be_passed_environment():
 
 def test_router_redirects_routes():
     here = False
+    there = False
 
     # noinspection PyUnusedLocal
     def _test(x, y):
         nonlocal here
         here = True
 
-    router = RequestRouter(routes=[('/', _test)])
+    def _more(x, y):
+        nonlocal there
+        there = True
+
+    router = RequestRouter(routes=[
+        ('/', _test),
+        ('/more', _more)
+    ])
     router(_default_wsgi_environ, lambda _x, _y: None)
     assert here is True
+    assert there is False
+    _default_wsgi_environ['PATH_INFO'] = '/more'
+    router(_default_wsgi_environ, lambda _x, _y: None)
+    assert there is True
+
+
+def test_route_always_starts_and_ends_with_proper_dollar_and_carets():
+    r = RequestRouter(routes=[(r'/', _test_handler)])
+    assert r.routes[0][0] == r'^/$'
+    r = RequestRouter(routes=[(r'^/', _test_handler)])
+    assert r.routes[0][0] == r'^/$'
+    r = RequestRouter(routes=[(r'/$', _test_handler)])
+    assert r.routes[0][0] == r'^/$'
+    r = RequestRouter(routes=[(r'^/$', _test_handler)])
+    assert r.routes[0][0] == r'^/$'
