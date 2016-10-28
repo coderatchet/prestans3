@@ -9,19 +9,26 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
+
 class _PropertyRulesProperty(object):
+    """ property descriptor for class-local, base-class-proxied property rule storage """
+
     # noinspection PyUnusedLocal
     def __get__(self, cls, _mcs):
         return _mcs._property_rule_graph[cls]
 
 
 class _ConfigChecksProperty(object):
+    """ property descriptor for class-local, base-class-proxied config check storage """
+
     # noinspection PyUnusedLocal
     def __get__(self, cls, _mcs):
         return _mcs._config_check_graph[cls]
 
 
 class _PrepareFunctionsProperty(object):
+    """ property descriptor for class-local, base-class-proxied prepare function storage """
+
     # noinspection PyUnusedLocal
     def __get__(self, cls, _mcs):
         return _mcs._prepare_functions_graph[cls]

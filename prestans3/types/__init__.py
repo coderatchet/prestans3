@@ -54,7 +54,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
 
         :param bool validate_immediately: whether to validate this object on construction or defer validation to the
                                           user or prestans3 REST api process
-        :raises: |ValidationException| on invalid state when validate_immediately is True
+        :raises |ValidationException|\ : on invalid state when validate_immediately is True
         """
         if validate_immediately:
             self.validate()
@@ -77,7 +77,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
         """
         validates against own |rules| and configured |attribute|\ 's rules.
 
-        :raises: |ValidationException| on invalid state
+        :raises |ValidationException|\ : on invalid state
         """
         if config is None:
             config = {}
@@ -166,6 +166,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
 
     @classmethod
     def register_config_check(cls, config_check, name=None):
+        """ register a cross configuration check to be validated on subclass definition """
         arg_count = config_check.__code__.co_argcount
         if arg_count != 2:
             func_name = config_check.__name__
@@ -196,6 +197,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
 
     @classmethod
     def register_prepare_function(cls, func, name=None):
+        """ register a single argument function to be available for specifying pre-validation data massaging """
         cls.prepare_functions[name] = func
 
 
@@ -205,6 +207,13 @@ PrestansTypeMeta._prepare_functions_graph = LazyOneWayGraph(ImmutableType)
 
 
 def _choices(instance, config):
+    """
+    Property rule to check whether the instance is equal to a member of the provided list
+
+    :param |ImmutableType| instance: the instance to check
+    :param config: a list of |ImmutableTypes| or equivalent natives to equate against
+    :raises |ValidationException|\ : if the `instance not in config`
+    """
     if instance not in config:
         from prestans3.errors import ValidationException
         raise ValidationException(instance.__class__,
@@ -308,6 +317,7 @@ class _Property(object):
 
     @property
     def config_checks(self):
+        """ returns the class-local, subclass-merging config check functions for this |type| """
         return self._of_type.config_checks
 
     def _get_and_check_rules_config(self, kwargs):
@@ -344,6 +354,8 @@ class _Property(object):
             return self._resolve_prepare_function(self.prepare)
 
     def _aggregate_prepare_functions(self, rest):
+        """ recursively calls each function in the order defined and returns the output """
+
         def _all(x, tail):
             if len(tail) < 1:
                 return x
@@ -397,6 +409,7 @@ class Container(ImmutableType):
 
 
 def new_mutable_type_func_name(template_class, _y=None, _z=None):
+    """ the default dynamic mutable model naming function """
     return "PMutable{}".format(template_class.__name__)
 
 

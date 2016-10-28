@@ -15,6 +15,7 @@ from prestans3.types import ImmutableType
 # noinspection PyAbstractClass
 class Temporal(ImmutableType):
     """ Base class for all time and date style classes """
+
     @classmethod
     def from_value(cls, value):
         return super(Temporal, cls).from_value(value)
@@ -22,10 +23,13 @@ class Temporal(ImmutableType):
 
 def _after(instance, config):
     """
+    checks if the temporal instance occurs after (non-inclusive) the configured temporal
 
-    :param instance:
-    :param config:
-    :return:
+    :param instance: the temporal instance (Date, Time, DateTime)
+    :type instance: T <= |Temporal|
+    :param config: the temporal instance to compare with (must match type of instance: Date, Time, DateTime)
+    :type config: T <= |Temporal|
+    :raises |ValidationException| if the configured temporal is equal or before the instance
     """
     if not instance > config:
         raise ValidationException(instance.__class__,
@@ -34,10 +38,13 @@ def _after(instance, config):
 
 def _before(instance, config):
     """
+    checks if the temporal instance occurs before (non-inclusive) the configured temporal
 
-    :param instance:
-    :param config:
-    :return:
+    :param instance: the temporal instance (Date, Time, DateTime)
+    :type instance: T <= |Temporal|
+    :param config: the temporal instance to compare with (must match type of instance: Date, Time, DateTime)
+    :type config: T <= |Temporal|
+    :raises |ValidationException| if the configured temporal is equal or after the instance
     """
     if not instance < config:
         raise ValidationException(instance.__class__,
@@ -45,6 +52,14 @@ def _before(instance, config):
 
 
 def _before_after_config_check(type, all_config):
+    """
+    checks if the before and after configuration does not conflict with each other,
+    i.e. `before` does not occur on or after `after`
+
+    :param type: a subclass of |Temporal|
+    :type type: class<T <= |Temporal|\ >
+    :param dict all_config: a dictionary of configured rules on the type
+    """
     if all_config is not None and 'after' in all_config and 'before' in all_config:
         after = all_config['after']
         before = all_config['before']
