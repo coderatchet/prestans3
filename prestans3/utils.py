@@ -10,8 +10,10 @@
 """
 from copy import copy
 
-
 # noinspection PyUnusedLocal
+import future.utils
+
+
 def prefix_with_injected(template_class, class_to_inject, target_base_class):
     return "Injected{}".format(template_class.__name__)
 
@@ -249,3 +251,13 @@ class LazyOneWayGraph(dict):
                 self._terminating_type in base.mro() and base is not of_type]
         self[of_type] = MergingProxyDictionary({}, *mro_)
         return self[of_type]
+
+
+if future.utils.PY3:
+    string_types = str
+else:
+    string_types = basestring
+
+
+def is_str(value):
+    return isinstance(value, string_types)

@@ -12,7 +12,7 @@ import codecs
 import re
 
 import future
-from future.utils import istext
+from ..utils import is_str
 
 from prestans3.errors import ValidationException
 from . import ImmutableType
@@ -43,8 +43,8 @@ class DataURLFile(ImmutableType):
         try:
             return super(DataURLFile, cls).from_value(value)
         except NotImplementedError:
-            # py2to3 replace istext(value) with isinstance(value, str)
-            if not istext(value):
+            # py2to3 replace is_str(value) with isinstance(value, str)
+            if not is_str(value):
                 raise TypeError("{} of type {} is not coercible to type {}".format(value, value.__class__.__name__,
                                                                                    cls.__name__))
             else:
@@ -62,9 +62,9 @@ class DataURLFile(ImmutableType):
         :rType: DataURLFile
         """
 
-        # py2to3 replace `istext(contents) or isbytes(contents) or isinstance(contents, bytearray)`
+        # py2to3 replace `is_str(contents) or isbytes(contents) or isinstance(contents, bytearray)`
         # with `isinstance(contents, (str, bytes, bytearray))`
-        if not istext(contents) or not istext(mime_type) or not istext(encoding):
+        if not is_str(contents) or not is_str(mime_type) or not is_str(encoding):
             raise TypeError("contents, mime_type and encoding should all be strings")
         else:
             return DataURLFile(DataURLFile.to_native_value(contents, encoding, mime_type))
@@ -122,7 +122,7 @@ class DataURLFile(ImmutableType):
                 self.encoding == other.encoding
             )
         # py2to3 replace with isinstance(other, str)
-        elif istext(other):
+        elif is_str(other):
             return self == DataURLFile.from_value(other)
         else:
             return False

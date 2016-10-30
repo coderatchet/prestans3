@@ -10,12 +10,14 @@
 """
 import re
 
-from future.types.newstr import BaseNewStr
-from future.utils import istext, with_metaclass
+from future.builtins import str
+from future.types.newstr import BaseNewStr, newstr
+from future.utils import with_metaclass
 
 from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.types import PrestansTypeMeta
 from . import ImmutableType
+from ..utils import is_str
 
 
 class MergingStrMeta(BaseNewStr, PrestansTypeMeta):
@@ -23,13 +25,13 @@ class MergingStrMeta(BaseNewStr, PrestansTypeMeta):
 
 
 # noinspection PyAbstractClass
-class String(with_metaclass(MergingStrMeta, ImmutableType, str)):
+class String(with_metaclass(MergingStrMeta, ImmutableType, newstr)):
     """
     Prestans 3 String type. Acts as a native :class:`str` with additional Prestans 3 functionality.
     """
 
-    def __init__(self, value='', encoding=None, errors='strict'):
-        str.__init__(value, encoding, errors)
+    def __init__(self, value='', encoding=None):
+        str.__init__(value, encoding)
         super(String, self).__init__()
 
     @classmethod
@@ -37,8 +39,8 @@ class String(with_metaclass(MergingStrMeta, ImmutableType, str)):
         try:
             return ImmutableType.from_value(value)
         except NotImplementedError:
-            # py2to3 replace istext with isinstance(x, str)
-            if not istext(value):
+            # py2to3 replace is_str(value) with isinstance(x, str)
+            if not is_str(value):
                 raise TypeError(
                     "{} of type {} is not coercible to {}".format(value, value.__class__.__name__, cls.__name__))
             return String(value)
