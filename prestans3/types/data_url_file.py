@@ -9,12 +9,13 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import codecs
-
-import prestans3
-from prestans3.errors import ValidationException
-from prestans3.future import istext, isbytes
-from . import ImmutableType
 import re
+
+import future
+from future.utils import istext
+
+from prestans3.errors import ValidationException
+from . import ImmutableType
 
 
 class DataURLFile(ImmutableType):
@@ -107,7 +108,7 @@ class DataURLFile(ImmutableType):
     def decoded_contents(self):
         """ attempts to decode the contents according to the configured encoding """
         # py2to3 remove else statement and PY3 check
-        if prestans3.future.PY3:
+        if future.utils.PY3:
             contents_ = bytes(self.contents, encoding='utf-8')
         else:
             contents_ = self.contents

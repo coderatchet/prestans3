@@ -63,6 +63,14 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
         return template_class
 
 
+def find_first(dictionary, condition):
+    # py2to3 unwrap dictinoary.items()
+    for key, value in list(dictionary.items()):
+        if condition(key, value):
+            return key, value
+    return None
+
+
 class MergingProxyDictionary(dict):
     """
     A MergingProxyDictionary allows for the merging of dictionaries without copying their values. for this reason,
@@ -116,17 +124,10 @@ class MergingProxyDictionary(dict):
                         pass
             raise error
 
-    def _find_first(self, dictionary, condition):
-        # py2to3 unwrap dictinoary.items()
-        for key, value in list(dictionary.items()):
-            if condition(key, value):
-                return key, value
-        return None
-
     def __contains__(self, item):
         in_me = super(MergingProxyDictionary, self).__contains__(item)
         if not in_me and self._others:
-            return any(self._find_first(other, lambda key, _: item == key) for other in self._others)
+            return any(find_first(other, lambda key, _: item == key) for other in self._others)
         return in_me
 
     def __copy__(self):

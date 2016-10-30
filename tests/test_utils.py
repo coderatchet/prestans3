@@ -12,8 +12,8 @@
 from copy import copy
 
 import pytest
+from future.utils import with_metaclass
 
-import prestans3.future
 from prestans3.errors import AccessError
 from prestans3.utils import inject_class, MergingProxyDictionary
 import prestans3.utils as utils
@@ -202,7 +202,7 @@ def test_with_meta_class():
             cls.attr = 'foo'
             super(Meta, cls).__init__(name, bases, attrs)
 
-    class WithMeta(prestans3.future.with_metaclass(Meta, object)):
+    class WithMeta(with_metaclass(Meta, object)):
         pass
 
     # noinspection PyUnresolvedReferences

@@ -46,7 +46,7 @@ setup(
     platforms=['any'],
     packages=find_packages(),
     include_package_data=True,
-    install_requires=['future=0.16.0'],
+    install_requires=['future==0.16.0'],
     tests_require=['pytest', 'pytest-mock'],
     setup_requires=['pytest-runner'],
     extras_require={

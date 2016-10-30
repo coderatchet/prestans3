@@ -9,13 +9,13 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import functools
-
-# py2to3 with_metaclass and istext should be replaced
 from copy import copy
 
-from ..future import with_metaclass, istext
-from ..utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
+from future.utils import with_metaclass, istext
+
 from .meta import PrestansTypeMeta
+from ..utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
+
 
 # py2to3 replace with_metaclass with metaclass=PrestansTypeMeta
 class ImmutableType(with_metaclass(PrestansTypeMeta)):

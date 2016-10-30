@@ -138,7 +138,7 @@ class ContainerValidationException(ValidationException):
         :param message_or_key_exception_tuple:
         :type message_or_key_exception_tuple: str or (str, ValidationException)
         """
-        from prestans3.future import istext
+        from future.utils import istext
         self.validation_exceptions = {}
         if isinstance(message_or_key_exception_tuple, tuple):
             super(ContainerValidationException, self).__init__(of_type)

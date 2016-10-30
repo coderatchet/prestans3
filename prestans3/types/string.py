@@ -10,27 +10,32 @@
 """
 import re
 
+from future.types.newstr import BaseNewStr
+from future.utils import istext, with_metaclass
+
 from prestans3.errors import ValidationException, PropertyConfigError
-from prestans3.future import istext
-from prestans3.future.newstr import newstr
+from prestans3.types import PrestansTypeMeta
 from . import ImmutableType
 
 
+class MergingStrMeta(BaseNewStr, PrestansTypeMeta):
+    pass
+
+
 # noinspection PyAbstractClass
-class String(newstr, ImmutableType):
+class String(with_metaclass(MergingStrMeta, ImmutableType, str)):
     """
     Prestans 3 String type. Acts as a native :class:`str` with additional Prestans 3 functionality.
     """
 
-    def __init__(self, value=None):
-        if value is None:
-            value = u""
-        super(String, self).__init__(value)
+    def __init__(self, value='', encoding=None, errors='strict'):
+        str.__init__(value, encoding, errors)
+        super(String, self).__init__()
 
     @classmethod
     def from_value(cls, value):
         try:
-            return super(String, cls).from_value(value)
+            return ImmutableType.from_value(value)
         except NotImplementedError:
             # py2to3 replace istext with isinstance(x, str)
             if not istext(value):
@@ -91,19 +96,19 @@ String.register_property_rule(_max_length, name="max_length")
 String.register_property_rule(_format_regex, name="format_regex")
 
 
-def _min_max_string_check_config(type, all_config):
+def _min_max_string_check_config(configured_type, all_config):
     """
     checks whether the min/max configurations don't conflict, i.e. min should be equal or less than max
 
-    :param type: subclass of |String|
+    :param configured_type: subclass of |String|
     :param dict all_config: dictionary of configured rules plus defaults for this |type| subclass
     :raises |PropertyConfigError|\ : if the configuration contains a min greater than max
     """
     if all_config is not None and 'min_length' in all_config and 'max_length' in all_config \
             and all_config['min_length'] > all_config['max_length']:
-        raise PropertyConfigError(type, 'min_length and max_length', 'invalid {} property configuration: ' + \
+        raise PropertyConfigError(configured_type, 'min_length and max_length', 'invalid {} property configuration: ' + \
                                   'min_length config of {} is greater than max_length config of {}'.format(
-                                      type.__name__, all_config['min_length'], all_config['max_length']))
+                                      configured_type.__name__, all_config['min_length'], all_config['max_length']))
 
 
 String.register_config_check(_min_max_string_check_config, name="min_max_string_check_config")
