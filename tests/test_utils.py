@@ -12,6 +12,7 @@
 from copy import copy
 
 import pytest
+from future.types.newstr import unicode
 from future.utils import with_metaclass
 
 from prestans3.errors import AccessError
@@ -435,3 +436,9 @@ def test_merging_dictionary_can_access_own_values():
     assert len(values) == 1
     assert list(values)[0] == list({'foo': 'bar'}.values())[0]
 
+def test_is_str_detects_proper_types():
+    assert utils.is_str('')
+    assert utils.is_str(u'')
+    # py2to3 remove this test and optimize imports
+    assert utils.is_str(unicode(''))
+    assert not utils.is_str(1)
