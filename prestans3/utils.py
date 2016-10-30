@@ -253,6 +253,7 @@ class LazyOneWayGraph(dict):
         return self[of_type]
 
 
+# py2to3 this and the is_str function should be removed completely
 if future.utils.PY3:
     string_types = str
 else:
