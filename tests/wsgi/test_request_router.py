@@ -10,6 +10,7 @@
 """
 import os
 import wsgiref.util
+from unittest.mock import create_autospec
 
 import pytest
 import pytest_mock
@@ -56,29 +57,35 @@ def test_router_may_be_passed_environment():
     router(_default_wsgi_environ, lambda _x, _y: None)
 
 
-# noinspection PyUnusedLocal
 def test_router_redirects_routes(mocker):
     """
-
     :param pytest_mock.MockFixture mocker:
     """
-    here = False
-    there = False
+    here = []
+    there = []
 
-    _test = mocker.MagicMock()
-    _test.return_value = 1
-    _more = mocker.MagicMock()
-    _test.return_value = 2
+    # noinspection PyUnusedLocal
+    def _test(environ, start_response):
+        here.append('yes')
+
+    # noinspection PyUnusedLocal
+    def _more(environ, start_response):
+        there.append('yes')
 
     router = RequestRouter(routes=[
         ('/', _test),
         ('/more', _more)
     ])
+
+    assert here == []
+    assert there == []
     router(_default_wsgi_environ, lambda _x, _y: None)
+    assert here == ['yes']
+    assert there == []
     _custom_path_wsgi_environ = setup_test_environ({"PATH_INFO": '/more'})
     router(_custom_path_wsgi_environ, lambda _x, _y: None)
-    assert _test.assert_called_once()
-    assert _more.assert_called_once()
+    assert here == ['yes']
+    assert there == ['yes']
 
 
 def test_route_always_starts_and_ends_with_proper_dollar_and_carets():
