@@ -12,9 +12,10 @@ import os
 import wsgiref.util
 
 import pytest
+import pytest_mock
 import logging
 
-from prestans3.http.request_router import RequestRouter
+from prestans3.wsgi.request_router import RequestRouter
 
 
 def setup_test_environ(overrides=None):
@@ -55,29 +56,29 @@ def test_router_may_be_passed_environment():
     router(_default_wsgi_environ, lambda _x, _y: None)
 
 
-def test_router_redirects_routes():
+# noinspection PyUnusedLocal
+def test_router_redirects_routes(mocker):
+    """
+
+    :param pytest_mock.MockFixture mocker:
+    """
     here = False
     there = False
 
-    # noinspection PyUnusedLocal
-    def _test(x, y):
-        nonlocal here
-        here = True
-
-    def _more(x, y):
-        nonlocal there
-        there = True
+    _test = mocker.MagicMock()
+    _test.return_value = 1
+    _more = mocker.MagicMock()
+    _test.return_value = 2
 
     router = RequestRouter(routes=[
         ('/', _test),
         ('/more', _more)
     ])
     router(_default_wsgi_environ, lambda _x, _y: None)
-    assert here is True
-    assert there is False
-    _default_wsgi_environ['PATH_INFO'] = '/more'
-    router(_default_wsgi_environ, lambda _x, _y: None)
-    assert there is True
+    _custom_path_wsgi_environ = setup_test_environ({"PATH_INFO": '/more'})
+    router(_custom_path_wsgi_environ, lambda _x, _y: None)
+    assert _test.assert_called_once()
+    assert _more.assert_called_once()
 
 
 def test_route_always_starts_and_ends_with_proper_dollar_and_carets():

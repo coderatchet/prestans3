@@ -10,7 +10,7 @@
 """
 import re
 
-from prestans3.future import istext
+from ..utils import is_str
 
 
 class RequestRouter(object):
@@ -37,7 +37,7 @@ class RequestRouter(object):
     def _normalize_routes(cls, routes):
         for path, handler in routes:
             # py2to3 replace with isinstance(path, str)
-            if not istext(path) or not cls.valid_wsgi_application(handler):
+            if not is_str(path) or not cls.valid_wsgi_application(handler):
                 raise ValueError(
                     "invalid route definition: ('{}', '{}'). The correct format is (route: str, handler: "
                     "(environ, start_response) -> any)".format(path, handler))
