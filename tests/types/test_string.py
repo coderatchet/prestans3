@@ -11,7 +11,6 @@
 import pytest
 
 from prestans3.errors import ValidationException, PropertyConfigError
-from prestans3.future import PYPY
 from prestans3.types import Model
 from prestans3.types import String
 from prestans3.types.string import _prepare_trim, _prepare_normalize_whitespace

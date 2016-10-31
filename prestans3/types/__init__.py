@@ -9,13 +9,13 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import functools
-
-# py2to3 with_metaclass and istext should be replaced
 from copy import copy
 
-from ..future import with_metaclass, istext
-from ..utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary
+from future.utils import with_metaclass
+
 from .meta import PrestansTypeMeta
+from ..utils import MergingProxyDictionary, LazyOneWayGraph, ImmutableMergingDictionary, is_str
+
 
 # py2to3 replace with_metaclass with metaclass=PrestansTypeMeta
 class ImmutableType(with_metaclass(PrestansTypeMeta)):
@@ -346,8 +346,8 @@ class _Property(object):
         :return: a function that will process the string
         """
 
-        # py2to3 replace istext with isinstance(x, str)
-        if not istext(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
+        # py2to3 replace is_str with isinstance(x, str)
+        if not is_str(self.prepare) and hasattr(self.prepare, '__iter__') and hasattr(self.prepare, '__len__'):
             return self._aggregate_prepare_functions(self.prepare)
         else:
             return self._resolve_prepare_function(self.prepare)
@@ -376,8 +376,8 @@ class _Property(object):
         :return: (t: T <= ImmutableType) -> T
         """
 
-        # py2to3 replace istext with isinstance(x, str)
-        if istext(str_or_func):
+        # py2to3 replace is_str with isinstance(x, str)
+        if is_str(str_or_func):
             try:
                 return self.property_type.prepare_functions[str_or_func]
             except KeyError:
@@ -407,6 +407,7 @@ class Container(ImmutableType):
     # func raises |ValidationException| on invalidation
 
 
+# noinspection PyUnusedLocal
 def new_mutable_type_func_name(template_class, _y=None, _z=None):
     """ the default dynamic mutable model naming function """
     return "PMutable{}".format(template_class.__name__)

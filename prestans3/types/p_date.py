@@ -20,6 +20,7 @@ class Date(date, Temporal):
 
     def __init__(self, year, month, day):
         import platform
+        # py2to3 remove if and only perform else
         if platform.python_implementation() == 'PyPy':
             date.__init__(date(year, month, day))
         else:

@@ -9,17 +9,16 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 
-from datetime import datetime, time, tzinfo
+from datetime import time, tzinfo
 
 import pytest
 
 from prestans3.errors import AccessError, ValidationException
-from prestans3.types import Array
-from prestans3.types import Integer
-from prestans3.types import Model
-from prestans3.types import String
-from prestans3.types import Time
-from prestans3.types.array import _ArrayProperty
+from prestans3.types.array import Array, _ArrayProperty
+from prestans3.types.integer import Integer
+from prestans3.types.model import Model
+from prestans3.types.string import String
+from prestans3.types.p_time import Time
 
 
 def test_array_can_be_set_with_initial_iterable():

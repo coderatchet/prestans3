@@ -12,11 +12,11 @@
 from copy import copy
 
 import pytest
+from future.utils import with_metaclass
 
-import prestans3.future
+import prestans3.utils as utils
 from prestans3.errors import AccessError
 from prestans3.utils import inject_class, MergingProxyDictionary
-import prestans3.utils as utils
 
 
 class InjectableClass(object):
@@ -202,7 +202,7 @@ def test_with_meta_class():
             cls.attr = 'foo'
             super(Meta, cls).__init__(name, bases, attrs)
 
-    class WithMeta(prestans3.future.with_metaclass(Meta, object)):
+    class WithMeta(with_metaclass(Meta, object)):
         pass
 
     # noinspection PyUnresolvedReferences
@@ -435,3 +435,8 @@ def test_merging_dictionary_can_access_own_values():
     assert len(values) == 1
     assert list(values)[0] == list({'foo': 'bar'}.values())[0]
 
+
+def test_is_str_detects_proper_types():
+    assert utils.is_str('')
+    assert utils.is_str(u'')
+    assert not utils.is_str(1)
