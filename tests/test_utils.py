@@ -435,6 +435,7 @@ def test_merging_dictionary_can_access_own_values():
     assert len(values) == 1
     assert list(values)[0] == list({'foo': 'bar'}.values())[0]
 
+
 def test_is_str_detects_proper_types():
     assert utils.is_str('')
     assert utils.is_str(u'')

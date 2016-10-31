@@ -9,10 +9,8 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import re
-
-from future.builtins import str
 from future.types.newstr import BaseNewStr, newstr
-from future.utils import with_metaclass
+from future.utils import with_metaclass, PYPY
 
 from prestans3.errors import ValidationException, PropertyConfigError
 from prestans3.types import PrestansTypeMeta
@@ -30,9 +28,15 @@ class String(with_metaclass(MergingStrMeta, ImmutableType, newstr)):
     Prestans 3 String type. Acts as a native :class:`str` with additional Prestans 3 functionality.
     """
 
-    def __init__(self, value='', encoding=None):
-        str.__init__(value, encoding)
-        super(String, self).__init__()
+    if PYPY:
+        def __init__(self, value=u'', encoding=None):
+            newstr.__init__(self, value, encoding)
+            super(String, self).__init__()
+
+    else:
+        def __init__(self, value=u'', encoding=None):
+            newstr.__init__(value, encoding)
+            super(String, self).__init__()
 
     @classmethod
     def from_value(cls, value):
