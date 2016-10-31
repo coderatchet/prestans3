@@ -28,10 +28,12 @@ def setup_test_environ(overrides=None):
 _default_wsgi_environ = setup_test_environ()
 
 
+# noinspection PyUnusedLocal
 def _test_handler(x, y):
     pass
 
 
+# noinspection PyArgumentList
 def test_router_is_a_callable_with_two_args():
     assert callable(RequestRouter(routes=[]))
     func = RequestRouter.__call__
@@ -56,9 +58,6 @@ def test_router_may_be_passed_environment():
 
 
 def test_router_redirects_routes():
-    """
-    :param pytest_mock.MockFixture mocker:
-    """
     here = []
     there = []
 
@@ -148,8 +147,14 @@ def test_valid_wsgi_application_accepts_callable_instance():
     assert RequestRouter.valid_wsgi_application(CallableClass())
 
 
-Foo = lambda x: None
-Bar = lambda x: None
+# noinspection PyUnusedLocal
+class Foo(object):
+    pass
+
+
+# noinspection PyUnusedLocal
+class Bar(object):
+    pass
 
 
 def test_request_router_accepts_and_stores_default_serializer():
