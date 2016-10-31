@@ -175,3 +175,8 @@ def test_request_router_accepts_and_stores_dict_of_mime_type_to_deserializers():
 def test_request_router_accepts_and_stores_application_name():
     r = RequestRouter(routes=[], application_name="presto")
     assert r.application_name == 'presto'
+
+
+def test_request_router_accepts_and_stores_description():
+    r = RequestRouter(routes=[], description="something that does stuff")
+    assert r.description == "something that does stuff"

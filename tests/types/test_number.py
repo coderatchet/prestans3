@@ -8,7 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-import pytest
+wimport pytest
 
 from prestans3.errors import ValidationException
 from prestans3.types import Float
