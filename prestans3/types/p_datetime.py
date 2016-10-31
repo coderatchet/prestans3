@@ -10,7 +10,7 @@
 """
 from datetime import datetime
 
-from prestans3.types.temporal import Temporal
+from ..types.temporal import Temporal
 
 
 # noinspection PyAbstractClass
@@ -22,6 +22,7 @@ class DateTime(Temporal, datetime):
 
     def __init__(self, year, month=None, day=None, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
         import platform
+        # py2to3 remove if and only perform else
         if platform.python_implementation() == 'PyPy':
             datetime.__init__(datetime(year, month, day, hour, minute, second, microsecond, tzinfo))
         else:

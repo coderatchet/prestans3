@@ -10,11 +10,12 @@
 """
 from copy import copy
 
-from prestans3.errors import ValidationException, AccessError, ContainerValidationException
-from prestans3.future import with_metaclass
-from prestans3.types import Container, _Property, new_mutable_type_func_name
-from prestans3.types.meta import PrestansTypeMeta
-from prestans3.utils import inject_class, ImmutableMergingDictionary, LazyOneWayGraph
+from future.utils import with_metaclass
+
+from ..errors import ValidationException, AccessError, ContainerValidationException
+from ..types import Container, _Property, new_mutable_type_func_name
+from ..types.meta import PrestansTypeMeta
+from ..utils import inject_class, ImmutableMergingDictionary, LazyOneWayGraph
 
 
 class ModelValidationException(ContainerValidationException):

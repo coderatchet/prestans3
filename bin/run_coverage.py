@@ -12,6 +12,12 @@
 import os
 import sys
 from subprocess import Popen, PIPE, STDOUT
+from future.utils import PYPY, PY2, PY3, PY27
+
+print("PYPY: {}".format(PYPY))
+print("PY2: {}".format(PY2))
+print("PY27: {}".format(PY27))
+print("PY3: {}".format(PY3))
 
 if __name__ == '__main__':
     if 'TRAVIS' in os.environ:

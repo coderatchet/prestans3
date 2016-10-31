@@ -20,6 +20,7 @@ class Float(Number, float):
     @classmethod
     def from_value(cls, value):
         try:
+            # noinspection PyUnresolvedReferences
             return super(Float, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, float):

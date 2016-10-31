@@ -8,7 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from prestans3.errors import ValidationException
+from ..errors import ValidationException
 
 from . import ImmutableType
 

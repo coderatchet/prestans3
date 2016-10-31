@@ -11,9 +11,9 @@
 from collections import Iterable
 from copy import copy
 
-from prestans3.errors import ValidationException, AccessError, ContainerValidationException
-from prestans3.types import Container, ImmutableType, _Property
-from prestans3.utils import inject_class, MergingProxyDictionary
+from ..errors import ValidationException, AccessError, ContainerValidationException
+from ..types import Container, ImmutableType, _Property
+from ..utils import inject_class, MergingProxyDictionary
 
 # py2to3 remove try, prefer builtins
 try:
