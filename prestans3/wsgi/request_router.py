@@ -15,7 +15,10 @@ from ..utils import is_str
 
 
 class RequestRouter(object):
-    def __init__(self, routes, serializers=None, default_serializer=None, default_deserializers=None, logger=None):
+    def __init__(self, routes, serializers=None, default_serializer=None, deserializers=None,
+                 default_deserializers=None, logger=None):
+        if deserializers is None:
+            deserializers = {}
         if serializers is None:
             serializers = {}
         if default_deserializers is None:
@@ -24,6 +27,7 @@ class RequestRouter(object):
         self._routes = self._normalize_routes(routes)
         self._serializers = serializers
         self._default_serializer = default_serializer
+        self._deserializers = deserializers
         self._default_deserializers = default_deserializers
 
     def __call__(self, environ, start_response):
@@ -48,6 +52,10 @@ class RequestRouter(object):
     @property
     def default_serializer(self):
         return self._default_serializer
+
+    @property
+    def deserializers(self):
+        return self._deserializers
 
     @property
     def default_deserializers(self):

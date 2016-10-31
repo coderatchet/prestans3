@@ -165,3 +165,8 @@ def test_request_router_accepts_and_stores_default_deserializers():
 def test_request_router_accepts_and_stores_dict_of_mime_type_to_serializers():
     r = RequestRouter(routes=[], serializers={"text/json": Foo})
     assert r.serializers == {'text/json': Foo}
+
+
+def test_request_router_accepts_and_stores_dict_of_mime_type_to_deserializers():
+    r = RequestRouter(routes=[], deserializers={"text/json": Bar})
+    assert r.deserializers == {'text/json': Bar}
