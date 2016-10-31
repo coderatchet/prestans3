@@ -9,6 +9,7 @@
     :license: Apache 2.0, see LICENSE for more details.
 """
 import re
+from inspect import isfunction
 
 from ..utils import is_str
 
@@ -50,6 +51,8 @@ class RequestRouter(object):
         from inspect import isclass
         if isclass(_callable):
             _callable = _callable.__call__
+        if not isfunction(_callable) and hasattr(_callable, '__call__'):
+            _callable = _callable.__call__.__func__
         var_names = _callable.__code__.co_varnames
         arg_count = _callable.__code__.co_argcount
         return arg_count == 2 or (arg_count == 3 and (var_names[0] == 'self' or var_names[0] == 'cls'))

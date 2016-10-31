@@ -140,3 +140,10 @@ def test_valid_wsgi_application_accepts_callable_classes():
     assert RequestRouter.valid_wsgi_application(CallableClass)
 
 
+def test_valid_wsgi_application_accepts_callable_instance():
+    class CallableClass(object):
+        def __call__(self, environ, start_response):
+            pass
+
+    assert RequestRouter.valid_wsgi_application(CallableClass())
+
