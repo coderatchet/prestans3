@@ -14,7 +14,7 @@ import re
 import future
 from ..utils import is_str
 
-from prestans3.errors import ValidationException
+from ..errors import ValidationException
 from . import ImmutableType
 
 

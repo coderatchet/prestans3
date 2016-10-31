@@ -84,7 +84,7 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
         exception_messages = None
         # py2to3 unwrap .items()
         for rule_name, rule in list(self.__class__.property_rules.items()):
-            from prestans3.errors import ValidationException
+            from ..errors import ValidationException
             try:
                 if rule_name in config:
                     rule(self, config[rule_name])
@@ -214,7 +214,7 @@ def _choices(instance, config):
     :raises |ValidationException|\ : if the `instance not in config`
     """
     if instance not in config:
-        from prestans3.errors import ValidationException
+        from ..errors import ValidationException
         raise ValidationException(instance.__class__,
                                   "{} property is {}, valid choices are [{}]"
                                   .format(instance.__class__.__name__, instance,
@@ -303,7 +303,7 @@ class _Property(object):
             else:
                 raise ValueError("{} is not a registered rule of type {}".format(key, self.property_type.__name__))
         if not _rule.configurable:
-            from prestans3.errors import PropertyConfigError
+            from ..errors import PropertyConfigError
             raise PropertyConfigError(self.property_type, key,
                                       "{} is a non-configurable rule in class {}, (see {}.{}()))"
                                       .format(key, self.property_type.__name__, ImmutableType.__name__,
