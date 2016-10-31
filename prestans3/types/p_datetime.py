@@ -10,7 +10,7 @@
 """
 from datetime import datetime
 
-from prestans3.types.temporal import Temporal
+from ..types.temporal import Temporal
 
 
 # noinspection PyAbstractClass

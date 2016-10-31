@@ -12,8 +12,8 @@ import re
 from future.types.newstr import BaseNewStr, newstr
 from future.utils import with_metaclass, PYPY
 
-from prestans3.errors import ValidationException, PropertyConfigError
-from prestans3.types import PrestansTypeMeta
+from ..errors import ValidationException, PropertyConfigError
+from ..types import PrestansTypeMeta
 from . import ImmutableType
 from ..utils import is_str
 

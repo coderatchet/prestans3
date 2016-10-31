@@ -10,7 +10,7 @@
 """
 from datetime import time
 
-from prestans3.types.temporal import Temporal
+from ..types.temporal import Temporal
 
 
 class Time(Temporal, time):

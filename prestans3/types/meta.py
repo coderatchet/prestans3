@@ -8,7 +8,6 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from abc import ABCMeta
 
 
 class _PropertyRulesProperty(object):

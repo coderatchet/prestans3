@@ -52,7 +52,7 @@ class ValidationException(Exception):
         :type of_type: class<T <= |ImmutableType|\ >
         :param str message: validation message, user friendly.
         """
-        from prestans3.types import ImmutableType
+        from .types import ImmutableType
         if not issubclass(of_type, ImmutableType):
             raise TypeError('validation exceptions are only valid for subclasses of {}, received type {}'.format(
                 ImmutableType.__name__, of_type.__name__))

@@ -8,8 +8,8 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from prestans3.errors import ValidationException, PropertyConfigError
-from prestans3.types import ImmutableType
+from ..errors import ValidationException, PropertyConfigError
+from ..types import ImmutableType
 
 
 # noinspection PyAbstractClass

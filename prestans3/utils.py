@@ -10,11 +10,11 @@
 """
 from copy import copy
 
-# noinspection PyUnusedLocal
 import future.utils
 
 
-def prefix_with_injected(template_class, class_to_inject, target_base_class):
+# noinspection PyUnusedLocal
+def prefix_with_injected_default_fn(template_class, class_to_inject, target_base_class):
     return "Injected{}".format(template_class.__name__)
 
 
@@ -45,7 +45,7 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
 
     if target_base_class in template_class.mro():
         if new_type_name_func is None:
-            new_type_name_func = prefix_with_injected
+            new_type_name_func = prefix_with_injected_default_fn
         new_type_name = new_type_name_func(template_class, class_to_inject, target_base_class)
 
         new_bases = []
@@ -187,37 +187,37 @@ class ImmutableMergingDictionary(MergingProxyDictionary):
 
     def __delitem__(self, key):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__, key)
 
     def __setitem__(self, key, value):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__, key)
 
     def update(self, other=None, **kwargs):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def popitem(self):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def setdefault(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def pop(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def clear(self):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
 
@@ -261,4 +261,5 @@ else:
 
 
 def is_str(value):
+    """ python 2/3 compatible is_str function """
     return isinstance(value, string_types)
