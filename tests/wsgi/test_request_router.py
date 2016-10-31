@@ -8,13 +8,11 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import logging
 import os
 import wsgiref.util
-from unittest.mock import create_autospec
 
 import pytest
-import pytest_mock
-import logging
 
 from prestans3.wsgi.request_router import RequestRouter
 
@@ -57,7 +55,7 @@ def test_router_may_be_passed_environment():
     router(_default_wsgi_environ, lambda _x, _y: None)
 
 
-def test_router_redirects_routes(mocker):
+def test_router_redirects_routes():
     """
     :param pytest_mock.MockFixture mocker:
     """
@@ -132,3 +130,13 @@ def test_request_router_accepts_logger():
     logger = logging.getLogger("test logger")
     r = RequestRouter(routes=[], logger=logger)
     assert r.logger == logger
+
+
+def test_valid_wsgi_application_accepts_callable_classes():
+    class CallableClass(object):
+        def __call__(self, environ, start_response):
+            pass
+
+    assert RequestRouter.valid_wsgi_application(CallableClass)
+
+

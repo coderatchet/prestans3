@@ -44,9 +44,12 @@ class RequestRouter(object):
         return [(re.sub(r'\^?([^^$]+)\$?', r'^\1$', regex), route) for regex, route in routes]
 
     @classmethod
-    def valid_wsgi_application(cls, func):
-        if not callable(func):
+    def valid_wsgi_application(cls, _callable):
+        if not callable(_callable):
             return False
-        var_names = func.__code__.co_varnames
-        arg_count = func.__code__.co_argcount
+        from inspect import isclass
+        if isclass(_callable):
+            _callable = _callable.__call__
+        var_names = _callable.__code__.co_varnames
+        arg_count = _callable.__code__.co_argcount
         return arg_count == 2 or (arg_count == 3 and (var_names[0] == 'self' or var_names[0] == 'cls'))
