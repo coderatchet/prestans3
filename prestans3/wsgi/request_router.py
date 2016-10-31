@@ -88,7 +88,7 @@ class RequestRouter(object):
         from inspect import isclass
         if isclass(_callable):
             _callable = _callable.__call__
-        if not isfunction(_callable) and hasattr(_callable, '__call__'):
+        elif not isfunction(_callable) and hasattr(_callable, '__call__'):
             _callable = _callable.__call__.__func__
         var_names = _callable.__code__.co_varnames
         arg_count = _callable.__code__.co_argcount
