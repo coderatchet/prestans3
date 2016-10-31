@@ -261,4 +261,5 @@ else:
 
 
 def is_str(value):
+    """ python 2/3 compatible is_str function """
     return isinstance(value, string_types)
