@@ -155,3 +155,8 @@ Bar = lambda x: None
 def test_request_router_accepts_and_stores_default_serializer():
     r = RequestRouter(routes=[], default_serializer=Foo)
     assert r.default_serializer == Foo
+
+
+def test_request_router_accepts_and_stores_default_deserializers():
+    r = RequestRouter(routes=[], default_deserializers=[Foo, Bar])
+    assert r.default_deserializers == [Foo, Bar]
