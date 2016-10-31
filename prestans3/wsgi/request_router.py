@@ -16,7 +16,7 @@ from ..utils import is_str
 
 class RequestRouter(object):
     def __init__(self, routes, serializers=None, default_serializer=None, deserializers=None,
-                 default_deserializers=None, logger=None):
+                 default_deserializers=None, logger=None, application_name='wsgi_application'):
         if deserializers is None:
             deserializers = {}
         if serializers is None:
@@ -29,6 +29,7 @@ class RequestRouter(object):
         self._default_serializer = default_serializer
         self._deserializers = deserializers
         self._default_deserializers = default_deserializers
+        self._application_name = application_name
 
     def __call__(self, environ, start_response):
         for expression, route in self.routes:
@@ -60,6 +61,10 @@ class RequestRouter(object):
     @property
     def default_deserializers(self):
         return self._default_deserializers
+
+    @property
+    def application_name(self):
+        return self._application_name
 
     @classmethod
     def _normalize_routes(cls, routes):
