@@ -53,18 +53,44 @@ The most simple use case will appear like this (note that handlers are defined a
             ...
         ])
 
+.. _regular expression: https://docs.python.org/3/library/re.html
+
 The first argument for a route pair is a python `regular expression`_ `str`. the string should represent a path endpoint
 with optional parameter groups marked by regular expression groups. Regex groups will be passed as arguments to the
 appropriate handler method of the handler class. named regex groups will be passed as keyword arguments to the handler
 method::
 
     application = RequestRouter(routes=[
-        ('/ham/([0-9]+)/spam/(?P<foo>[a-zA-Z_]+)', MyHamSpamHandler)
+        ('/ham/([0-9]+)/spam/(?P<foo>[a-zA-Z_]+)', MyHamSpamHandler),
+        ...
     ])
+    calling GET '/ham/123/spam/bar'
+    # calls MyHamSpamHandler.some_get_method(123, foo='bar')
 
-matching of regular expressions is global and not multiline
+Path expressions have implicit ``^`` and ``$`` markers on the start and end of the str respectively. If these markers
+already exist, they are ignored::
 
-.. _regular expression: https://docs.python.org/3/library/re.html
+    ['^/$', '^/', '/$', '/'] # these path expressions all result in '^/$'
+
+Handler
+^^^^^^^
+
+Each handler should extend :class:`~request_handler.BaseRequestHandler`. methods are defined at the HTTP verb level::
+
+    class FooHandler(BaseRequestHandler):
+        @response(response_template=Array.property(Integer))
+        def my_get(arg1, arg2):
+            return [1,2,3]
+
+Part of Prestans 3's value is the ability to define well-defined contracts for both requests and responses. By default,
+calling the ``OPTIONS`` http method on an endpoint will retrieve its |blueprint|\ . An |blueprint| is a well-defined
+, computer-parsable |IDL| for describing ReST endpoints. The blueprint provides a list of available HTTP verbs for
+an endpoint, the expected request and response format and any conditions that apply to the content of any properties in
+the request (such as ``min_length`` and ``required``).
+
+|blueprints| are built-in to the standard |types| and are enabled by default. A developer may add keyword arguments to
+custom |Model| definitions and ``[request/response]_template`` property definitions in order to provide information for
+each of the |Model|\ 's |attributes| when querying its blueprint.
 
 Motivation
 ----------

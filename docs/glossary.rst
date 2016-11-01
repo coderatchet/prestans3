@@ -21,3 +21,13 @@ Glossary
     scalar
         represents a basic native value. e.g. int, string, float, date, time. immutable by nature and does not contain
         unrelated values.
+
+    API blueprint
+        an |IDL| of the related API or API endpoint
+
+    IDL (Interface Definition Language)
+        A defined grammar describing the capability and contract of an interface. Prestans 3 implements an |IDL| for
+        HTTP ReST calls using |blueprint|
+
+
+

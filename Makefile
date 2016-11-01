@@ -252,4 +252,4 @@ dummy:
 
 .PHONY: livehtml
 livehtml:
-	sphinx-autobuild -B -p 12345 -i *.pyc -i docs/peps -z prestans3 -z peps docs $(BUILDDIR)
+	sphinx-autobuild -B -p 12345 -i *.pyc -z prestans3 docs $(BUILDDIR)

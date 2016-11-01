@@ -88,6 +88,11 @@ rst_epilog = """
 .. |rule|  replace:: :term:`property rule`
 .. |rules|  replace:: :term:`property rules<property rule>`
 
+.. |blueprint|  replace:: :term:`API blueprint`
+.. |blueprints|  replace:: :term:`API blueprints<API blueprint>`
+
+.. |IDL|  replace:: :term:`IDL<IDL (Interface Definition Language)>`
+
 .. |emdash|  unicode:: U+2014  .. em dash
 .. |hellip|  unicode:: U+2026 .. ellipsis
     :ltrim:
