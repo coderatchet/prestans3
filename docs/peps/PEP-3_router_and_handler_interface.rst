@@ -4,7 +4,7 @@ PEP 3 - Request Router and Handlers
 
 Preamble
 --------
-Request redirection and content propagation should be simple yet as configurable as needed. The way a ReST api is
+Request redirection and content propagation should be simple yet as configurable as needed. The way a ReST API is
 constructed should not inhibit scalability and promote good practices. In Prestans 3's implementation of request and
 route handling, conforming to our suggested process of endpoint creation should result in a ReST conformant,
 "good-citizen" API. Given the high level of misunderstanding about what ReST actually is, using the Prestans 3 route and
@@ -30,8 +30,8 @@ Specification
 
 .. py:currentmodule:: prestans3.wsgi
 
-The interface consists of a main entry point wsgi application router:|RequestRouter|  and a base class for implementing
-custom endpoint handlers: |BaseRequestHandler|\ .
+The tools consists mainly of a WSGI application router for defining supported API URL paths: |RequestRouter| and a
+base class for implementing custom endpoint handlers: |BaseRequestHandler|\ .
 
 Router
 ^^^^^^
@@ -116,14 +116,14 @@ and |@response| decorators::
     from prestans3.wsgi.request_handler import BaseRequestHandler, request, response
 
     class CurrentTimeHandler(BaseRequestHandler):
-        """ yes, the Time class is a more appropriate response_template but this example is for pedagogy """
+        """ yes, the Time class is a more appropriate response_template but this example is merely pedagogical """
         @request(request_template=Array.property(
             element_template=String.property(description="timezone "), min_length=1))
         @response(response_template=Array.property(
             element_template=String.property(
-                regex_format=r"[0-1][0-9]:[0-5][0-9]:[0-5][0-9] (?:AM|PM) (?:\+|-)[0-1][0-2][03]0"))
+                regex_format=r"[0-1][0-9]:[0-5][0-9]:[0-5][0-9] (?:AM|PM) (?:\+|-)[01][0-2][03]0"))
         def post():
-            ...
+            # ...
 
 
 Request Decorator
