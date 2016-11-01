@@ -96,6 +96,7 @@ rst_epilog = """
 .. |emdash|  unicode:: U+2014  .. em dash
 .. |hellip|  unicode:: U+2026 .. ellipsis
     :ltrim:
+.. |copy|  unicode:: U+00A9 .. copyright symbol
 
 .. types
 .. -----
@@ -193,6 +194,15 @@ rst_epilog = """
 
 .. |ImmutableMergingDictionary|  replace:: :class:`ImmutableMergingDictionary<.ImmutableMergingDictionary>`
 .. |ImmutableMergingDictionaries|  replace:: :class:`ImmutableMergingDictionaries<.ImmutableMergingDictionary>`
+
+.. wsgi
+.. ----
+
+.. |BaseRequestHandler|  replace:: :class:`BaseRequestHandler<request_handler.BaseRequestHandler>`
+.. |BaseRequestHandlers|  replace:: :class:`BaseRequestHandlers<request_handler.BaseRequestHandler>`
+
+.. |RequestRouter|  replace:: :class:`RequestRouter<request_router.RequestRouter>`
+.. |RequestRouters|  replace:: :class:`RequestRouters<request_router.RequestRouter>`
 
 """
 
