@@ -42,6 +42,9 @@ to your API. configuration is provided for serializing, deserializing, applicati
 The router visually acts as a glossary of url patterns to their respective handlers. A route is defined as a tuple pair:
 (:class:`str`, T <= |BaseRequestHandler|\ ).
 
+Defining a RequestRouter
+""""""""""""""""""""""""
+
 The most simple use case will appear like this (note that handlers are defined alongside this code for example's sake)::
 
     from prestans3.wsgi.request_router import RequestRouter, BaseRequestHandler
@@ -78,6 +81,8 @@ already exist, they are ignored::
 
     ['^/$', '^/', '/$', '/'] # these path expressions all result in '^/$'
 
+
+
 Handler
 ^^^^^^^
 
@@ -105,11 +110,81 @@ Defining a Handler Method
 A request handler method is unique for each permutation of url path, query parameters and http verb. the name of a
 method is arbitrary but should indicate what verb it supports e.g. ``def get_with_search_keywords(...)``. Methods
 defined on the |BaseRequestHandler| may be configured to handle requests and constrain responses using the |@request|
-and |@response| decorators.
+and |@response| decorators::
+
+    from prestans3.types import Array, String
+    from prestans3.wsgi.request_handler import BaseRequestHandler, request, response
+
+    class CurrentTimeHandler(BaseRequestHandler):
+        """ yes, the Time class is a more appropriate response_template but this example is for pedagogy """
+        @request(request_template=Array.property(
+            element_template=String.property(description="timezone "), min_length=1))
+        @response(response_template=Array.property(
+            element_template=String.property(
+                regex_format=r"[0-1][0-9]:[0-5][0-9]:[0-5][0-9] (?:AM|PM) (?:\+|-)[0-1][0-2][03]0"))
+        def post():
+            ...
+
 
 Request Decorator
 """""""""""""""""
 
+.. _request.request_template:
+
+.. py:data:: @request(request_template=T <= prestans3.types.ImmutableType, ...)
+
+    ``request_template`` parameter defines the contract of the required request body which is validated and unmarshalled
+    into an instance of the type.
+
+.. _request.accepts_mime_type:
+
+.. py:data:: @request(accepts_mime_types=[] of str)
+
+    e.g. ``@request(accepts_mime_types=['text/json', 'application/xml'])``. Describes the supported mime types of the
+    request body. By default, thehandler will accept the globally defined ``default_deserializer`` defined in the
+    constructor of the application's |RequestRouter|\ . Requests with a ``Content-Type`` header will be respected and an
+    error will be returned for request body's not conforming to the specified types. For requests without a
+    ``Content-Type`` header, request content is assumed to be the ``default_serializer`` mime_type.
+
+    If defined, the values override this default. If your API mainly talks with one mime type, such
+    as ``'text/json'``, then it should be unnecessary to provide this value for most use cases.
+
+.. _request.http_method:
+
+.. py:data:: @request(http_method=str in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS' (see note)])
+
+    **Note:** *unless you wish to override the* |blueprint| *functionality, it is not recommended you implement
+    a handler for the OPTIONS verb*
+
+    The HTTP method this method should support. Multiple methods with the same :ref:`http_method<request.http_method>`
+    value may be defined if they differ in their :ref:`parameter_set<request.parameter_set>` value
+
+.. _request.parameter_set:
+
+.. py:data:: @request(parameter_set=T <= ParameterSet)
+
+    used in conjunction with the :ref:`http_method<request.http_method>` parameter to define a method to handle a unique
+    combination of url query parameters. Multiple methods defined with the same :ref:`http_method<request.http_method>`
+    will handle requests according to the matched :ref:`parameter_set<request.parameter_set>`. A |ParameterSet| is
+    unique and therefore must not conflict with other |ParameterSets| declared on methods with the same
+    :ref:`http_method<request.http_method>`.
+
+
+Response Decorator
+""""""""""""""""""
+
+.. py:data:: @response(response_template=T <= prestans3.types.ImmutableType, ...)
+
+    response_template, like the request_template, defines the contract an API developer will adhere to in their
+    response. Values returned from the decorated method will be coerced into the declared |type| and validated by the
+    |_Property| \'s definition and provided rules.
+
+Implicit HTTP Verb Method Definitions
+"""""""""""""""""""""""""""""""""""""
+
+*Note: This feature is experimental and open subject to change*
+
+As well as explicitly defining which methods
 
 Backwards Compatibility
 -----------------------
@@ -120,4 +195,4 @@ The current implementation of request handlers and routers should support Python
 Reference Implementation
 ------------------------
 
-see :mod:`~prestans3.wsgi`.
+see the :mod:`prestans3.wsgi` module.

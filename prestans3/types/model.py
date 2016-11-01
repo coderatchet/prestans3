@@ -124,7 +124,7 @@ class Model(with_metaclass(_PrestansModelTypeMeta, Container)):
             super(Model, self).__setattr__(key, value)
 
     def __delattr__(self, item):
-        """ disabled on default Model, see :function:`Model.mutable()` for creating a mutable version """
+        """ disabled on default Model, see :func:`Model.mutable()` for creating a mutable version """
         if self.is_prestans_attribute(item):
             raise AccessError(self.__class__, "attempted to delete value of prestans3 attribute on an immutable Model, "
                                               "For a mutable {class_name}, call {class_name}.mutable(...)".format(

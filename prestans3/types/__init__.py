@@ -5,7 +5,7 @@
     
     A WSGI compliant REST micro-framework.
 
-    :copyright: (c) 2016 Anomaly Software
+    :copyright: |copy| 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
 import functools
@@ -46,13 +46,14 @@ class ImmutableType(with_metaclass(PrestansTypeMeta)):
 
     def __init__(self, validate_immediately=True):
         """
-        NOTE: call this method after setting values if validating immediately in order for validation to work!
+        **NOTE**: *call this method after setting values if validating immediately in order for validation to work!*
 
         if validate_immediately is set, this may possibly raise a |ValidationException| when initializing the object.
         This is the default behaviour of all immutable types.
 
-        :param bool validate_immediately: whether to validate this object on construction or defer validation to the
-                                          user or prestans3 REST api process
+        :param bool validate_immediately:
+            whether to validate this object on construction or defer validation to the user or prestans3 REST
+            api process
         :raises |ValidationException|\ : on invalid state when validate_immediately is True
         """
         if validate_immediately:
