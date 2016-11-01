@@ -104,8 +104,12 @@ Defining a Handler Method
 
 A request handler method is unique for each permutation of url path, query parameters and http verb. the name of a
 method is arbitrary but should indicate what verb it supports e.g. ``def get_with_search_keywords(...)``. Methods
-defined on the |BaseRequestHandler| may be configured to handle requests and constrain responses using the
-:func:`@request<request_handler.request>` and :func:`@response<request_handler.response>` decorators.
+defined on the |BaseRequestHandler| may be configured to handle requests and constrain responses using the |@request|
+and |@response| decorators.
+
+Request Decorator
+"""""""""""""""""
+
 
 Backwards Compatibility
 -----------------------

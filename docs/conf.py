@@ -204,6 +204,10 @@ rst_epilog = """
 .. |RequestRouter|  replace:: :class:`RequestRouter<request_router.RequestRouter>`
 .. |RequestRouters|  replace:: :class:`RequestRouters<request_router.RequestRouter>`
 
+.. |@request|  replace:: :func:`@request<request_handler.request>`
+
+.. |@response| replace:: :func:`@response<request_handler.response>`
+
 """
 
 
