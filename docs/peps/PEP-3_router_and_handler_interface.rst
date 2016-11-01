@@ -5,10 +5,10 @@ PEP 3 - Request Router and Handlers
 Preamble
 --------
 Request redirection and content propagation should be simple yet as configurable as needed. The way a ReST API is
-constructed should not inhibit scalability and promote good practices. In Prestans 3's implementation of request and
+constructed should promote good practices and not impede scalability. In Prestans 3's implementation of request and
 route handling, conforming to our suggested process of endpoint creation should result in a ReST conformant,
 "good-citizen" API. Given the high level of misunderstanding about what ReST actually is, using the Prestans 3 route and
-handler interface will help enforce the true concepts of ReST without inhibiting the creativity of the API developer.
+handler interface will help enforce the true standards of ReST without inhibiting the creativity of the API developer.
 
 Abstract
 --------
