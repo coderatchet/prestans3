@@ -223,6 +223,15 @@ ArrayValidationException
         :special-members:
         :exclude-members: __init__
 
+WSGI
+====
+
+
+.. py:currentmodule:: prestans3.wsgi.request_router
+
+.. autoclass:: RequestRouter
+
+
 Utils
 =====
 
