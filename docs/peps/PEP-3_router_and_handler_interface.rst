@@ -93,16 +93,18 @@ Each handler should extend |BaseRequestHandler|. methods are defined at the HTTP
         def my_get(arg1, arg2):
             return [1,2,3]
 
-Part of Prestans 3's value is the ability to define well-defined contracts for both requests and responses. By default,
+Part of Prestans 3's value is the ability to produce well-defined contracts for both requests and responses. By default,
 calling the ``OPTIONS`` http method on an endpoint will retrieve its |blueprint|\ . An |blueprint| is a well-defined
 , computer-parsable |IDL| for describing ReST endpoints. The blueprint provides a list of available HTTP verbs for
 an endpoint, the expected request and response format and any conditions that apply to the content of any properties in
 the request (such as ``min_length`` and ``required``).
 
-|blueprints| are built-in to the standard |types| and are enabled by default. A developer may add keyword arguments to
-custom |Model| definitions (through the :meth:`ImmutableType.property()<prestans3.types.ImmutableType.property>` method)
-and ``[request/response]_template`` property definitions in order to provide information for each of the |Model|\ 's
-|attributes| when querying its blueprint.
+|blueprints| are built-in to the standard |types| and custom subclasses and are enabled by default. A developer may add
+keyword arguments to custom |Model| definitions (through the
+:meth:`ImmutableType.property()<prestans3.types.ImmutableType.property>` method) and ``[request/response]_template``
+property definitions in order to provide information for each of the |Model|\ 's |attributes| for use when querying its
+blueprint.
+
 
 Defining a Handler Method
 """""""""""""""""""""""""
@@ -136,18 +138,19 @@ Request Decorator
     ``request_template`` parameter defines the contract of the required request body which is validated and unmarshalled
     into an instance of the type.
 
-.. _request.accepts_mime_type:
+.. _request.deserializers:
 
-.. py:data:: @request(accepts_mime_types=[] of str)
+.. py:data:: @request(deserializers=[] of prestans3.transport.Deserializer)
 
-    e.g. ``@request(accepts_mime_types=['text/json', 'application/xml'])``. Describes the supported mime types of the
-    request body. By default, thehandler will accept the globally defined ``default_deserializer`` defined in the
-    constructor of the application's |RequestRouter|\ . Requests with a ``Content-Type`` header will be respected and an
-    error will be returned for request body's not conforming to the specified types. For requests without a
-    ``Content-Type`` header, request content is assumed to be the ``default_serializer`` mime_type.
+    e.g. ``@request(deserializers=[prestans3.transport.json.JsonSerializer, prestans3.transport.xml.XmlDeserializer])``.
+    lists the supported deserializers of the request body. By default, the handler will accept the global
+    ``default_deserializer`` parameter of the application's |RequestRouter|\ . Requests with a ``Content-Type`` header
+    will be respected and an error will be returned for request body's not conforming to the specified types. For
+    requests without a ``Content-Type`` header, request content is assumed to be the ``default_serializer`` mime_type.
 
     If defined, the values override this default. If your API mainly talks with one mime type, such
-    as ``'text/json'``, then it should be unnecessary to provide this value for most use cases.
+    as ``'application/json'``, and your global ``default_deserializer`` is declared (see above), then it should be
+    unnecessary to provide this value in the majority of use cases.
 
 .. _request.http_method:
 
@@ -173,18 +176,37 @@ Request Decorator
 Response Decorator
 """"""""""""""""""
 
+.. _response.response_template:
+
 .. py:data:: @response(response_template=T <= prestans3.types.ImmutableType, ...)
 
     response_template, like the request_template, defines the contract an API developer will adhere to in their
     response. Values returned from the decorated method will be coerced into the declared |type| and validated by the
     |_Property| \'s definition and provided rules.
 
+.. _response.serializers:
+
+.. py:data:: @response(serializers=[] of prestans3.transport.Serializer)
+
+    A list of serializers in order of preference for serializing the data. Prestans 3 will honour the ``Accepts`` HTTP
+    header and search for any compliant handler in this list. If this parameter is not declared, the global settings for
+    the containing |RequestRouter|\ 's ``serializers`` parameter is applied.
+
 Implicit HTTP Verb Method Definitions
 """""""""""""""""""""""""""""""""""""
 
-*Note: This feature is experimental and open subject to change*
+**Note:** *This feature is experimental and subject to change*
 
-As well as explicitly defining which methods
+As well as explicitly defining which methods will support each verb/parameterset combination, functions named by their
+verb counterpart (e.g. ``def get(...):`` or ``def delete(...):``) are implicitly registers as catch-all handlers for
+that HTTP method::
+
+    from prestans3.wsgi.request_handler import BaseRequestHandler
+
+    class MyRequestHandler(BaseRequestHandler):
+        def get(foo, bar):
+            """ called implicitly by the router when receiving a HTTP GET request with any parameter sets """
+            pass
 
 Backwards Compatibility
 -----------------------
