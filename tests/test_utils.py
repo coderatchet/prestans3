@@ -440,3 +440,14 @@ def test_is_str_detects_proper_types():
     assert utils.is_str('')
     assert utils.is_str(u'')
     assert not utils.is_str(1)
+
+
+def test_get_user_attributes_obtains_correct_attributes():
+    class _Custom(object):
+        def one(self):
+            pass
+
+        two = 'spam'
+
+    assert utils.get_user_attributes(_Custom) == [('one', _Custom.one), ('two', 'spam')]
+

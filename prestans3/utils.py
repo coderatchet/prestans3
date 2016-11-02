@@ -8,6 +8,7 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
+import inspect
 from copy import copy
 
 import future.utils
@@ -263,3 +264,9 @@ else:
 def is_str(value):
     """ python 2/3 compatible is_str function """
     return isinstance(value, string_types)
+
+
+def get_user_attributes(cls):
+    """ returns the list of user defined class attributes excluding those from :class:`object` """
+    boring = dir(type('dummy', (object,), {}))
+    return [item for item in inspect.getmembers(cls) if item[0] not in boring]
