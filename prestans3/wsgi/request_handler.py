@@ -12,4 +12,5 @@
 
 def request(func):
     """ decorator for configuring HTTP methods on RequestHandlers """
+    func.prestans_handler = True
     return func
