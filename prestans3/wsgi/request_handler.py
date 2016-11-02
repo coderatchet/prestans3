@@ -10,7 +10,18 @@
 """
 
 
-def request(func):
+class request(object):
     """ decorator for configuring HTTP methods on RequestHandlers """
-    func.prestans_handler = True
-    return func
+    def __init__(self, http_method=None):
+        self.prestans_handler = True
+        self.http_method = http_method
+
+    def __call__(self, f):
+        def wrapped_f(*args, **kwargs):
+            return f(*args, **kwargs)
+        wrapped_f.prestans_handler = self.prestans_handler
+        wrapped_f.http_method = self.http_method
+        return wrapped_f
+
+
+
