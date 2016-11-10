@@ -2,7 +2,7 @@
 """
     setup.py
     ~~~~~~~~
-    
+
     A WSGI compliant REST micro-framework.
 
     :copyright: (c) 2016 Anomaly Software
@@ -37,11 +37,11 @@ setup(
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Internet :: WWW/HTTP',
         'Topic :: Internet :: WWW/HTTP :: WSGI',
         'Topic :: Software Development :: Libraries :: Application Frameworks',
         'Topic :: Software Development :: Libraries :: Python Modules',
-        'Programming Language :: Python :: Implementation :: PyPy',
     ],
     platforms=['any'],
     packages=find_packages(),
