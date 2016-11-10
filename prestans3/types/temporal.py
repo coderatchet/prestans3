@@ -8,8 +8,8 @@
     :copyright: (c) 2016 Anomaly Software
     :license: Apache 2.0, see LICENSE for more details.
 """
-from prestans3.errors import ValidationException, PropertyConfigError
-from prestans3.types import ImmutableType
+from ..errors import ValidationException, PropertyConfigError
+from ..types import ImmutableType
 
 
 # noinspection PyAbstractClass
@@ -51,20 +51,20 @@ def _before(instance, config):
                                   "{} is not before configured temporal {}".format(str(instance), str(config)))
 
 
-def _before_after_config_check(type, all_config):
+def _before_after_config_check(configured_type, all_config):
     """
     checks if the before and after configuration does not conflict with each other,
     i.e. `before` does not occur on or after `after`
 
-    :param type: a subclass of |Temporal|
-    :type type: class<T <= |Temporal|\ >
+    :param configured_type: a subclass of |Temporal|
+    :type configured_type: class<T <= |Temporal|\ >
     :param dict all_config: a dictionary of configured rules on the type
     """
     if all_config is not None and 'after' in all_config and 'before' in all_config:
         after = all_config['after']
         before = all_config['before']
         if after >= before:
-            raise PropertyConfigError(type, "after and before",
+            raise PropertyConfigError(configured_type, "after and before",
                                       "configuration for after '{}' is equal-to or " +
                                       "later than configuration for before '{}'".format(after, before))
 

@@ -10,7 +10,7 @@
 """
 from datetime import time
 
-from prestans3.types.temporal import Temporal
+from ..types.temporal import Temporal
 
 
 class Time(Temporal, time):
@@ -20,6 +20,7 @@ class Time(Temporal, time):
 
     def __init__(self, hour=0, minute=0, second=0, microsecond=0, tzinfo=None):
         import platform
+        # py2to3 remove if and only perform else
         if platform.python_implementation() == 'PyPy':
             time.__init__(time(hour, minute, second, microsecond, tzinfo))
         else:

@@ -20,6 +20,7 @@ class Integer(Number, int):
     @classmethod
     def from_value(cls, value):
         try:
+            # noinspection PyUnresolvedReferences
             return super(Integer, cls).from_value(value)
         except NotImplementedError:
             if not isinstance(value, int):

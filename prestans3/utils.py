@@ -10,9 +10,11 @@
 """
 from copy import copy
 
+import future.utils
+
 
 # noinspection PyUnusedLocal
-def prefix_with_injected(template_class, class_to_inject, target_base_class):
+def prefix_with_injected_default_fn(template_class, class_to_inject, target_base_class):
     return "Injected{}".format(template_class.__name__)
 
 
@@ -43,7 +45,7 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
 
     if target_base_class in template_class.mro():
         if new_type_name_func is None:
-            new_type_name_func = prefix_with_injected
+            new_type_name_func = prefix_with_injected_default_fn
         new_type_name = new_type_name_func(template_class, class_to_inject, target_base_class)
 
         new_bases = []
@@ -61,6 +63,14 @@ def inject_class(template_class, class_to_inject, target_base_class=object, new_
     else:
         injected_class_cache.update({args_key: template_class})
         return template_class
+
+
+def find_first(dictionary, condition):
+    # py2to3 unwrap dictinoary.items()
+    for key, value in list(dictionary.items()):
+        if condition(key, value):
+            return key, value
+    return None
 
 
 class MergingProxyDictionary(dict):
@@ -116,17 +126,10 @@ class MergingProxyDictionary(dict):
                         pass
             raise error
 
-    def _find_first(self, dictionary, condition):
-        # py2to3 unwrap dictinoary.items()
-        for key, value in list(dictionary.items()):
-            if condition(key, value):
-                return key, value
-        return None
-
     def __contains__(self, item):
         in_me = super(MergingProxyDictionary, self).__contains__(item)
         if not in_me and self._others:
-            return any(self._find_first(other, lambda key, _: item == key) for other in self._others)
+            return any(find_first(other, lambda key, _: item == key) for other in self._others)
         return in_me
 
     def __copy__(self):
@@ -184,37 +187,37 @@ class ImmutableMergingDictionary(MergingProxyDictionary):
 
     def __delitem__(self, key):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__, key)
 
     def __setitem__(self, key, value):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__, key)
 
     def update(self, other=None, **kwargs):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def popitem(self):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def setdefault(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def pop(self, key, default=None):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
     def clear(self):
         """ :raises AccessError: when attempting to call this function. """
-        from prestans3.errors import AccessError
+        from .errors import AccessError
         raise AccessError(self.__class__)
 
 
@@ -248,3 +251,15 @@ class LazyOneWayGraph(dict):
                 self._terminating_type in base.mro() and base is not of_type]
         self[of_type] = MergingProxyDictionary({}, *mro_)
         return self[of_type]
+
+
+# py2to3 this and the is_str function should be removed completely
+if future.utils.PY3:
+    string_types = str
+else:
+    string_types = basestring
+
+
+def is_str(value):
+    """ python 2/3 compatible is_str function """
+    return isinstance(value, string_types)

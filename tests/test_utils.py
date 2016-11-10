@@ -12,11 +12,11 @@
 from copy import copy
 
 import pytest
+from future.utils import with_metaclass
 
-import prestans3.future
+import prestans3.utils as utils
 from prestans3.errors import AccessError
 from prestans3.utils import inject_class, MergingProxyDictionary
-import prestans3.utils as utils
 
 
 class InjectableClass(object):
@@ -45,8 +45,8 @@ def test_can_inject_class_with_more_than_one_subclass():
     new_type = inject_class(__C, InjectableClass)
     assert new_type.__name__ == 'Injected{}'.format(__C.__name__)
     assert new_type.__bases__[0] == __C
-    assert new_type.__bases__[1].__name__ == utils.prefix_with_injected(__A, None, None)
-    assert new_type.__bases__[2].__name__ == utils.prefix_with_injected(__B, None, None)
+    assert new_type.__bases__[1].__name__ == utils.prefix_with_injected_default_fn(__A, None, None)
+    assert new_type.__bases__[2].__name__ == utils.prefix_with_injected_default_fn(__B, None, None)
     injected_a = new_type.__bases__[1]
     injected_b = new_type.__bases__[2]
 
@@ -98,7 +98,7 @@ def test_can_inject_class_in_complex_hierarchy():
     new_type = inject_class(__Z, InjectableClass, __B)
     assert len(new_type.__bases__) == 5
     assert new_type.__bases__[0] is __Z
-    assert new_type.__bases__[1].__name__ == utils.prefix_with_injected(__X, None, None)
+    assert new_type.__bases__[1].__name__ == utils.prefix_with_injected_default_fn(__X, None, None)
     assert new_type.__bases__[2] is __Y
     assert new_type.__bases__[3] is InjectableClass
     assert new_type.__bases__[4] is __B
@@ -189,7 +189,7 @@ def test_new_type_is_sub_type_of_old_type_for_inject_class():
     new_type = inject_class(__B, __A, target_base_class=object)
     assert issubclass(new_type, __A)
     for thing in new_type.__bases__:
-        if thing.__name__ == utils.prefix_with_injected(__A, None, None):
+        if thing.__name__ == utils.prefix_with_injected_default_fn(__A, None, None):
             assert issubclass(thing, __A)
             assert __A.mro()
 
@@ -202,7 +202,7 @@ def test_with_meta_class():
             cls.attr = 'foo'
             super(Meta, cls).__init__(name, bases, attrs)
 
-    class WithMeta(prestans3.future.with_metaclass(Meta, object)):
+    class WithMeta(with_metaclass(Meta, object)):
         pass
 
     # noinspection PyUnresolvedReferences
@@ -435,3 +435,8 @@ def test_merging_dictionary_can_access_own_values():
     assert len(values) == 1
     assert list(values)[0] == list({'foo': 'bar'}.values())[0]
 
+
+def test_is_str_detects_proper_types():
+    assert utils.is_str('')
+    assert utils.is_str(u'')
+    assert not utils.is_str(1)
