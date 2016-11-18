@@ -32,7 +32,7 @@ def test_inspect_decorated_methods_have__request_flag():
     assert hasattr(handler_method, 'prestans_handler') and handler_method.prestans_handler
 
 
-def test_decorated_methods_have_http_verb_setting():
+def test_decorated_request_methods_have_http_verb_setting():
     class _Handler(object):
         @request(http_method='GET')
         def my_get_method(self):
